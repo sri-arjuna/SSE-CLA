@@ -36,8 +36,10 @@ import sys
 import datetime
 import time
 import re
-
-#import platform
+import platform
+import random
+import logging
+import fnmatch
 
 ######################################
 ### Initialize Global Variables 
@@ -47,8 +49,11 @@ global thisMEM, thisFile, thisFileAdd, thisAssembler
 global script_name, script_version, script_date
 global RAM, STACK, REGISTERS
 global list_ignores, high_chance
-list_ignores = ["skse64_loader.exe", "SkyrimSE.exe"]
-high_chance = ["skee64.dll", "Trishape", "Ninode", "mesh" ]
+global hc_reasons, ignore_reasons
+global culprint
+######################################
+### Default Values
+######################################
 script_name = "SSE CLA - Sephs Skyrim Experimental Crash Log Analyzer"
 script_version = "0.2"
 script_date = "2023.04.23"
@@ -60,6 +65,36 @@ thisAssembler = ""
 RAM = ""
 STACK = ""
 REGISTERS = ""
+
+######################################
+### Lists
+######################################
+
+list_ignores = ["skse64_loader.exe", "SkyrimSE.exe"]
+high_chance = ["skee64.dll", "Trishape", "Ninode", "mesh" ]
+culprint = []
+
+######################################
+### Dictionary
+######################################
+
+hc_reasons = {
+'skee64.dll': "Some mod might be incompatible with RaceMenu, or your body.",
+'Trishape': "Trishapes are related to meshes, specifically a mod supplying a bad mesh. ",
+'Ninode': "Ninodes are related to skeletons. Probably an xpmsse overwrite. ",
+'Mesh': "Some generic mesh issue, yet to be defined",
+'hdtSMP64.dll': "If this appears often, it might indicate a bad config. However, it might also just indicate that there were NPCs around that were wearing hdt/smp enabled clothing...",
+'bad_alloc': "100% your issue! Free RAM, buy more RAM... either way, this IS the cause!",
+'cbp.dll': "If this appears often, it might indicate a bad config. However, it might also just indicate that there were NPCs around that were wearing hdt/smp enabled clothing...",
+'Dawnguard.esm': "Your missing the required DLC!",
+'Dragonborn.esm': "Your missing the required DLC!",
+'Hearthfire.esm': "Your missing the required DLC!",
+'no_alloc': "Could not find the proper memory allocation provided by reference",
+}
+ignore_reasons = {
+'skse64_loader.exe': "At best, this entry is an indication that the culprint is a mod that is using SKSE...",
+'SkyrimSE.exe': "Its the game exe, the issue is somewhere else."
+}
 
 ######################################
 ### Functions : Tools
@@ -91,8 +126,15 @@ def s_get_input(msg):
         if len(user_input) == 1:
             return user_input
 
+# Add culprints
+def add_culprint(value):
+    global culprint
+    if value not in culprint:
+        culprint.append(value)
+
+
 # Warn if possible RAM issue:
-def s_issue_ram(LOG):
+def s_ram_check(LOG):
     RAM = "\n"
     match = re.search(r'PHYSICAL MEMORY: (\d+\.\d+) GB/(\d+\.\d+) GB', LOG)
     if match:
@@ -107,7 +149,47 @@ def s_issue_ram(LOG):
         else:
             RAM += "# RAM (all good):\n*It is absolute unlikely that the crash was due to RAM.*"
         RAM += "\n"
+    
+    RAM += s_ram_config(used_ram,available_ram)
+    RAM +="\n----\n"
     return RAM
+
+def s_ram_config(cur, max):
+    if isinstance(cur, str):
+        cur_val, cur_unit = cur.split()
+        if cur_unit == 'GB':
+            cur = float(cur_val) * (1024 ** 3)
+        else:
+            cur = float(cur_val) * (1024 ** 2)
+    if isinstance(max, str):
+        max_val, max_unit = max.split()
+        if max_unit == 'GB':
+            max = float(max_val) * (1024 ** 3)
+        else:
+            max = float(max_val) * (1024 ** 2)
+    if max < 4 * (1024 ** 3) or max - cur <= 1.5 * (1024 ** 3):
+        return '''
+First and foremost, try to close any other application and background processes that might be running that you do not need.
+Like, but not limited to, game launchers, web browsers with 20 open tabs, Spotify, even Discord.
+Also, you might want to consider using lower texture mods, aka, use a 2k instead of a 4k texture mod, or just a 1k texture.
+
+If the above did not help, you could try apply these config tweaks to: __Skyrim.ini___
+Make sure to comment out (#) any existing variantes of these, so you can go back if they dont help or make things worse.
+
+This is most applicable if you're using 4 GB ram or less.
+
+[Display]
+iTintTextureResolution=2048
+
+[General]
+ClearInvalidRegistrations=1
+
+[Memory]
+DefaultHeapInitialAllocMB=768
+ScrapHeapSizeMB=256
+'''
+    return ''
+
 
 # Continue
 def my_continue():
@@ -145,7 +227,7 @@ def p_menu_main(filename=None):
     while True:
         clear_console()
         p_print_menu_header()
-        s_issue_ram(thisLOG)
+        s_ram_check(thisLOG)
         print("\n==== Main Menu ====")
         print("1. Call")
         print("2. Register")
@@ -245,7 +327,7 @@ def s_parse_CallStack(LOG):
     global thisMEM, thisFile, thisFileAdd, thisAssembler, list_ignores, high_chance
     calls = [thisMEM.strip(), thisFile.strip(), thisFileAdd.strip(), thisAssembler.strip()]
 
-    REPORT = "\n\n# Probable Call Stack\n"
+    REPORT = "\n# Probable Call Stack\n"
     REPORT_HC = ""
     match = re.search(r'PROBABLE CALL STACK:\s*\n(.*?)(?=REGISTERS:)', LOG, re.DOTALL)
 
@@ -253,7 +335,7 @@ def s_parse_CallStack(LOG):
         stack = match.group(1)
         for call in calls:
             if call in list_ignores:
-                REPORT += f"{call}\n\t\t*Ignored because it is unlikely the cause! (part of: list_ignores)*\n\n"
+                REPORT += f"{call}\n\t\t*"+ignore_reasons[call]+"*\n\n"
                 continue
 
             VAR = ""
@@ -265,10 +347,12 @@ def s_parse_CallStack(LOG):
                     count += 1
             if count > 1:
                 REPORT += f"{call}:\n\tFound {count} occurrences\n\t**NOTE:**\n\t*Only because this file appeared often does not mean it was the cause, it might just have been 'the final straw' to 'break the camels back'!*\n\n"
+                add_culprint(call)
                 if call in high_chance:
-                    REPORT += f"\t--> *Very high chance of causing the issue! (its from the main indicators above and also part of: high_chance)* <--\n"
+                    REPORT += f"\t--> *Very high chance of causing the issue! ("+hc_reasons[call]+")* <--\n"
             elif count == 1:
                 REPORT += f"{call}:\n\t{VAR}\n\n"
+                add_culprint(call)
             else:
                 REPORT += f"{call}\n\tNo occurrences of were found in Call Stack\n\n"
 
@@ -277,29 +361,66 @@ def s_parse_CallStack(LOG):
             hc_pattern = re.compile(pattern, re.IGNORECASE)
             for line in stack.split('\n'):
                 if hc_pattern.search(line) and pattern not in hc_set:
-                    REPORT_HC += f"{pattern}\n\t*High chance of causing the issue! (part of: high_chance)*\n"
+                    REPORT_HC += f"{pattern}\n\t*High chance of causing the issue! ("+hc_reasons[pattern]+")*\n"
                     hc_set.add(pattern)
+                    add_culprint(call)
 
         if REPORT_HC:
             REPORT += "# Call Stack : High Chances\n"
             REPORT += REPORT_HC
 
-    REPORT += "----\n"
+    REPORT += "\n----\n"
     return REPORT
 
 
 # Parse the register section
 def s_parse_Register(LOG):
-    REPORT = ""
-    match = re.search(r'REGISTERS:\s*\n(.*)', LOG, re.DOTALL)
-    if match:
-        registers_section = match.group(1)
-        register_lines = registers_section.split('\n')
+    global thisMEM, thisFile, thisFileAdd, thisAssembler, list_ignores, high_chance, registers
 
-        # Loop through all the lines in the "REGISTERS:" section and parse each line
-        for line in register_lines:
-            pass
+    REPORT = "\n# Registers\n"
+    match = re.search(r'STACK:\s*\n(.*?)(?=PC:)', LOG, re.DOTALL)
+
+    if match:
+        stack = match.group(1)
+        for register in registers:
+            if register in list_ignores:
+                REPORT += f"{register}\n\t\t*"+ignore_reasons[register]+"*\n\n"
+                continue
+
+            VAR = ""
+            register_pattern = re.compile(register, re.IGNORECASE)
+            count = 0
+            for line in stack.split('\n'):
+                if register_pattern.search(line):
+                    VAR = line.strip()
+                    count += 1
+            if count > 1:
+                REPORT += f"{register}:\n\tFound {count} occurrences\n\t**NOTE:**\n\t*Only because this register appeared often does not mean it was the cause, it might just have been 'the final straw' to 'break the camels back'!*\n\n"
+                add_culprint(register)
+                if register in high_chance:
+                    REPORT += f"\t--> *Very high chance of causing the issue! ("+hc_reasons[register]+")* <--\n"
+            elif count == 1:
+                REPORT += f"{register}:\n\t{VAR}\n\n"
+                add_culprint(register)
+            else:
+                REPORT += f"{register}\n\tNo occurrences of were found in Stack\n\n"
+
+        hc_set = set()
+        for pattern in high_chance:
+            hc_pattern = re.compile(pattern, re.IGNORECASE)
+            for line in stack.split('\n'):
+                if hc_pattern.search(line) and pattern not in hc_set:
+                    REPORT += f"{pattern}\n\t*High chance of causing the issue! ("+hc_reasons[pattern]+")*\n"
+                    hc_set.add(pattern)
+                    add_culprint(register)
+
+        if REPORT_HC:
+            REPORT += "# Stack : High Chances\n"
+            REPORT += REPORT_HC
+
+    REPORT += "\n----\n"
     return REPORT
+
 
 
 ######################################
@@ -321,9 +442,9 @@ if len(sys.argv) > 1:
         thisFileAdd = ""
         thisAssembler = ""
         REPORT = s_parse_Header()
-        REPORT += s_issue_ram(LOG)
-        REPORT += s_parse_Register(LOG)
+        REPORT += s_ram_check(LOG)
         REPORT += s_parse_CallStack(LOG)
+        REPORT += s_parse_Register(LOG)
         print(REPORT)
     my_continue()
 else:
@@ -337,7 +458,7 @@ else:
     thisFile = ""
     thisFileAdd = ""
     thisAssembler = ""
-    s_issue_ram(thisLOG)
+    s_ram_check(thisLOG)
     # Show Menu
     p_menu_main(thisLOG)
     my_continue()
