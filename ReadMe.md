@@ -20,4 +20,4 @@ SSE CLA - Sephrajins Skyrim Experimental Crash Log Analyzer
 
 
 # License
-GNU GPL v2
+GNU GPL v2 --> [LICENSE](./LICENSE)

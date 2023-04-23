@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 # SSE CLA - Sephs Skyrim Experimental Crash Log Analyzer
-# 2023.04.22 by Sephrajin aka sri-arjuna aka (sea) :: 
+# 2023.04.22 by Sephrajin aka sri-arjuna aka (sea)
+# Source code:      https://github.com/sri-arjuna/SSE-CLA
+# Nexus Mod page:   https://www.nexusmods.com/skyrimspecialedition/mods/89860
 # --------------
 #
-# This also works on Windows
+# This should work on Windows and *nix systems as well.
 #
 # --------------
 #
@@ -48,8 +50,8 @@ global list_ignores, high_chance
 list_ignores = ["skse64_loader.exe", "SkyrimSE.exe"]
 high_chance = ["skee64.dll", "Trishape", "Ninode", "mesh" ]
 script_name = "SSE CLA - Sephs Skyrim Experimental Crash Log Analyzer"
-script_version = "0.1"
-script_date = "2023.04.22"
+script_version = "0.2"
+script_date = "2023.04.23"
 REPORT = ""
 thisMEM = ""
 thisFile = ""
