@@ -25,7 +25,7 @@ SSE CLA - Sephs Skyrim Experimental Crash Log Analyzer
 
 # Installation:
 * Download file
-* Extract to <My Games>\Skyrim <Version>\SKSE
+* Extract to \<My Games\>\Skyrim \<Version\>\SKSE
 
 ----
 
