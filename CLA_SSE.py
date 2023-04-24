@@ -170,16 +170,6 @@ def s_explain_topic(topic):
     
     return str+"\n\n"
 
-# new
-def my_func(x):
-    cases = {
-        1: lambda: print("The value is 1."),
-        2: lambda: print("The value is 2."),
-        3: lambda: print("The value is 3.")
-    }
-    default_case = lambda: print("The value is not 1, 2, or 3.")
-    cases.get(x, default_case)()
-
 ######################################
 ### Functions : Print Solutions
 ######################################
@@ -261,12 +251,18 @@ print("=========================================================================
 worklist = get_crash_logs()
 work_count = len(worklist)
 i = 1
+
+# Tried:
+# abspath / normpath(abspath) // os.path.normpath(os.path.abspath(thisReport))
+# r"{}"  rf"{}"
+# thisDIR = os.getcwd() // os.path.join(thisDIR, thisReport)
+
 for thisLOG in worklist:
     # Set filename for output
     thisReport = thisLOG.removesuffix(".log")  + '-REPORT.txt'
     # Read the contents of the log file
     with open(thisLOG, 'r', encoding="utf-8", errors="ignore") as LOG:
-        DATA = LOG.readlines() #.splitlines()
+        DATA = LOG.readlines()
         # Open output stream
         with open(thisReport, "w", encoding="utf-8", errors="ignore") as REPORT:
             # Open for both, stdout and file output
