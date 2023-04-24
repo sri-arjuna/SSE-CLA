@@ -337,18 +337,23 @@ for thisLOG in worklist:
             # Generate Summary:
             p_title("Summary")         
             
-            # Prints reasons for : LOW
+            # Prints reasons
             for item in culprint:
                 list_remove(item,culprint)
                 print(item)
-                print(reasons_low[item]+"\n")
-                if item == "SkyrimSE.exe":
-                    for thisAdd in list_chance_SkyrimAdd:
-                        str_Add = str(item.strip)+"+"+thisAdd
-                        for aLine in DATA:
-                            if str_Add in aLine:
-                                print(thisAdd+":\n")
-                                print(reasons_Skyrim[thisAdd]+"\n")
+                # LOW
+                if item in list_chance_low:
+                    print(reasons_low[item]+"\n")
+                    if item == "SkyrimSE.exe":
+                        for thisAdd in list_chance_SkyrimAdd:
+                            str_Add = str(item.strip)+"+"+thisAdd
+                            for aLine in DATA:
+                                if str_Add in aLine:
+                                    print(thisAdd+":\n")
+                                    print(reasons_Skyrim[thisAdd]+"\n")
+                # HIGH
+                if item in list_chance_high:
+                    print(reasons_high[item]+"\n")
             
             # Print current culprints:
             print("----------------------------\n\nRemaining culprints:\n\t"+str(culprint))
