@@ -1,4 +1,4 @@
-SSE CLA - Sephs Skyrim Experimental Crash Log Analyzer
+CLA SSE - Sephs Skyrim Experimental Crash Log Analyzer
 -------------------------------------------------------
 
 
@@ -16,7 +16,7 @@ SSE CLA - Sephs Skyrim Experimental Crash Log Analyzer
 ----
 
 # Requirements:
-* [Python 3+](https://www.python.org/downloads/)
+* [Python 3.3 or higher](https://www.python.org/downloads/)
 * [Crash Logger](https://www.nexusmods.com/skyrimspecialedition/mods/59596) or [Crash Logger SSE AE VR - PDB support](https://www.nexusmods.com/skyrimspecialedition/mods/59818)
 
 ***Note:*** *if you are using my [Skyrim SE collection for Vortex](https://next.nexusmods.com/skyrimspecialedition/collections/1bxi7n), you only need to make sure that python is installed.*
@@ -26,12 +26,13 @@ SSE CLA - Sephs Skyrim Experimental Crash Log Analyzer
 # Installation:
 * Download file
 * Extract to \<My Games\>\Skyrim \<Version\>\SKSE
+* Make sure you have at least Python 3.3 installed on your system
 
 ----
 
 # Usage:
-* Drag & Drop logfile/s onto the python file.
-* Read result
+* Double click on the python file.
+* Double click on the generated reports.
 * Fix issues
 * Profit
 
