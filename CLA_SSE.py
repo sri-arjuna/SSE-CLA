@@ -177,7 +177,7 @@ def s_explain_topic(topic):
 def p_solve_GameVer(g_ver, s_ver):
     # Print versions:
     GameVer_Result = ""
-    GameVer_Result += "Game:\t\t\t\t" + g_ver + "\n"
+    GameVer_Result += "Game:\t\t\t" + g_ver + "\n"
     GameVer_Result += "Script Extender:\t" + s_ver + "\n"
 
     # Extract major and minor version numbers from game version string
@@ -312,7 +312,7 @@ for thisLOG in worklist:
                 ram_avail = float(match.group(2))
                 ram_free = abs(ram_avail - ram_use)
                 RAM = "RAM used: \t\t" + str(ram_use) + "\n"
-                RAM += "RAM available: \t" + str(ram_avail) + "\n"
+                RAM += "RAM available:\t\t" + str(ram_avail) + "\n"
                 RAM += "RAM free: \t\t" + str(ram_free) + "\n"
             else:
                 RAM = "FATAL: \t\t Could not parse RAM values...."
