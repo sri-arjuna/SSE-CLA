@@ -36,13 +36,11 @@ CLA SSE - Sephs Skyrim Experimental Crash Log Analyzer
 * Fix issues
 * Profit
 
-### Bug
+### Important:
 
-As of right now in early stage, currently there is a bug that it does not work when placed in a path that contains spaces.
+Depending on the security settings of your system, Windows might block access for the script (as it needs read/write access).
+Be sure to give it the according permission, if required, there will be a notification right of the clock in the windows taskbar.
 
-I suggest using something like:
-* c:\temp
-* d:\some\path\without\spaces
 
 ----
 
