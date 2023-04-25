@@ -36,6 +36,14 @@ CLA SSE - Sephs Skyrim Experimental Crash Log Analyzer
 * Fix issues
 * Profit
 
+### Bug
+
+As of right now in early stage, currently there is a bug that it does not work when placed in a path that contains spaces.
+
+I suggest using something like:
+* c:\temp
+* d:\some\path\without\spaces
+
 ----
 
 # Experimental:
