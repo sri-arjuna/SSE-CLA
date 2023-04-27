@@ -1,6 +1,5 @@
 #Precision version
 #racemenu version
-#osa.dll
 
 #!/usr/bin/env python3
 # SSE CLA - Sephs Skyrim Experimental Crash Log Analyzer
@@ -178,8 +177,8 @@ def s_explain_topic(topic):
 def p_solve_GameVer(g_ver, s_ver):
     # Print versions:
     GameVer_Result = ""
-    GameVer_Result += "Game:\t\t\t\t\t" + g_ver + "\n"
-    GameVer_Result += "Script Extender:\t\t" + s_ver + "\n"
+    GameVer_Result += "Game Version:   \t" + g_ver + "\n"
+    GameVer_Result += "Script Extender:\t" + s_ver + "\n"
 
     # Extract major and minor version numbers from game version string
     g_ver_parts = re.findall(r'\d+', g_ver)
@@ -281,9 +280,11 @@ for thisLOG in worklist:
             
             # Basic Header
             p_title(script_title)
+            # Just a little READ ME
+            print("If you are asking others for assistance / help, ALWAYS provide both files!\n################################################################################\n\n")
             
             # Check for logger:
-            print("Crashlog tool:\t\t\t",end="")
+            print("Crashlog tool/ver:\t",end="")
             if "Skyrim" in str(DATA[0].strip()):
                 thisLOGGER = "Crash Logger"
                 # Get logger version
@@ -338,9 +339,9 @@ for thisLOG in worklist:
                     ram_use = float(match.group(1))
                     ram_avail = float(match.group(2))
                     ram_free = round(ram_avail - ram_use, 2)   # abs(ram_avail - ram_use)
-                    RAM = "RAM used: \t\t\t" + str(ram_use) + "\n"
-                    RAM += "RAM available:\t\t" + str(ram_avail) + "\n"
-                    RAM += "RAM free: \t\t\t" + str(ram_free) + "\n"
+                    RAM = "RAM used: \t\t" + str(ram_use) + "\n"
+                    RAM += "RAM avail:\t\t" + str(ram_avail) + "\n"
+                    RAM += "RAM free: \t\t" + str(ram_free) + "\n"
                 else:
                     RAM = "FATAL: \t\t Could not parse RAM values...."
             # Other Logger specific tasks
@@ -369,13 +370,28 @@ for thisLOG in worklist:
             
             #  Check for main indicators:
             p_section("Header indicators:") 
-            print("todo")
+            print("Memory:  \t" + thisMEM + " " + s_Count(thisMEM,DATA) )
+            print("File:    \t" + thisFile + " " + s_Count(thisFile,DATA) )
+            print("Address: \t" + thisFileAdd + " " + s_Count(thisFileAdd,DATA) )
+            print("Assemler:\t" + thisAssembler + " " + s_Count(thisAssembler,DATA) )
+            
+            # Parse for it
+            p_title("\nParsing results:")
+            for item in thisMEM, thisFile, thisFileAdd, thisAssembler:
+                print(item + ":")
+                for line in DATA:
+                    if "MODULES:" in line:
+                        break
+                    if item in line:
+                        if not line in lines_printed:
+                            print("\t "+line.strip())
+                            list_add(line,lines_printed)
             
             # Generate Summary:
             p_section("Summary:")
             
             # Print current culprints:
-            print("----------------------------\n\nDEBUG: culprints in list:\n\t"+str(culprint))
+            #print("----------------------------\n\nDEBUG: culprints in list:\n\t"+str(culprint))
             
             # Prints reasons
             for item in culprint:
