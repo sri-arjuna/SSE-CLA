@@ -1,16 +1,22 @@
-#Precision version
-#racemenu version
-
 #!/usr/bin/env python3
 # SSE CLA - Sephs Skyrim Experimental Crash Log Analyzer
-# 2023.04.22 by Sephrajin aka sri-arjuna aka (sea)
+# --------------
+# Created: 2023.04.22 by Sephrajin aka sri-arjuna aka (sea)
+# Licence: GPLv2
 # Source code:      https://github.com/sri-arjuna/SSE-CLA
 # Nexus Mod page:   https://www.nexusmods.com/skyrimspecialedition/mods/89860
+#
 # --------------
 #
 # In no way I claim this to be either perfect, nor functional, 
 # it should only assist you to help getting an indication of what MIGHT be wrong, 
 # without any guarantee that this actualy is the cause of the crash.
+#
+# --------------
+#
+# TODO
+# Precision version
+# racemenu version
 #
 # --------------
 #
@@ -51,8 +57,8 @@ original_stdout = sys.stdout
 ### Script Variables
 ######################################
 script_name = "CLA SSE - Sephs Skyrim Experimental Crash Log Analyzer"
-script_version = "0.4"
-script_changed = "2023.04.25"
+script_version = "0.5"
+script_changed = "2023.04.27"
 script_title = script_name+" ("+script_version+") / "+script_changed
 ######################################
 ### Lists
@@ -158,24 +164,24 @@ def p_section(str):
         
 # This is why!
 def s_explain_topic(topic):
+    # Check for topic in lists and print the result
+    txt = ""
     if topic in list_chance_low:
         txt = reasons_low[topic]
     elif topic in list_chance_high:
         txt = reasons_high[topic]
     else:
         txt = topic+"\t=\tNot handled yet, please report your situation, the crashlog, what happened, and your thoughts to help improve the tool."
-    
-    #txt = "\t- " + topic + ":\n" + "\t" + txt + "\n\n"
+    # Final string adjustment
     txt = "\t" + txt + "\n"
-    #print("DEBUG : " + txt)
     return txt
 
 ######################################
 ### Functions : Print Solutions
 ######################################
-# Print solution to SKSE and Skyrim related issues
+# Print versions of SKSE and Skyrim
 def p_solve_GameVer(g_ver, s_ver):
-    # Print versions:
+    # Basic versions
     GameVer_Result = ""
     GameVer_Result += "Game Version:   \t" + g_ver + "\n"
     GameVer_Result += "Script Extender:\t" + s_ver + "\n"
@@ -190,7 +196,7 @@ def p_solve_GameVer(g_ver, s_ver):
     s_ver_major = int(s_ver_parts[1])
     s_ver_minor = int(s_ver_parts[2])
 
-    # Perform actual version check
+    # Perform actual version check for possible issues
     if g_ver_major != s_ver_major or g_ver_minor != s_ver_minor:
         GameVer_Result += "\nWarning: Game and Script Extender versions may not be compatible.\n"
     # Return string to print
@@ -251,8 +257,10 @@ print("=========================================================================
 ######################################
 # Retrieve crash logs that have no report file.
 worklist = get_crash_logs()
+# Prepare counter for nicer display
 work_count = len(worklist)
 i = 1
+# Crash log writer yet unknown
 thisLOGGER = ""
 for thisLOG in worklist:
     # Set filename for output
@@ -262,11 +270,11 @@ for thisLOG in worklist:
         DATA = LOG.readlines()
         # Open output stream
         with open(thisReport, "w", encoding="utf-8", errors="ignore") as REPORT:
-            # Open for both, stdout and file output
+            # Prepare stdout to be restorable
             sys.stdout = original_stdout
-            lines_printed = []
-            culprint = []
+            # Console: Inform user of current file passed
             print(str(i)+"/"+str(work_count)+" Parsing file: " + thisLOG, end='')
+            # Print to file
             sys.stdout = REPORT
             # Clear variable / Set Defaults
             thisMEM = ""
@@ -277,6 +285,10 @@ for thisLOG in worklist:
             ram_use = ""
             ram_avail = ""
             ram_free = ""
+            # List: No lines printed yet of this crashlog
+            lines_printed = []
+            # List: no culprints found yet in this crashlog
+            culprint = []
             
             # Basic Header
             p_title(script_title)
@@ -294,8 +306,9 @@ for thisLOG in worklist:
                 thisLOGGER = ".NET Script Framework"
                 ver_Logger = thisLOGGER+" "+str(DATA[3].split(":")[1])
                 print(ver_Logger,end="")
-                # End of parsing thisLOG
                 print("Not yet handled")
+                # Not yet handled, will do later
+                # Inform user: just skip to keep it short.
                 sys.stdout = original_stdout
                 i += 1
                 print(".....SKIP")
@@ -349,6 +362,8 @@ for thisLOG in worklist:
                 print("TODO: " + thisLOGGER)
             
             # Applies to / Works for all loggers
+            # or variables have been prepared.
+            
             # Show RAM info
             p_section("RAM:")
             print(RAM)
@@ -381,6 +396,7 @@ for thisLOG in worklist:
                 print(item + ":")
                 for line in DATA:
                     if "MODULES:" in line:
+                        # Stop parsing (Load Order) to prevent false-positives
                         break
                     if item in line:
                         if not line in lines_printed:
@@ -432,9 +448,20 @@ for thisLOG in worklist:
                                 print("\t\t\t" + aLine.strip())
                                 list_add(aLine,lines_printed)
             
-            # Print current culprints:
+           # For some reasons, there are remaining entries in the list: "culprint"
+           # Lets just parse them here.. not nice, but at least it'll be "complete"...
+           while len(culprint) > 0:
+                for item in culprint:
+                    # Working with "item", remove from list
+                    list_remove(item,culprint)
+                    # Explain it..
+                    print(item+":")
+                    print(s_explain_topic(item))
+                    
+             # Print current culprints:
+             # "Thanks" to above brute force method, this is no empty... I dont like the above bruteforce approach
             print("----------------------------\n\nDEBUG: Remaining culprints (should be empty):\n\t"+str(culprint))
-            
+
             # End of parsing thisLOG
             sys.stdout = original_stdout
             i += 1
