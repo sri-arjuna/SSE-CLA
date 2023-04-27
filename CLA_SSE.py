@@ -1,3 +1,7 @@
+#Precision version
+#racemenu version
+#osa.dll
+
 #!/usr/bin/env python3
 # SSE CLA - Sephs Skyrim Experimental Crash Log Analyzer
 # 2023.04.22 by Sephrajin aka sri-arjuna aka (sea)
@@ -40,6 +44,7 @@ global script_name, script_version, script_date
 global ram_use, ram_avail, ram_free
 global list_chance_low, list_chance_high, list_chance_SkyrimAdd
 global reasons_low, reasons_high, reasons_Skyrim
+global lines_printed
 global culprint, indicator
 # Save original stdout
 original_stdout = sys.stdout
@@ -56,9 +61,8 @@ script_title = script_name+" ("+script_version+") / "+script_changed
 ### that are looked for within the logfile
 ######################################
 list_chance_low = ["skse64_loader.exe", "SkyrimSE.exe"]
-list_chance_high = ["skee64.dll", "Trishape", "Ninode", "mesh", "hdtSMP64.dll", "cbp.dll", "bad_alloc", "no_alloc", "Dawnguard.esm", "Dragonborn.esm", "Hearthfire.esm" ]
+list_chance_high = ["skee64.dll", "Trishape", "Ninode", "mesh", "hdtSMP64.dll", "cbp.dll", "bad_alloc", "no_alloc", " Dawnguard.esm", " Dragonborn.esm", " Hearthfire.esm" ]
 list_chance_SkyrimAdd = ["A0D789", "67B88B", "D6DDDA", "D02C2C", "5999C7", "12FDD00", "7428B1", "D2B923", "12F5590", "132BEF", "C0EB6A", "8BDA97", "5E1F22", "C1315C", "A" ]
-culprint = []
 ######################################
 ### Dictionary
 ### Provide the item of a list to get an according response.
@@ -78,9 +82,9 @@ reasons_high = {
 'cbp.dll': "If this appears often, it might indicate a bad config. However, it might also just indicate that there were NPCs around that were wearing SMP/cbp enabled clothing...",
 'bad_alloc': "100% your issue! Free RAM, buy more RAM... either way, this IS the cause!",
 'no_alloc': "Could not find the proper memory allocation provided by reference",
-'Dawnguard.esm': "Your missing the required DLC!",
-'Dragonborn.esm': "Your missing the required DLC!",
-'Hearthfire.esm': "Your missing the required DLC!",
+' Dawnguard.esm': "Your missing the required DLC!",
+' Dragonborn.esm': "Your missing the required DLC!",
+' Hearthfire.esm': "Your missing the required DLC!",
 }
 # Skyrim
 reasons_Skyrim = {
@@ -91,7 +95,7 @@ reasons_Skyrim = {
 '5999C7': "Monster Mod.esp\nNumerous errors and causes of CTD, even with the unoffical patches and latest updates of the mod itself.\nTo keep it short: Do not use.",
 '12FDD00': "Probable Callstack: BSShader::unk_xxxxxxx+xx mentioned FIRST or with the HIGHEST PRIORITY\nBroken NIF\nBest apporach, disable some of your NIF mods and figure out which one is causing it by starting a new game to reproduce the error, once figured, report to the mod author so they can create a fix.\nOR, use CAO(Cathedral Assets Optimizer), but that could lead to other issues.. so... its up to you.",
 '7428B1': "Install 'SSE Engine Fixes.\nIf you do have that, are you using the'Equipment Durability System mod'?\nIt could be related to an enchanted weapon braking, or other mods that change a character while holding a weapon.",
-'D2B923': "Save game issue:\nCould be related to either: Save System Overhaul(SSO) or users of the mod Alternate Start-LAL\nMaybe also related to or fixable by SkyUI SE - Flasching Savegame fix",
+'D2B923': "Save game issue:\nCould be related to either: Save System Overhaul(SSO) or users of the mod Alternate Start-LAL\nMaybe also related to or fixable by SkyUI SE - Flashing Savegame fix",
 '12F5590': "Facegen issue:\nRegenerate the Face in CK, search for 'BSDynamicTriShape' as a hint, or check the  HDT-SMP log for the last NPC used.",
 '132BEF': "Head Mesh Issue:\nCheck the HDT-SMP log where the last NPC most probably could be the issue.\nIf you use 'Ordinary Women', make sure that mod gets loaded last among mods that change body/heads.",
 'C0EB6A': "Actualy an issue of SkyrimSE.exe:\nShould be fix-able by the use of 'SSE Engine Fixes' mod",
@@ -261,6 +265,8 @@ for thisLOG in worklist:
         with open(thisReport, "w", encoding="utf-8", errors="ignore") as REPORT:
             # Open for both, stdout and file output
             sys.stdout = original_stdout
+            lines_printed = []
+            culprint = []
             print(str(i)+"/"+str(work_count)+" Parsing file: " + thisLOG, end='')
             sys.stdout = REPORT
             # Clear variable / Set Defaults
@@ -349,6 +355,9 @@ for thisLOG in worklist:
             
             # Start actual parsing...
             for line in DATA:
+                if "MODULES:" in line:
+                    # Stop parsing (Load Order) to prevent false-positives
+                    break
                 # for list LOW
                 for low in list_chance_low:
                     if low in line:
@@ -360,20 +369,20 @@ for thisLOG in worklist:
             
             #  Check for main indicators:
             p_section("Header indicators:") 
-            #todo
+            print("todo")
             
             # Generate Summary:
             p_section("Summary:")
             
             # Print current culprints:
-            #print("----------------------------\n\nDEBUG: culprints in list:\n\t"+str(culprint))
+            print("----------------------------\n\nDEBUG: culprints in list:\n\t"+str(culprint))
             
             # Prints reasons
             for item in culprint:
                 # Working with "item", remove from list
                 list_remove(item,culprint)
                 # Print 'title' for current item
-                print(item+" "+s_Count(item,DATA))
+                print("\n"+item+" "+s_Count(item,DATA))
                 # LOW
                 if item in list_chance_low:
                     # Show basic reason
@@ -381,20 +390,34 @@ for thisLOG in worklist:
                     # Check for more details:
                     if item == "SkyrimSE.exe":
                         for thisAdd in list_chance_SkyrimAdd:
+                            str_Add = item+"+"+thisAdd
                             # DEBUG
-                            print("\t- " + thisAdd)
-                            str_Add = str(item.strip)+"+"+thisAdd
+                            #print("\t- " + str_Add)
                             for aLine in DATA:
+                                if "MODULES:" in aLine:
+                                    # Do not print after MODULES / Loadorder
+                                    break
                                 if str_Add in aLine:
-                                    print("\t-" + str_Add + ":\n")
-                                    print("\t\t" + reasons_Skyrim[thisAdd]+"\n")
-                                    print(aLine)
+                                    print("\t-" + str_Add )#+ ":\n")
+                                    print("\t\t" + reasons_Skyrim[thisAdd])
+                                    if not aLine in lines_printed:
+                                        print("\t\t\t" + aLine.strip())
+                                        list_add(aLine,lines_printed)
                 # HIGH
                 if item in list_chance_high:
                     print(s_explain_topic(item))
+                    for aLine in DATA:
+                        if "MODULES:" in aLine:
+                            # Do not print after MODULES / Loadorder
+                            break
+                        if item in aLine:
+                            #print("\t-" + item )#+ ":\n")
+                            if not item in lines_printed:
+                                print("\t\t\t" + aLine.strip())
+                                list_add(aLine,lines_printed)
             
             # Print current culprints:
-            print("----------------------------\n\nDEBUG: Remaining culprints:\n\t"+str(culprint))
+            print("----------------------------\n\nDEBUG: Remaining culprints (should be empty):\n\t"+str(culprint))
             
             # End of parsing thisLOG
             sys.stdout = original_stdout
