@@ -66,7 +66,7 @@ script_title = script_name+" ("+script_version+") / "+script_changed
 ### that are looked for within the logfile
 ######################################
 list_chance_low = ["skse64_loader.exe", "SkyrimSE.exe"]
-list_chance_high = ["skee64.dll", "Trishape", "Ninode", "mesh", "hdtSMP64.dll", "cbp.dll", "bad_alloc", "no_alloc", " Dawnguard.esm", " Dragonborn.esm", " Hearthfire.esm" ]
+list_chance_high = ["skee64.dll", "Trishape", "Ninode", "mesh", "hdtSMP64.dll", "cbp.dll", "bad_alloc", "no_alloc", " Dawnguard.esm", " Dragonborn.esm", " Hearthfire.esm", "SchlongsOfSkyrim.dll", "nvwgf2umx.dll", "0x0 on thread " ]
 list_chance_SkyrimAdd = ["A0D789", "67B88B", "D6DDDA", "D02C2C", "5999C7", "12FDD00", "7428B1", "D2B923", "12F5590", "132BEF", "C0EB6A", "8BDA97", "5E1F22", "C1315C", "A" ]
 ######################################
 ### Dictionary
@@ -78,8 +78,9 @@ reasons_low = {
 'SkyrimSE.exe': "This file on its own is not the cause, however, we'll do further parsing..."
 }
 # High
+# Note: DLC.esm's have leading spaces on purpose to avoid false-positives
 reasons_high = {
-'skee64.dll': "Some mod might be incompatible with RaceMenu, or your body.",
+'skee64.dll': "Some mod might be incompatible with RaceMenu, or your body.\n\tYou might want to read: https://www.nexusmods.com/skyrimspecialedition/articles/1372 and/or https://www.nexusmods.com/skyrimspecialedition/mods/44252?tab=description\n\tIf there are any further entries below this, it might be a strong indicator for its cause.",
 'Trishape': "Trishapes are related to meshes, specifically a mod supplying a bad mesh. ",
 'Ninode': "Ninodes are related to skeletons. Probably an xpmsse overwrite. ",
 'Mesh': "Some generic mesh issue, yet to be defined",
@@ -90,6 +91,33 @@ reasons_high = {
 ' Dawnguard.esm': "Your missing the required DLC!",
 ' Dragonborn.esm': "Your missing the required DLC!",
 ' Hearthfire.esm': "Your missing the required DLC!",
+'SchlongsOfSkyrim.dll': "Don esl'ify any mod that uses Schlongs. Use a previous save and re-schlongify all armors in MCM.",
+'nvwgf2umx.dll': "Update your NVidia driver!\nOr your PC is too weak - aka - try fewer / lighter mods.",
+'0x0 on thread ': "This actualy is an engine issue of Skyrim, but rare.\nMost often caused by 'Face lighting' / 'Face shadow' issues. Best chance to avoid: Make sure have the newest SSE Engine Fix!\nNow parsing some keywords that might (or not) give some additional indiciation.",
+
+}
+# Dialogue - no detailed description, summarizing in if block
+reasons_Dialog = {
+'Honed Metal': "",
+'Your Own Thoughts': "",
+'Swift Service': "",
+}
+# Racemenu
+reasons_Racemenu = {
+'XPMSEWeaponStyleScaleEffect.psc': "",
+'agud_system.psc': "",
+'BGSHazard(Name: `Fire`': "",
+'XPMSE': "",
+'race': "",
+'face': "",
+} 
+# Engine
+reasons_Engine = {
+'Facelight Plus': "- Try 'no facelight' variant",
+'Autoconversation-Illuminate': "- Try 'no facelight' variant for 'Facelight Plus'",
+'ShadowSceneNode(Name: `shadow scene node`)': "Unproven, but could indicate cause by combination of multiple lighting mods.",
+'BSFadeNode(Name: `skeleton.nif`)': "",
+'NiCamera': "Unproven, but could indicate cause by combination of multiple lighting mods.",
 }
 # Skyrim
 reasons_Skyrim = {
@@ -203,8 +231,7 @@ def p_solve_GameVer(g_ver, s_ver):
     return GameVer_Result + "\n"
         
 # Print solution to RAM related issues
-def p_solve_RAM():
-    global ram_use, ram_avail, ram_free
+def p_solve_RAM(ram_use, ram_avail, ram_free):
     str_result = ""
     bol_maybe = 0
     if abs(ram_use - ram_avail) <= 1.5:
@@ -367,7 +394,7 @@ for thisLOG in worklist:
             # Show RAM info
             p_section("RAM:")
             print(RAM)
-            print(p_solve_RAM())
+            print(p_solve_RAM(ram_use, ram_avail, ram_free))
             
             # Start actual parsing...
             for line in DATA:
@@ -412,7 +439,7 @@ for thisLOG in worklist:
             # Prints reasons
             for item in culprint:
                 # Working with "item", remove from list
-                list_remove(item,culprint)
+                #list_remove(item,culprint)
                 # Print 'title' for current item
                 print("\n"+item+" "+s_Count(item,DATA))
                 # LOW
@@ -423,8 +450,6 @@ for thisLOG in worklist:
                     if item == "SkyrimSE.exe":
                         for thisAdd in list_chance_SkyrimAdd:
                             str_Add = item+"+"+thisAdd
-                            # DEBUG
-                            #print("\t- " + str_Add)
                             for aLine in DATA:
                                 if "MODULES:" in aLine:
                                     # Do not print after MODULES / Loadorder
@@ -435,22 +460,71 @@ for thisLOG in worklist:
                                     if not aLine in lines_printed:
                                         print("\t\t\t" + aLine.strip())
                                         list_add(aLine,lines_printed)
+                    
+                            
                 # HIGH
                 if item in list_chance_high:
                     print(s_explain_topic(item))
+                    if item == "skee64.dll":
+                        #print(reasons_high[item])
+                        for raceM in reasons_Racemenu:
+                            for rLine in DATA:
+                                if raceM in rLine and not lines_printed:
+                                    print("- " + raceM)
+                                    list_add(rLine,lines_printed)
                     for aLine in DATA:
                         if "MODULES:" in aLine:
                             # Do not print after MODULES / Loadorder
                             break
+                        if "0x0 on thread " in aLine:
+                            # Re-parse all lines for possible facelight indicators
+                            for oxLine in DATA:
+                                # Yes, this is not the nicest method, but i'm currently not aware of better methods
+                                for engR in reasons_Engine:
+                                    if engR in oxLine and not lines_printed:
+                                        list_add(oxLine,lines_printed)
+                                        print(engR + ":\n")
+                                        print(reasons_Engine(engR))
+                                        print(oxLine)
+                                        
+                        
                         if item in aLine:
-                            #print("\t-" + item )#+ ":\n")
                             if not item in lines_printed:
                                 print("\t\t\t" + aLine.strip())
                                 list_add(aLine,lines_printed)
+                
+            # Additional parse for more
+            for line in DATA:
+                if "MODULES:" in line:
+                    # Do not print after MODULES / Loadorder
+                    break
+                # Dialog
+                for rD in reasons_Dialog:
+                        if rD in line and not lines_printed:
+                            print("Dialogue Mods:\nIf you get more than one entry here, try to figure which one is working best, remove the other ones.\nI mean, come on, why did you even use 2 or more dialogue mods? (if applicable).")
+                            list_add(line,lines_printed)
+                            print(line)
+                # Vamire feed animations
+                if "Sacrilege" in line and not lines_printed:
+                        print("Sacrilege:\nMake sure you have no mods like: Campfire, Honed Metal or Hunterborn born installed. Also, other mods that add/change different kinds of vampire feeding might be the cause for this CTD.")
+                        list_add(line,lines_printed)
+                        print(line)
+                # Cloaks
+                if "clothes\\cloaksofskyrim\\" in line:
+                    if not line in lines_printed:
+                        print("Artesian cloaks of Skyrim:\nMost likely due to HDT enabled capes. Possible fix: Use the according Retexture mod or remove the cape-mod itself.")
+                        list_add(line,lines_printed)
+                        print(line)
+                # Smooth cam
+                    if "SmoothCam.dll+" in line:
+                        if not line in lines_printed:
+                            print("Camera:\nIf you get this error more often, try disabling (some of) the compatiblity settings in MCM (trial & error).")
+                            list_add(line,lines_printed)
+                            print(line)
             
-           # For some reasons, there are remaining entries in the list: "culprint"
-           # Lets just parse them here.. not nice, but at least it'll be "complete"...
-           while len(culprint) > 0:
+            # For some reasons, there are remaining entries in the list: "culprint"
+            # Lets just parse them here.. not nice, but at least it'll be "complete"...
+            while len(culprint) > 0:
                 for item in culprint:
                     # Working with "item", remove from list
                     list_remove(item,culprint)
