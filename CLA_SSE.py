@@ -145,6 +145,7 @@ reasons_Skyrim = {
 def list_add(item, list):
     if item not in list:
         list.append(item)
+    return list
 
 # Remove item from a global list
 def list_remove(item, list):
@@ -404,11 +405,11 @@ for thisLOG in worklist:
                 # for list LOW
                 for low in list_chance_low:
                     if low in line:
-                        list_add(low,culprint)
+                        culprint = list_add(low,culprint)
                 # for list HIGH
                 for high in list_chance_high:
                     if high in line:
-                        list_add(high,culprint)
+                        culprint = list_add(high,culprint)
             
             #  Check for main indicators:
             p_section("Header indicators:") 
@@ -426,20 +427,15 @@ for thisLOG in worklist:
                         # Stop parsing (Load Order) to prevent false-positives
                         break
                     if item in line:
-                        if not line in lines_printed:
+                        if not line.strip() in lines_printed:
                             print("\t "+line.strip())
-                            list_add(line,lines_printed)
+                            lines_printed = list_add(line.strip(),lines_printed)
             
             # Generate Summary:
             p_section("Summary:")
             
-            # Print current culprints:
-            #print("----------------------------\n\nDEBUG: culprints in list:\n\t"+str(culprint))
-            
             # Prints reasons
             for item in culprint:
-                # Working with "item", remove from list
-                #list_remove(item,culprint)
                 # Print 'title' for current item
                 print("\n"+item+" "+s_Count(item,DATA))
                 # LOW
@@ -451,17 +447,18 @@ for thisLOG in worklist:
                         for thisAdd in list_chance_SkyrimAdd:
                             str_Add = item+"+"+thisAdd
                             for aLine in DATA:
+                                if "Unhandled exception" in line:
+                                    # Dont print this line, output is handled already
+                                    continue
                                 if "MODULES:" in aLine:
                                     # Do not print after MODULES / Loadorder
                                     break
                                 if str_Add in aLine:
                                     print("\t-" + str_Add )#+ ":\n")
                                     print("\t\t" + reasons_Skyrim[thisAdd])
-                                    if not aLine in lines_printed:
+                                    if not aLine.strip() in lines_printed:
                                         print("\t\t\t" + aLine.strip())
-                                        list_add(aLine,lines_printed)
-                    
-                            
+                                        lines_printed = list_add(aLine.strip(),lines_printed)
                 # HIGH
                 if item in list_chance_high:
                     print(s_explain_topic(item))
@@ -471,8 +468,11 @@ for thisLOG in worklist:
                             for rLine in DATA:
                                 if raceM in rLine and not lines_printed:
                                     print("- " + raceM)
-                                    list_add(rLine,lines_printed)
+                                    lines_printed = list_add(rLine,lines_printed)
                     for aLine in DATA:
+                        if "Unhandled exception" in line:
+                            # Dont print this line, output is handled already
+                            continue
                         if "MODULES:" in aLine:
                             # Do not print after MODULES / Loadorder
                             break
@@ -482,7 +482,7 @@ for thisLOG in worklist:
                                 # Yes, this is not the nicest method, but i'm currently not aware of better methods
                                 for engR in reasons_Engine:
                                     if engR in oxLine and not lines_printed:
-                                        list_add(oxLine,lines_printed)
+                                        lines_printed = list_add(oxLine,lines_printed)
                                         print(engR + ":\n")
                                         print(reasons_Engine(engR))
                                         print(oxLine)
@@ -491,7 +491,7 @@ for thisLOG in worklist:
                         if item in aLine:
                             if not item in lines_printed:
                                 print("\t\t\t" + aLine.strip())
-                                list_add(aLine,lines_printed)
+                                lines_printed = list_add(aLine,lines_printed)
                 
             # Additional parse for more
             for line in DATA:
@@ -500,41 +500,41 @@ for thisLOG in worklist:
                     break
                 # Dialog
                 for rD in reasons_Dialog:
-                        if rD in line and not lines_printed:
-                            print("Dialogue Mods:\nIf you get more than one entry here, try to figure which one is working best, remove the other ones.\nI mean, come on, why did you even use 2 or more dialogue mods? (if applicable).")
-                            list_add(line,lines_printed)
-                            print(line)
+                    if rD in line and not lines_printed:
+                        print("Dialogue Mods:\nIf you get more than one entry here, try to figure which one is working best, remove the other ones.\nI mean, come on, why did you even use 2 or more dialogue mods? (if applicable).")
+                        lines_printed = list_add(line,lines_printed)
+                        print(line)
                 # Vamire feed animations
                 if "Sacrilege" in line and not lines_printed:
-                        print("Sacrilege:\nMake sure you have no mods like: Campfire, Honed Metal or Hunterborn born installed. Also, other mods that add/change different kinds of vampire feeding might be the cause for this CTD.")
-                        list_add(line,lines_printed)
-                        print(line)
+                    print("Sacrilege:\nMake sure you have no mods like: Campfire, Honed Metal or Hunterborn born installed. Also, other mods that add/change different kinds of vampire feeding might be the cause for this CTD.")
+                    lines_printed = list_add(line,lines_printed)
+                    print(line)
                 # Cloaks
                 if "clothes\\cloaksofskyrim\\" in line:
                     if not line in lines_printed:
                         print("Artesian cloaks of Skyrim:\nMost likely due to HDT enabled capes. Possible fix: Use the according Retexture mod or remove the cape-mod itself.")
-                        list_add(line,lines_printed)
+                        lines_printed = list_add(line,lines_printed)
                         print(line)
                 # Smooth cam
-                    if "SmoothCam.dll+" in line:
-                        if not line in lines_printed:
-                            print("Camera:\nIf you get this error more often, try disabling (some of) the compatiblity settings in MCM (trial & error).")
-                            list_add(line,lines_printed)
-                            print(line)
+                if "SmoothCam.dll+" in line:
+                    if not line in lines_printed:
+                        print("Camera:\nIf you get this error more often, try disabling (some of) the compatiblity settings in MCM (trial & error).")
+                        lines_printed = list_add(line,lines_printed)
+                        print(line)
             
             # For some reasons, there are remaining entries in the list: "culprint"
             # Lets just parse them here.. not nice, but at least it'll be "complete"...
-            while len(culprint) > 0:
-                for item in culprint:
-                    # Working with "item", remove from list
-                    list_remove(item,culprint)
-                    # Explain it..
-                    print(item+":")
-                    print(s_explain_topic(item))
+            #while len(culprint) > 0:
+            #    for item in culprint:
+            #        # Working with "item", remove from list
+            #        list_remove(item,culprint)
+            #        # Explain it..
+            #        print(item+":")
+            #        print(s_explain_topic(item))
                     
              # Print current culprints:
              # "Thanks" to above brute force method, this is no empty... I dont like the above bruteforce approach
-            print("----------------------------\n\nDEBUG: Remaining culprints (should be empty):\n\t"+str(culprint))
+            #print("----------------------------\n\nDEBUG: Remaining culprints (should be empty):\n\t"+str(culprint))
 
             # End of parsing thisLOG
             sys.stdout = original_stdout
