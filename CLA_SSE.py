@@ -152,6 +152,15 @@ def list_remove(item, list):
     if item in list:
         list.remove(item)
 
+# Print line if not printed yet
+def print_line(tLine, printed_lines, prefix=""):
+    if tLine not in printed_lines:
+        if prefix:
+            print(prefix + tLine)
+        else:
+            print(tLine)
+        printed_lines.append(tLine)
+
 # Get Crash logs that do not have a report yet.
 def get_crash_logs():
     pattern = re.compile(r'crash-.*\.log$')
@@ -317,7 +326,7 @@ for thisLOG in worklist:
             ram_avail = ""
             ram_free = ""
             # List: No lines printed yet of this crashlog
-            lines_printed = []
+            printed = []
             # List: no culprints found yet in this crashlog
             culprint = []
             
@@ -430,9 +439,7 @@ for thisLOG in worklist:
                         # Stop parsing (Load Order) to prevent false-positives
                         break
                     if item in line:
-                        if not line.strip() in lines_printed:
-                            print("\t "+line.strip())
-                            lines_printed = list_add(line.strip(),lines_printed)
+                        print_line(line.strip(),printed,"\t")
             
             # Generate Summary:
             p_section("Summary:")
@@ -459,9 +466,7 @@ for thisLOG in worklist:
                                 if str_Add in aLine:
                                     print("\t-" + str_Add )#+ ":\n")
                                     print("\t\t" + reasons_Skyrim[thisAdd])
-                                    if not aLine.strip() in lines_printed:
-                                        print("\t\t\t" + aLine.strip())
-                                        lines_printed = list_add(aLine.strip(),lines_printed)
+                                    print_line(aLine.strip(),printed,"\t\t\t")
                 # HIGH
                 if item in list_chance_high:
                     print(s_explain_topic(item))
@@ -469,9 +474,7 @@ for thisLOG in worklist:
                         #print(reasons_high[item])
                         for raceM in reasons_Racemenu:
                             for rLine in DATA:
-                                if raceM in rLine and not lines_printed:
-                                    print("- " + raceM)
-                                    lines_printed = list_add(rLine,lines_printed)
+                                print_line(rLine.strip(),printed,"- ")
                     for aLine in DATA:
                         if "Unhandled exception" in line:
                             # Dont print this line, output is handled already
@@ -492,9 +495,7 @@ for thisLOG in worklist:
                                         
                         
                         if item in aLine:
-                            if not item in lines_printed:
-                                print("\t\t\t" + aLine.strip())
-                                lines_printed = list_add(aLine,lines_printed)
+                            print_line(item,printed)
                 
             # Additional parse for more
             for line in DATA:
@@ -503,42 +504,24 @@ for thisLOG in worklist:
                     break
                 # Dialog
                 for rD in reasons_Dialog:
-                    if rD in line and line not in lines_printed:
+                    if rD in line and line not in printed:
                         print("Dialogue Mods:\nIf you get more than one entry here, try to figure which one is working best, remove the other ones.\nI mean, come on, why did you even use 2 or more dialogue mods? (if applicable).")
-                        lines_printed = list_add(line,lines_printed)
-                        print(line)
+                        print_line(line.strip(),printed)
                 # Vamire feed animations
-                if "Sacrilege" in line and line not in lines_printed:
+                if "Sacrilege" in line and line not in printed:
                     print("Sacrilege:\nMake sure you have no mods like: Campfire, Honed Metal or Hunterborn born installed. Also, other mods that add/change different kinds of vampire feeding might be the cause for this CTD.")
-                    lines_printed = list_add(line,lines_printed)
-                    print(line)
+                    print_line(line.strip(),printed)
                 # Cloaks
                 if "clothes\\cloaksofskyrim\\" in line:
-                    if line not in lines_printed:
+                    if line not in printed:
                         print("Artesian cloaks of Skyrim:\nMost likely due to HDT enabled capes. Possible fix: Use the according Retexture mod or remove the cape-mod itself.")
-                        lines_printed = list_add(line,lines_printed)
-                        print(line)
+                        print_line(line.strip(),printed)
                 # Smooth cam
                 if "SmoothCam.dll+" in line:
-                    if line not in lines_printed:
+                    if line not in printed:
                         print("Camera:\nIf you get this error more often, try disabling (some of) the compatiblity settings in MCM (trial & error).")
-                        lines_printed = list_add(line,lines_printed)
-                        print(line)
+                        print_line(line.strip(),printed)
             
-            # For some reasons, there are remaining entries in the list: "culprint"
-            # Lets just parse them here.. not nice, but at least it'll be "complete"...
-            #while len(culprint) > 0:
-            #    for item in culprint:
-            #        # Working with "item", remove from list
-            #        list_remove(item,culprint)
-            #        # Explain it..
-            #        print(item+":")
-            #        print(s_explain_topic(item))
-                    
-             # Print current culprints:
-             # "Thanks" to above brute force method, this is no empty... I dont like the above bruteforce approach
-            #print("----------------------------\n\nDEBUG: Remaining culprints (should be empty):\n\t"+str(culprint))
-
             # End of parsing thisLOG
             sys.stdout = original_stdout
             i += 1
