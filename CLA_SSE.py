@@ -210,10 +210,13 @@ def s_explain_topic(topic):
 ######################################
 # Print versions of SKSE and Skyrim
 def p_solve_GameVer(g_ver, s_ver):
+    # SKSE version might be empty...
+    if s_ver is None or s_ver == "":
+        return "Error: Script Extender version not found.\n"
     # Basic versions
     GameVer_Result = ""
-    GameVer_Result += "Game Version:   \t" + g_ver + "\n"
-    GameVer_Result += "Script Extender:\t" + s_ver + "\n"
+    GameVer_Result += "Game Version:   \t" + str(g_ver) + "\n"
+    GameVer_Result += "Script Extender:\t" + str(s_ver) + "\n"
 
     # Extract major and minor version numbers from game version string
     g_ver_parts = re.findall(r'\d+', g_ver)
@@ -500,24 +503,24 @@ for thisLOG in worklist:
                     break
                 # Dialog
                 for rD in reasons_Dialog:
-                    if rD in line and not lines_printed:
+                    if rD in line and line not in lines_printed:
                         print("Dialogue Mods:\nIf you get more than one entry here, try to figure which one is working best, remove the other ones.\nI mean, come on, why did you even use 2 or more dialogue mods? (if applicable).")
                         lines_printed = list_add(line,lines_printed)
                         print(line)
                 # Vamire feed animations
-                if "Sacrilege" in line and not lines_printed:
+                if "Sacrilege" in line and line not in lines_printed:
                     print("Sacrilege:\nMake sure you have no mods like: Campfire, Honed Metal or Hunterborn born installed. Also, other mods that add/change different kinds of vampire feeding might be the cause for this CTD.")
                     lines_printed = list_add(line,lines_printed)
                     print(line)
                 # Cloaks
                 if "clothes\\cloaksofskyrim\\" in line:
-                    if not line in lines_printed:
+                    if line not in lines_printed:
                         print("Artesian cloaks of Skyrim:\nMost likely due to HDT enabled capes. Possible fix: Use the according Retexture mod or remove the cape-mod itself.")
                         lines_printed = list_add(line,lines_printed)
                         print(line)
                 # Smooth cam
                 if "SmoothCam.dll+" in line:
-                    if not line in lines_printed:
+                    if line not in lines_printed:
                         print("Camera:\nIf you get this error more often, try disabling (some of) the compatiblity settings in MCM (trial & error).")
                         lines_printed = list_add(line,lines_printed)
                         print(line)
