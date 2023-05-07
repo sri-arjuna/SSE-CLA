@@ -5,7 +5,7 @@ CLA SSE - Sephs Skyrim Experimental Crash Log Analyzer
 # Goal:
 - Get an easy to read indication of the most probable cause for the crash.
 - Provide a list of 1 or more possible culprints (reasons) 
-- Let users to either just show on console, and/or save as MD. (might make a HTML export function later on)
+- Print/Summarize original lines only once for easier debuging
 
 ----
 
