@@ -155,11 +155,8 @@ def list_remove(item, list):
 # Print line if not printed yet
 def print_line(tLine, printed_lines, prefix=""):
     if tLine not in printed_lines:
-        if prefix:
-            print(prefix + tLine)
-        else:
-            print(tLine)
         printed_lines.append(tLine)
+        print(prefix + tLine)
 
 # Get Crash logs that do not have a report yet.
 def get_crash_logs():
