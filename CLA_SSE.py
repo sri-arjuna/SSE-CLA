@@ -90,7 +90,7 @@ reasons_Chance = {
 ' Dawnguard.esm': "Your missing the required DLC!",
 ' Dragonborn.esm': "Your missing the required DLC!",
 ' Hearthfire.esm': "Your missing the required DLC!",
-'SchlongsOfSkyrim.dll': "Don esl'ify any mod that uses Schlongs. Use a previous save and re-schlongify all armors in MCM.",
+'SchlongsOfSkyrim.dll': "Dont esl'ify any mod that uses Schlongs. Use a previous save and re-schlongify all armors in MCM.",
 'nvwgf2umx.dll': "Update your NVidia driver!\n\tOr your PC is too weak - aka - try fewer / lighter mods.",
 '0x0 on thread ': "This actualy is an engine issue of Skyrim, but rare.\nMost often caused by 'Face lighting' / 'Face shadow' issues. Best chance to avoid: Make sure have the newest SSE Engine Fix!\nNow parsing some keywords that might (or not) give some additional indiciation.",
 }
@@ -330,6 +330,9 @@ for thisLOG in worklist:
             printed = []
             # List: no culprints found yet in this crashlog
             culprint = []
+            # Reset Culprint counter
+            iCulprintCount = 0
+            iCulprintSolved = 0
             
             # Basic Header
             p_title(script_title)
@@ -338,34 +341,12 @@ for thisLOG in worklist:
             
             # Check for logger:
             print("Crashlog tool/ver:\t",end="")
-            if "Skyrim" in str(DATA[0].strip()):
+            if "Skyrim" == str(DATA[0].split(" ")[0]):
                 thisLOGGER = "Crash Logger"
                 # Get logger version
                 ver_Logger = str(DATA[1].strip())
                 print(ver_Logger)
-            elif "NetScriptFramework" in str(DATA[2].strip()):
-                thisLOGGER = ".NET Script Framework"
-                ver_Logger = thisLOGGER+" "+str(DATA[3].split(":")[1])
-                print(ver_Logger,end="")
-                print("Not yet handled")
-                # Not yet handled, will do later
-                # Inform user: just skip to keep it short.
-                sys.stdout = original_stdout
-                i += 1
-                print(".....SKIP")
-                continue
-            else:
-                thisLOGGER = "Unknown"
-                print(thisLOGGER,end="")
-                # End of parsing thisLOG
-                print("Can not handle unknown logger")
-                sys.stdout = original_stdout
-                i += 1
-                print(".....SKIP")
-                continue  
-            
-            # Logger specific tasks:
-            if thisLOGGER == "Crash Logger":
+                
                 # Get SKSE version
                 first_pass_str = ''.join(DATA)
                 ver_SKSE = re.search("skse.*\.dll", first_pass_str)
@@ -373,9 +354,6 @@ for thisLOG in worklist:
                     ver_SKSE = ver_SKSE.group(0)
                 # Get Skyrim version
                 ver_Skyrim = str(DATA[0].strip())
-                
-                # Check Game vs SKSE versions
-                print(p_solve_GameVer(ver_Skyrim, ver_SKSE))
                 
                 # Unhandled Exception
                 line_Unhandled = str(DATA[3].strip())
@@ -398,19 +376,74 @@ for thisLOG in worklist:
                     RAM += "RAM free: \t\t" + str(ram_free) + "\n"
                 else:
                     RAM = "FATAL: \t\t Could not parse RAM values...."
-            # Other Logger specific tasks
-            elif thisLOGGER == ".NET Script Framework":
-                print("TODO: " + thisLOGGER)
+                
+            elif "NetScriptFramework" in str(DATA[2].strip()):
+                thisLOGGER = ".NET Script Framework"
+                #ver_Logger = thisLOGGER+" "+str(DATA[3].split(":")[1])
+                if len(DATA[3].split(":")) >= 2:
+                    ver_Logger = thisLOGGER + " " + str(DATA[3].split(":")[1])
+                else:
+                    # Handle the case when the split operation doesn't produce the expected result
+                    ver_Logger = thisLOGGER + " Unknown Version"
+                print(ver_Logger,end="")
+                
+                # Get SKSE version
+                first_pass_str = ''.join(DATA)
+                ver_SKSE = re.search("skse64_1.*\.dll", first_pass_str)
+                ver_SKSE = ver_SKSE.group(0)
+                
+                # Get Skyrim version
+                for line in DATA:
+                    if "ApplicationVersion" in line:
+                        ver_Skyrim = line.split(":")[1]
+                        break
+                
+                # Unhandled Exception
+                line_Unhandled = str(DATA[0].strip())
+                parts = line_Unhandled.split(" at ")
+                subparts = parts[1].split(" ")
+                thisMEM = subparts[0]
+                thisFile = subparts[1].split('+')[0].strip("()")
+                thisFileAdd = subparts[1].split("+")[1][:6]
+                thisAssembler = "Thread: " + parts[1].split("thread")[1].strip("!")
+                
+                # RAM
+                RAM = "INFO: \t\t'.Net Script Framework' does not provide RAM values...."
+                
+                # Not yet handled, will do later
+                # Inform user: just skip to keep it short.
+                #sys.stdout = original_stdout
+                #i += 1
+                #print(".....SKIP")
+                #continue
+            else:
+                thisLOGGER = "Unknown"
+                print(thisLOGGER,end="")
+                # End of parsing thisLOG
+                print("Can not handle unknown logger")
+                sys.stdout = original_stdout
+                i += 1
+                print(".....SKIP")
+                continue  
+            
+            # Logger specific tasks:
+            if thisLOGGER == "Crash Logger" or thisLOGGER == ".NET Script Framework" :
+                
+                # Check Game vs SKSE versions
+                #if thisLOGGER == "Crash Logger":
+                print(p_solve_GameVer(ver_Skyrim, ver_SKSE))
+                
+                # Show RAM info
+                p_section("RAM:")
+                print(RAM)
+                if thisLOGGER == "Crash Logger":
+                    print(p_solve_RAM(ram_use, ram_avail, ram_free))
+            else:
+                print("TODO SKSE, Skyrim and RAM: " + thisLOGGER)
             
             # Applies to / Works for all loggers
             # or variables have been prepared.
-            iCulprintCount = 0
-            iCulprintSolved = 0
             
-            # Show RAM info
-            p_section("RAM:")
-            print(RAM)
-            print(p_solve_RAM(ram_use, ram_avail, ram_free))
             
             # Start actual parsing...
             for line in DATA:
@@ -421,10 +454,6 @@ for thisLOG in worklist:
                 for low in list_chance:
                     if low in line:
                         culprint = list_add(low,culprint)
-                # for list HIGH
-                #for high in list_chance:
-                #    if high in line:
-                #        culprint = list_add(high,culprint)
                 
             # Update Culprint max
             iCulprintCount = len(culprint)
@@ -434,7 +463,7 @@ for thisLOG in worklist:
             print("Memory:  \t" + thisMEM + " " + s_Count(thisMEM,DATA) )
             print("File:    \t" + thisFile + " " + s_Count(thisFile,DATA) )
             print("Address: \t" + thisFileAdd + " " + s_Count(thisFileAdd,DATA) )
-            print("Assemler:\t" + thisAssembler + " " + s_Count(thisAssembler,DATA) )
+            print("Assembler:\t" + thisAssembler + " " + s_Count(thisAssembler,DATA) )
             
             # Parse for it
             p_title("\nParsing results:")
@@ -466,7 +495,7 @@ for thisLOG in worklist:
                                 if "Unhandled exception" in line:
                                     # Dont print this line, output is handled already
                                     continue
-                                if "MODULES:" in aLine:
+                                if "MODULES:" in aLine or "Modules" in aLine:
                                     # Do not print after MODULES / Loadorder
                                     break
                                 if str_Add in aLine:
@@ -476,7 +505,7 @@ for thisLOG in worklist:
                     if item == "skee64.dll":
                         for raceM in reasons_Racemenu:
                             for rLine in DATA:
-                                if "MODULES:" in aLine:
+                                if "MODULES:" in aLine or "Modules" in aLine:
                                     # Do not print after MODULES / Loadorder
                                     break
                                 print_line(rLine.strip(),printed,"- ")
@@ -484,7 +513,7 @@ for thisLOG in worklist:
                         if "Unhandled exception" in line:
                             # Dont print this line, output is handled already
                             continue
-                        if "MODULES:" in aLine:
+                        if "MODULES:" in aLine or "Modules" in aLine:
                             # Do not print after MODULES / Loadorder
                             break
                         if "0x0 on thread " in aLine:
