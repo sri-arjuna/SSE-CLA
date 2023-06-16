@@ -83,6 +83,7 @@ reasons_Chance = {
 'Trishape': "Trishapes are related to meshes, specifically a mod supplying a bad mesh. ",
 'Ninode': "Ninodes are related to skeletons. Probably an xpmsse overwrite. ",
 'Mesh': "Some generic mesh issue, yet to be defined",
+'mesh': "Some generic mesh issue, yet to be defined",
 'hdtSMP64.dll': "If this appears often, it might indicate a bad config. However, it might also just indicate that there were NPCs around that were wearing hdt/SMP enabled clothing...",
 'cbp.dll': "If this appears often, it might indicate a bad config. However, it might also just indicate that there were NPCs around that were wearing SMP/cbp enabled clothing...",
 'bad_alloc': "100% your issue! Free RAM, buy more RAM or increase the swap-file... either way, this IS the cause!",
@@ -505,7 +506,7 @@ for thisLOG in worklist:
                     if item == "skee64.dll":
                         for raceM in reasons_Racemenu:
                             for rLine in DATA:
-                                if "MODULES:" in aLine or "Modules" in aLine:
+                                if "MODULES:" in rLine or "Modules" in rLine:
                                     # Do not print after MODULES / Loadorder
                                     break
                                 print_line(rLine.strip(),printed,"- ")
