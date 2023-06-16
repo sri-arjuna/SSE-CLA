@@ -48,68 +48,66 @@ global thisMEM, thisFile, thisFileAdd, thisAssembler
 global script_name, script_version, script_date
 global ram_use, ram_avail, ram_free
 global list_chance_low, list_chance_high, list_chance_SkyrimAdd
-global reasons_low, reasons_high, reasons_Skyrim
+global reasons_Chance, reasons_Skyrim
 global lines_printed
 global culprint, indicator
+global iCulprintCount, iCulprintSolved
 # Save original stdout
 original_stdout = sys.stdout
 ######################################
 ### Script Variables
 ######################################
 script_name = "CLA SSE - Sephs Skyrim Experimental Crash Log Analyzer"
-script_version = "0.6"
-script_changed = "2023.05.02"
+script_version = "0.7"
+script_changed = "2023.06.16"
 script_title = script_name+" ("+script_version+") / "+script_changed
 ######################################
 ### Lists
 ### This provides list of known issues
 ### that are looked for within the logfile
 ######################################
-list_chance_low = ["skse64_loader.exe", "SkyrimSE.exe"]
-list_chance_high = ["skee64.dll", "Trishape", "Ninode", "mesh", "hdtSMP64.dll", "cbp.dll", "bad_alloc", "no_alloc", " Dawnguard.esm", " Dragonborn.esm", " Hearthfire.esm", "SchlongsOfSkyrim.dll", "nvwgf2umx.dll", "0x0 on thread " ]
+list_chance = ["skse64_loader.exe", "SkyrimSE.exe","skee64.dll", "Trishape", "Ninode", "mesh", "hdtSMP64.dll", "cbp.dll", "bad_alloc", "no_alloc", " Dawnguard.esm", " Dragonborn.esm", " Hearthfire.esm", "SchlongsOfSkyrim.dll", "nvwgf2umx.dll", "0x0 on thread " ]
 list_chance_SkyrimAdd = ["A0D789", "67B88B", "D6DDDA", "D02C2C", "5999C7", "12FDD00", "7428B1", "D2B923", "12F5590", "132BEF", "C0EB6A", "8BDA97", "5E1F22", "C1315C", "A" ]
 ######################################
 ### Dictionary
 ### Provide the item of a list to get an according response.
 ######################################
-# Low
-reasons_low = {
-'skse64_loader.exe': "At best, this entry is an indication that the culprint is a mod that is using SKSE...",
-'SkyrimSE.exe': "This file on its own is not the cause, however, we'll do further parsing..."
-}
-# High
+# Reason
 # Note: DLC.esm's have leading spaces on purpose to avoid false-positives
-reasons_high = {
+reasons_Chance = {
+'skse64_loader.exe': "At best, this entry is an indication that the culprint is a mod that is using SKSE...",
+'SkyrimSE.exe': "This file on its own is not the cause, however, we'll do further parsing...",
+'skse64_loader.exe': "At best, this entry is an indication that the culprint is a mod that is using SKSE...",
+'SkyrimSE.exe': "This file on its own is not the cause, however, we'll do further parsing...",
 'skee64.dll': "Some mod might be incompatible with RaceMenu, or your body.\n\tYou might want to read: https://www.nexusmods.com/skyrimspecialedition/articles/1372 and/or https://www.nexusmods.com/skyrimspecialedition/mods/44252?tab=description\n\tIf there are any further entries below this, it might be a strong indicator for its cause.",
 'Trishape': "Trishapes are related to meshes, specifically a mod supplying a bad mesh. ",
 'Ninode': "Ninodes are related to skeletons. Probably an xpmsse overwrite. ",
 'Mesh': "Some generic mesh issue, yet to be defined",
 'hdtSMP64.dll': "If this appears often, it might indicate a bad config. However, it might also just indicate that there were NPCs around that were wearing hdt/SMP enabled clothing...",
 'cbp.dll': "If this appears often, it might indicate a bad config. However, it might also just indicate that there were NPCs around that were wearing SMP/cbp enabled clothing...",
-'bad_alloc': "100% your issue! Free RAM, buy more RAM... either way, this IS the cause!",
-'no_alloc': "Could not find the proper memory allocation provided by reference",
+'bad_alloc': "100% your issue! Free RAM, buy more RAM or increase the swap-file... either way, this IS the cause!",
+'no_alloc': "Could not find the proper memory allocation provided by reference\nIf this happens often, you might want to run a 'MemCheck' to check your RAM for faulty hardware.",
 ' Dawnguard.esm': "Your missing the required DLC!",
 ' Dragonborn.esm': "Your missing the required DLC!",
 ' Hearthfire.esm': "Your missing the required DLC!",
 'SchlongsOfSkyrim.dll': "Don esl'ify any mod that uses Schlongs. Use a previous save and re-schlongify all armors in MCM.",
-'nvwgf2umx.dll': "Update your NVidia driver!\nOr your PC is too weak - aka - try fewer / lighter mods.",
+'nvwgf2umx.dll': "Update your NVidia driver!\n\tOr your PC is too weak - aka - try fewer / lighter mods.",
 '0x0 on thread ': "This actualy is an engine issue of Skyrim, but rare.\nMost often caused by 'Face lighting' / 'Face shadow' issues. Best chance to avoid: Make sure have the newest SSE Engine Fix!\nNow parsing some keywords that might (or not) give some additional indiciation.",
-
 }
 # Dialogue - no detailed description, summarizing in if block
 reasons_Dialog = {
-'Honed Metal': "",
-'Your Own Thoughts': "",
-'Swift Service': "",
+'Honed Metal': "todo",
+'Your Own Thoughts': "todo",
+'Swift Service': "todo",
 }
 # Racemenu
 reasons_Racemenu = {
-'XPMSEWeaponStyleScaleEffect.psc': "",
-'agud_system.psc': "",
-'BGSHazard(Name: `Fire`': "",
-'XPMSE': "",
-'race': "",
-'face': "",
+'XPMSEWeaponStyleScaleEffect.psc': "todo",
+'agud_system.psc': "todo",
+'BGSHazard(Name: `Fire`': "todo",
+'XPMSE': "todo",
+'race': "todo",
+'face': "todo",
 } 
 # Engine
 reasons_Engine = {
@@ -121,21 +119,21 @@ reasons_Engine = {
 }
 # Skyrim
 reasons_Skyrim = {
-'A0D789': "Did you fight a dragon? Did he stomp?\nIf you're using 'Ultimate dragons' there's a fix on its Nexus page.\nIt could also be a DAR issue, please make sure that the animation is not being overwritten.",
-'67B88B': "Probably related to: Callstack: 'AnimationGraphManagerHolder'\nFor now, make sure to regenerate animations using FNIS or Nemesis and NEVER delete FNIS.esp, as that file is generated by either of the two.",
-'D6DDDA': "Stack: BSResource::anonymous_namespace::LooseFileStream* OR BSResource::ArchiveStream* OR BSResource::CompressedArchiveStream**\nEither you do not have a pagefile that is large enough, or there is an issue with a texture of one of your mods. ",
-'D02C2C': "Monster Mod.esp\nNumerous errors and causes of CTD, even with the unoffical patches and latest updates of the mod itself.\nTo keep it short: Do not use.",
-'5999C7': "Monster Mod.esp\nNumerous errors and causes of CTD, even with the unoffical patches and latest updates of the mod itself.\nTo keep it short: Do not use.",
 '12FDD00': "Probable Callstack: BSShader::unk_xxxxxxx+xx mentioned FIRST or with the HIGHEST PRIORITY\nBroken NIF\nBest apporach, disable some of your NIF mods and figure out which one is causing it by starting a new game to reproduce the error, once figured, report to the mod author so they can create a fix.\nOR, use CAO(Cathedral Assets Optimizer), but that could lead to other issues.. so... its up to you.",
-'7428B1': "Install 'SSE Engine Fixes.\nIf you do have that, are you using the'Equipment Durability System mod'?\nIt could be related to an enchanted weapon braking, or other mods that change a character while holding a weapon.",
-'D2B923': "Save game issue:\nCould be related to either: Save System Overhaul(SSO) or users of the mod Alternate Start-LAL\nMaybe also related to or fixable by SkyUI SE - Flashing Savegame fix",
 '12F5590': "Facegen issue:\nRegenerate the Face in CK, search for 'BSDynamicTriShape' as a hint, or check the  HDT-SMP log for the last NPC used.",
 '132BEF': "Head Mesh Issue:\nCheck the HDT-SMP log where the last NPC most probably could be the issue.\nIf you use 'Ordinary Women', make sure that mod gets loaded last among mods that change body/heads.",
-'C0EB6A': "Actualy an issue of SkyrimSE.exe:\nShould be fix-able by the use of 'SSE Engine Fixes' mod",
-'8BDA97': "This could be an issue of having both, 'SSE Engine Fixes' and 'SSE Display Tweaks' mods active.\nCheck their settings and/or disable one or the other to see if you get another crash - or avoid this from now on.",
+'5999C7': "Monster Mod.esp\nNumerous errors and causes of CTD, even with the unoffical patches and latest updates of the mod itself.\nTo keep it short: Do not use.",
 '5E1F22': "Missing Master (esm):\nGet/fix your mod list in order... dammit!\nEither mod manager should have warned you about this issue!",
+'67B88B': "Probably related to: Callstack: 'AnimationGraphManagerHolder'\nFor now, make sure to regenerate animations using FNIS or Nemesis and NEVER delete FNIS.esp, as that file is generated by either of the two.",
+'7428B1': "Install 'SSE Engine Fixes.\nIf you do have that, are you using the'Equipment Durability System mod'?\nIt could be related to an enchanted weapon braking, or other mods that change a character while holding a weapon.",
+'8BDA97': "This could be an issue of having both, 'SSE Engine Fixes' and 'SSE Display Tweaks' mods active.\nCheck their settings and/or disable one or the other to see if you get another crash - or avoid this from now on.",
+'A': "(probably:) Animation Issue:\nNo further information available",
+'A0D789': "Did you fight a dragon? Did he stomp?\nIf you're using 'Ultimate dragons' there's a fix on its Nexus page.\nIt could also be a DAR issue, please make sure that the animation is not being overwritten.",
+'C0EB6A': "Actualy an issue of SkyrimSE.exe:\nShould be fix-able by the use of 'SSE Engine Fixes' mod",
 'C1315C': "controlmap.txt...What have you done?!\nProbably some mod that uses hotkeys might have modified this file... good luck with the hunt!",
-'A': "(probably:) Animation Issue:\nNo further information available"
+'D02C2C': "Monster Mod.esp\nNumerous errors and causes of CTD, even with the unoffical patches and latest updates of the mod itself.\nTo keep it short: Do not use.",
+'D2B923': "Save game issue:\nCould be related to either: Save System Overhaul(SSO) or users of the mod Alternate Start-LAL\nMaybe also related to or fixable by SkyUI SE - Flashing Savegame fix",
+'D6DDDA': "Stack: BSResource::anonymous_namespace::LooseFileStream* OR BSResource::ArchiveStream* OR BSResource::CompressedArchiveStream**\nEither you do not have a pagefile that is large enough, or there is an issue with a texture of one of your mods. ",
 }
 
 ######################################
@@ -201,10 +199,16 @@ def p_section(str):
 def s_explain_topic(topic):
     # Check for topic in lists and print the result
     txt = ""
-    if topic in list_chance_low:
-        txt = reasons_low[topic]
-    elif topic in list_chance_high:
-        txt = reasons_high[topic]
+    global iCulprintSolved
+    global printed
+    if topic in list_chance:
+        txt = reasons_Chance[topic]
+        iCulprintSolved = iCulprintSolved + 1
+        printed.append(topic)
+    elif topic in list_chance_SkyrimAdd:
+        txt = reasons_Skyrim[topic]
+        iCulprintSolved = iCulprintSolved + 1
+        printed.append(topic)
     else:
         txt = topic+"\t=\tNot handled yet, please report your situation, the crashlog, what happened, and your thoughts to help improve the tool."
     # Final string adjustment
@@ -400,6 +404,8 @@ for thisLOG in worklist:
             
             # Applies to / Works for all loggers
             # or variables have been prepared.
+            iCulprintCount = 0
+            iCulprintSolved = 0
             
             # Show RAM info
             p_section("RAM:")
@@ -411,14 +417,17 @@ for thisLOG in worklist:
                 if "MODULES:" in line:
                     # Stop parsing (Load Order) to prevent false-positives
                     break
-                # for list LOW
-                for low in list_chance_low:
+                # for list chance
+                for low in list_chance:
                     if low in line:
                         culprint = list_add(low,culprint)
                 # for list HIGH
-                for high in list_chance_high:
-                    if high in line:
-                        culprint = list_add(high,culprint)
+                #for high in list_chance:
+                #    if high in line:
+                #        culprint = list_add(high,culprint)
+                
+            # Update Culprint max
+            iCulprintCount = len(culprint)
             
             #  Check for main indicators:
             p_section("Header indicators:") 
@@ -445,8 +454,8 @@ for thisLOG in worklist:
             for item in culprint:
                 # Print 'title' for current item
                 print("\n"+item+" "+s_Count(item,DATA))
-                # LOW
-                if item in list_chance_low:
+                # Reasons
+                if item in list_chance:
                     # Show basic reason
                     print(s_explain_topic(item))
                     # Check for more details:
@@ -464,13 +473,12 @@ for thisLOG in worklist:
                                     print("\t-" + str_Add )#+ ":\n")
                                     print("\t\t" + reasons_Skyrim[thisAdd])
                                     print_line(aLine.strip(),printed,"\t\t\t")
-                # HIGH
-                if item in list_chance_high:
-                    print(s_explain_topic(item))
                     if item == "skee64.dll":
-                        #print(reasons_high[item])
                         for raceM in reasons_Racemenu:
                             for rLine in DATA:
+                                if "MODULES:" in aLine:
+                                    # Do not print after MODULES / Loadorder
+                                    break
                                 print_line(rLine.strip(),printed,"- ")
                     for aLine in DATA:
                         if "Unhandled exception" in line:
@@ -489,9 +497,11 @@ for thisLOG in worklist:
                                         print(engR + ":\n")
                                         print(reasons_Engine(engR))
                                         print(oxLine)
-                                        
-                        
                         if item in aLine:
+                            # This should avoid double prints
+                            if item in printed:
+                                continue
+                            print("DEBUG check entry")
                             print_line(item,printed)
                 
             # Additional parse for more
@@ -518,6 +528,18 @@ for thisLOG in worklist:
                     if line not in printed:
                         print("Camera:\nIf you get this error more often, try disabling (some of) the compatiblity settings in MCM (trial & error).")
                         print_line(line.strip(),printed)
+            
+            print("\n")
+            p_section("Success Statistic:")
+            print("Issues Found:\t" + str(iCulprintCount) + "\nIssues Solved:\t" + str(iCulprintSolved))
+            
+            print("\n")
+            p_section("DEBUG State:")
+            print("Culprint list content:")
+            c_list = ""
+            for c in culprint:
+                c_list = c_list + c + ", "
+            print(c_list)
             
             # End of parsing thisLOG
             sys.stdout = original_stdout
