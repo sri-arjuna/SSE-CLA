@@ -366,7 +366,19 @@ for thisLOG in worklist:
                 thisAssembler = parts[1].split("\t")[1]
                 
                 # Retrieve Memory info
-                line_RAM = str(DATA[10].strip())
+                if "PHYSICAL MEMORY" in str(DATA[9].strip()):
+                    # only 1 GPU, expecting default 2
+                    line_RAM = str(DATA[9].strip())
+                elif "PHYSICAL MEMORY" in str(DATA[10].strip()):
+                    # 2 GPU, as expected
+                    line_RAM = str(DATA[10].strip())
+                elif "PHYSICAL MEMORY" in str(DATA[11].strip()):
+                    # 3 GPU, laptop and nerds
+                    line_RAM = str(DATA[11].strip())
+                elif "PHYSICAL MEMORY" in str(DATA[12].strip()):
+                    # 4 GPU, just to be sure
+                    line_RAM = str(DATA[12].strip())
+                # Actual parsing / split for RAM    
                 match = re.search(r'PHYSICAL MEMORY: (\d+\.\d+) GB/(\d+\.\d+) GB', line_RAM)
                 if match:
                     ram_use = float(match.group(1))
