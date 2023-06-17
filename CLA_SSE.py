@@ -58,8 +58,8 @@ original_stdout = sys.stdout
 ### Script Variables
 ######################################
 script_name = "CLA SSE - Sephs Skyrim Experimental Crash Log Analyzer"
-script_version = "0.7"
-script_changed = "2023.06.16"
+script_version = "0.7a"
+script_changed = "2023.06.17"
 script_title = script_name+" ("+script_version+") / "+script_changed
 ######################################
 ### Lists
@@ -84,8 +84,8 @@ reasons_Chance = {
 'Ninode': "Ninodes are related to skeletons. Probably an xpmsse overwrite. ",
 'Mesh': "Some generic mesh issue, yet to be defined",
 'mesh': "Some generic mesh issue, yet to be defined",
-'hdtSMP64.dll': "If this appears often, it might indicate a bad config. However, it might also just indicate that there were NPCs around that were wearing hdt/SMP enabled clothing...",
-'cbp.dll': "If this appears often, it might indicate a bad config. However, it might also just indicate that there were NPCs around that were wearing SMP/cbp enabled clothing...",
+'hdtSMP64.dll': "If this appears often, it might indicate a bad config (rare). However, it might also just indicate that there were NPCs around that were wearing hdt/SMP enabled clothing...",
+'cbp.dll': "If this appears often, it might indicate a bad config (rare). However, it might also just indicate that there were NPCs around that were wearing SMP/cbp enabled clothing...",
 'bad_alloc': "100% your issue! Free RAM, buy more RAM or increase the swap-file... either way, this IS the cause!",
 'no_alloc': "Could not find the proper memory allocation provided by reference\nIf this happens often, you might want to run a 'MemCheck' to check your RAM for faulty hardware.",
 ' Dawnguard.esm': "Your missing the required DLC!",
@@ -94,6 +94,7 @@ reasons_Chance = {
 'SchlongsOfSkyrim.dll': "Dont esl'ify any mod that uses Schlongs. Use a previous save and re-schlongify all armors in MCM.",
 'nvwgf2umx.dll': "Update your NVidia driver!\n\tOr your PC is too weak - aka - try fewer / lighter mods.",
 '0x0 on thread ': "This actualy is an engine issue of Skyrim, but rare.\nMost often caused by 'Face lighting' / 'Face shadow' issues. Best chance to avoid: Make sure have the newest SSE Engine Fix!\nNow parsing some keywords that might (or not) give some additional indiciation.",
+'HUD': "There seems to be an issue with your HUD / UI.\nNordic UI using the TDM patch might be the cause (at the very least in combination with Skyrim Souls).\nIf that is not what you are using, please figure out a fix and send me your crashlog and solution.",
 }
 # Dialogue - no detailed description, summarizing in if block
 reasons_Dialog = {
@@ -572,12 +573,12 @@ for thisLOG in worklist:
                         print_line(line.strip(),printed)
             
             print("\n")
-            p_section("Success Statistic:")
+            p_section("Success Statistic: (this has been detected/handled, does not mean its the cause)")
             print("Issues Found:\t" + str(iCulprintCount) + "\nIssues Solved:\t" + str(iCulprintSolved))
             
             print("\n")
             p_section("DEBUG State:")
-            print("Culprint list content:")
+            print("Culprint list content: (just a list)")
             c_list = ""
             for c in culprint:
                 c_list = c_list + c + ", "
