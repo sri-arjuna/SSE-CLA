@@ -17,7 +17,8 @@
 # TODO
 # Precision version
 # racemenu version
-#
+# short unhandled exception
+# 
 # --------------
 #
 # Syntax for functions:
@@ -81,9 +82,9 @@ reasons_Chance = {
 'SkyrimSE.exe': "This file on its own is not the cause, however, we'll do further parsing...",
 'skee64.dll': "Some mod might be incompatible with RaceMenu, or your body.\n\tYou might want to read: https://www.nexusmods.com/skyrimspecialedition/articles/1372 and/or https://www.nexusmods.com/skyrimspecialedition/mods/44252?tab=description\n\tIf there are any further entries below this, it might be a strong indicator for its cause.",
 'Trishape': "Trishapes are related to meshes, specifically a mod supplying a bad mesh. ",
-'NiNode': "Ninodes are related to skeletons. Probably (but does not have to be) an xpmsse overwrite.\n\tIf there are any 'indent' lines, they might give a more precice of what _could_ be the reason.\n\t-- This is beta detection, and might not be accurate --",
-'Mesh': "Some generic mesh issue, yet to be defined...\n\tIf there are any 'indent' lines, they might give a more precice of what _could_ be the reason.\n\t-- This is beta detection, and might not be accurate --",
-'mesh': "Some generic mesh issue, yet to be defined...\n\tIf there are any 'indent' lines, they might give a more precice of what _could_ be the reason.\n\t-- This is beta detection, and might not be accurate --",
+'NiNode': "Ninodes are related to skeletons. Probably (but does not have to be) an xpmsse overwrite.\n\tIf there are any 'indent' lines, they might give a more precice of what _could_ be the reason.\n\t-- This is beta detection, and might not be accurate --\n\t-- This is showing previous lines 6 & 5, and is considered WIP --",
+'Mesh': "Some generic mesh issue, yet to be defined...\n\tIf there are any 'indent' lines, they might give a more precice of what _could_ be the reason.\n\t-- This is beta detection, and might not be accurate --\n\t-- This is showing previous lines 1 & 2, and is considered WIP --",
+'mesh': "Some generic mesh issue, yet to be defined...\n\tIf there are any 'indent' lines, they might give a more precice of what _could_ be the reason.\n\t-- This is beta detection, and might not be accurate --\n\t-- This is showing previous lines 1 & 2, and is considered WIP --",
 'hdtSMP64.dll': "If this appears often, it might indicate a bad config (rare). However, it might also just indicate that there were NPCs around that were wearing hdt/SMP enabled clothing...",
 'cbp.dll': "If this appears often, it might indicate a bad config (rare). However, it might also just indicate that there were NPCs around that were wearing SMP/cbp enabled clothing...",
 'bad_alloc': "100% your issue! Free RAM, buy more RAM or increase the swap-file... either way, this IS the cause!",
@@ -383,10 +384,28 @@ for thisLOG in worklist:
                 line_Unhandled = str(DATA[3].strip())
                 parts = line_Unhandled.split(" at ")
                 subparts = parts[1].split(" ")
-                thisMEM = subparts[0]
-                thisFile = subparts[1].split('+')[0]
-                thisFileAdd = subparts[1].split("+")[1][:6]
-                thisAssembler = parts[1].split("\t")[1]
+                if "0x000000000000" == subparts[0]:
+                    thisMEM = subparts[0]
+                    culprint.append("0x0")
+                    thisFile = "n/a"
+                    thisFileAdd = "n/a"
+                    thisAssembler = "n/a"
+                else:
+                    thisMEM = subparts[0]
+                    thisFile = subparts[1].split('+')[0]
+                    thisFileAdd = subparts[1].split("+")[1][:6]
+                    if len(parts) >= 1:
+                        if "\t" in parts[1]:
+                            thisAssembler = parts[1].split("\t")[1]
+                            #continue
+                        elif " " in parts[1]:
+                            thisAssembler = parts[1].split(" ")[1]
+                            #continue
+                        else:
+                            thisAssembler = "n/a"
+                    else:
+                        thisAssembler = "n/a"
+                    
                 
                 # Retrieve Memory info
                 if "PHYSICAL MEMORY" in str(DATA[9].strip()):
@@ -445,13 +464,6 @@ for thisLOG in worklist:
                 
                 # RAM
                 RAM = "INFO: \t\t'.Net Script Framework' does not provide RAM values...."
-                
-                # Not yet handled, will do later
-                # Inform user: just skip to keep it short.
-                #sys.stdout = original_stdout
-                #i += 1
-                #print(".....SKIP")
-                #continue
             else:
                 thisLOGGER = "Unknown"
                 print(thisLOGGER,end="")
@@ -538,6 +550,13 @@ for thisLOG in worklist:
                                     print("\t-" + str_Add )#+ ":\n")
                                     print("\t\t" + reasons_Skyrim[thisAdd])
                                     print_line(aLine.strip(),printed,"\t\t\t")
+                    
+                    if item == "0x0":
+                        zero_lines = []
+                        for zLine in DATA:
+                            if "0x0" in zLine:
+                                print("z:: ", zLine)
+                                zero_lines.append(zLine)
                     
                     if item == "NiNode":
                         ninode_lines = []
