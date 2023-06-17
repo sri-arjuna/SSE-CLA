@@ -2,10 +2,10 @@ CLA SSE - Sephs Skyrim Experimental Crash Log Analyzer
 -------------------------------------------------------
 
 # Goal:
-- Get an easy to read indication of the most probable cause for the crash.
-- Provide a list of 1 or more possible culprints (reasons) 
-- Print/Summarize original lines only once for easier debuging
-- Shorten the things to read compared to orginal (raw) crash log file
+- Get an easy-to-read indication of the most probable cause for the crash.
+- Provide a list of 1 or more possible culprits (reasons) 
+- Print/Summarize original lines only once for easier debugging
+- Shorten the things to read compared to original (raw) crash log file
 
 
 ----
