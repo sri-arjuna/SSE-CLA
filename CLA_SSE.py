@@ -17,7 +17,6 @@
 # TODO
 # Precision version
 # racemenu version
-# short unhandled exception
 # 
 # --------------
 #
@@ -59,7 +58,7 @@ original_stdout = sys.stdout
 ### Script Variables
 ######################################
 script_name = "CLA SSE - Sephs Skyrim Experimental Crash Log Analyzer"
-script_version = "0.7a"
+script_version = "0.7b"
 script_changed = "2023.06.17"
 script_title = script_name+" ("+script_version+") / "+script_changed
 ######################################
@@ -555,8 +554,11 @@ for thisLOG in worklist:
                         zero_lines = []
                         for zLine in DATA:
                             if "0x0" in zLine:
-                                print("z:: ", zLine)
+                                print("yay")
                                 zero_lines.append(zLine)
+                                #if not zLine in printed:
+                                print(zero_lines[-1],end="")
+                                print_line(zLine.strip(),printed,"z::")
                     
                     if item == "NiNode":
                         ninode_lines = []
