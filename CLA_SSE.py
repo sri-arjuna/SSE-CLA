@@ -282,6 +282,28 @@ ClearInvalidRegistrations=1
 [Memory]
 DefaultHeapInitialAllocMB=768
 ScrapHeapSizeMB=256
+
+==================================
+
+Last but not least, increasing your pagefile is a good and simple way to avoid this.
+Best practice: pagefile-size > RAM
+Example: 24 GB > 16 GB RAM
+
+Please read / follow:
+1. In the Taskbar Search, type “Advanced System“. ...
+2. In System Properties, click Advanced tab.
+3. In Performance section click Settings button.
+4. Performance Options will open. ...
+5. Here, under Virtual memory, select Change.
+6. Uncheck Automatically manage paging file size for all drives.
+7. Select a Drive that hardly use (as in not often)
+8. Set manual size
+9. Set value to ~ 150% of your RAM (as shown in example)
+10. Confirm with "OK".
+
+If you want to read more about (allthough, not related to sharepoint server):
+https://learn.microsoft.com/en-us/sharepoint/technical-reference/the-paging-file-size-should-exceed-the-amount-of-physical-ram-in-the-system
+
 '''
     return str_result
 
