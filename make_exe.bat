@@ -1,0 +1,1 @@
+pyinstaller --onefile CLA_SSE.py
