@@ -83,7 +83,7 @@ reasons_Chance = {
 'Trishape': "Trishapes are related to meshes, specifically a mod supplying a bad mesh. ",
 'NiNode': "Ninodes are related to skeletons. It could be a wrong loadorder for skeleton based mods.\n\tIf you use HDT/SMP, make sure to load it like: Body (CBBE or BH/UNP) -> FNIS/Nemesis -> DAR -> HDT -> XP32\n\tAlso make sure that you've chosen the HDT/SMP variant of xpmsse.\n\tIf you find a mod name in the following list, try disabling it and rerurn FNIS or Nemesis.",
 'mesh': "Some generic mesh issue, yet to be defined...\n\tIf there are any 'indent' lines, they might give a more precice of what _could_ be the reason.\n\t-- This is beta detection, and might not be accurate --\n\t-- This is showing previous lines 1 & 2, and is considered WIP --",
-'hdtSMP64.dll': "If this appears often, it might indicate a bad config (rare). However, it might also just indicate that there were NPCs around that were wearing hdt/SMP enabled clothing...\n\tAlso make sure you have these installed:\n\t- HDT SMP XMLs (for Artesian Cloaks): https://www.nexusmods.com/skyrimspecialedition/mods/25240\n\t- SMP NPC fix: https://www.nexusmods.com/skyrimspecialedition/mods/91616 ",
+'hdtSMP64.dll': "If this appears often, it might indicate a bad config (rare). However, it might also just indicate that there were NPCs around that were wearing hdt/SMP enabled clothing...\n\tAlso make sure you have these installed:\n\t- SMP NPC fix: https://www.nexusmods.com/skyrimspecialedition/mods/91616 ",
 'cbp.dll': "If this appears often, it might indicate a bad config (rare). However, it might also just indicate that there were NPCs around that were wearing SMP/cbp enabled clothing...\n\tMake sure to have this installed:\n\t\n\t- SMP NPC fix: https://www.nexusmods.com/skyrimspecialedition/mods/91616 ",
 'bad_alloc': "100% your issue! Free RAM, buy more RAM or increase the swap-file... either way, this IS the cause!",
 'no_alloc': "Could not find the proper memory allocation provided by reference\nIf this happens often, you might want to run a 'MemCheck' to check your RAM for faulty hardware.",
@@ -589,6 +589,7 @@ for thisLOG in worklist:
                                     # Do not print after MODULES / Loadorder
                                     break
                                 if raceM in rLine:
+                                    print_line(reasons_Racemenu[raceM].strip(),printed,"- ")
                                     if rLine not in printed:
                                         print_line(rLine.strip(),printed,"- ")
                     
@@ -634,7 +635,7 @@ for thisLOG in worklist:
                 # Cloaks
                 if "clothes\\cloaksofskyrim\\" in line:
                     if line not in printed:
-                        print("Artesian cloaks of Skyrim:\nMost likely due to HDT enabled capes. Possible fix: Use the according Retexture mod or remove the cape-mod itself.")
+                        print("Artesian cloaks of Skyrim:\n\tMost likely due to HDT enabled capes. Possible fix: Use the according Retexture mod or remove the cape-mod itself.\n\t- HDT SMP XMLs (for Artesian Cloaks): https://www.nexusmods.com/skyrimspecialedition/mods/25240")
                         print_line(line.strip(),printed)
                 # Smooth cam
                 if "SmoothCam.dll+" in line:
