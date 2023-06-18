@@ -361,7 +361,7 @@ for thisLOG in worklist:
             # Basic Header
             p_title(script_title)
             # Just a little READ ME
-            print("If you are asking others (aka not Sephrajin) for assistance / help, ALWAYS provide both files!\n##############################################################################################\n\n")
+            print("If you are asking others for assistance / help, ALWAYS provide the crashlog as well!\n#####################################################################################\n\n")
             
             # Check for logger:
             print("Crashlog tool/ver:\t",end="")
@@ -440,6 +440,7 @@ for thisLOG in worklist:
                     # Handle the case when the split operation doesn't produce the expected result
                     ver_Logger = thisLOGGER + " Unknown Version"
                 print(ver_Logger,end="")
+                print("Because this crash logger is not fully supported, you WILL get multiple false-positives, most likely 'count 1' ones!")
                 
                 # Get SKSE version
                 first_pass_str = ''.join(DATA)
