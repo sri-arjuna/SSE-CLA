@@ -66,7 +66,7 @@ script_title = script_name+" ("+script_version+") / "+script_changed
 ### This provides list of known issues
 ### that are looked for within the logfile
 ######################################
-list_chance = ["skse64_loader.exe", "SkyrimSE.exe","skee64.dll", "Trishape", "NiNode", "mesh", "Mesh", "hdtSMP64.dll", "cbp.dll", "bad_alloc", "no_alloc", " Dawnguard.esm", " Dragonborn.esm", " Hearthfire.esm", "SchlongsOfSkyrim.dll", "nvwgf2umx.dll", "0x0 on thread ", "HUD", ]
+list_chance = ["skse64_loader.exe", "SkyrimSE.exe","skee64.dll", "Trishape", "NiNode", "mesh", "hdtSMP64.dll", "cbp.dll", "bad_alloc", "no_alloc", " Dawnguard.esm", " Dragonborn.esm", " Hearthfire.esm", "SchlongsOfSkyrim.dll", "nvwgf2umx.dll", "0x0 on thread ", "HUD", ]
 list_chance_SkyrimAdd = ["A0D789", "67B88B", "D6DDDA", "D02C2C", "5999C7", "12FDD00", "7428B1", "D2B923", "12F5590", "132BEF", "C0EB6A", "8BDA97", "5E1F22", "C1315C", "A" ]
 ######################################
 ### Dictionary
@@ -82,7 +82,6 @@ reasons_Chance = {
 'skee64.dll': "Some mod might be incompatible with RaceMenu, or your body.\n\tYou might want to read: https://www.nexusmods.com/skyrimspecialedition/articles/1372 and/or https://www.nexusmods.com/skyrimspecialedition/mods/44252?tab=description\n\tIf there are any further entries below this, it might be a strong indicator for its cause.",
 'Trishape': "Trishapes are related to meshes, specifically a mod supplying a bad mesh. ",
 'NiNode': "Ninodes are related to skeletons. Probably (but does not have to be) an xpmsse overwrite.\n\tIf there are any 'indent' lines, they might give a more precice of what _could_ be the reason.\n\t-- This is beta detection, and might not be accurate --\n\t-- This is showing previous lines 6 & 5, and is considered WIP --",
-'Mesh': "Some generic mesh issue, yet to be defined...\n\tIf there are any 'indent' lines, they might give a more precice of what _could_ be the reason.\n\t-- This is beta detection, and might not be accurate --\n\t-- This is showing previous lines 1 & 2, and is considered WIP --",
 'mesh': "Some generic mesh issue, yet to be defined...\n\tIf there are any 'indent' lines, they might give a more precice of what _could_ be the reason.\n\t-- This is beta detection, and might not be accurate --\n\t-- This is showing previous lines 1 & 2, and is considered WIP --",
 'hdtSMP64.dll': "If this appears often, it might indicate a bad config (rare). However, it might also just indicate that there were NPCs around that were wearing hdt/SMP enabled clothing...",
 'cbp.dll': "If this appears often, it might indicate a bad config (rare). However, it might also just indicate that there were NPCs around that were wearing SMP/cbp enabled clothing...",
@@ -556,25 +555,28 @@ for thisLOG in worklist:
                             if "0x0" in zLine:
                                 print("yay")
                                 zero_lines.append(zLine)
-                                #if not zLine in printed:
-                                print(zero_lines[-1],end="")
-                                print_line(zLine.strip(),printed,"z::")
+                                if zLine.strip() not in printed:
+                                    print(zero_lines[-1],end="")
+                                    print_line(zLine.strip(),printed,"z::")
                     
                     if item == "NiNode":
                         ninode_lines = []
                         for nLine in DATA:
                             ninode_lines.append(nLine)
                             if "NiNode" in nLine:
-                                print(nLine,end="")
-                                print(ninode_lines[-6],end="")
-                                print(ninode_lines[-5],end="")
-                                print("-" * 80 )
+                                if nLine.strip() not in printed:
+                                    print("-" * 80 )
+                                    print_line(nLine.strip()+" "+s_Count(nLine.strip(),DATA),printed,"")
+                                    print_line(ninode_lines[-6].strip()+" "+s_Count(nLine.strip(),DATA),printed,"")
+                                    print_line(ninode_lines[-5].strip()+" "+s_Count(nLine.strip(),DATA).strip(),printed,"")
+                                    #print("\n")
+                                    #
                                 
-                    if item == "Mesh" or item == "mesh":
+                    if item.lower == "mesh":
                         mesh_lines = []
                         for mLine in DATA:
                             mesh_lines.append(mLine)
-                            if "Mesh" in mLine or "mesh" in mLine:
+                            if "mesh" in mLine.lower:
                                 print(mLine,end="")
                                 print(mesh_lines[-1],end="")
                                 print(mesh_lines[-2])
