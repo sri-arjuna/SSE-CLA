@@ -361,7 +361,7 @@ for thisLOG in worklist:
             # Basic Header
             p_title(script_title)
             # Just a little READ ME
-            print("If you are asking others for assistance / help, ALWAYS provide both files!\n################################################################################\n\n")
+            print("If you are asking others (aka not Sephrajin) for assistance / help, ALWAYS provide both files!\n##############################################################################################\n\n")
             
             # Check for logger:
             print("Crashlog tool/ver:\t",end="")
@@ -660,5 +660,66 @@ for thisLOG in worklist:
             sys.stdout = original_stdout
             i += 1
     print(".....DONE")
-sys.stdout.close()
-os.system("pause")
+#sys.stdout.close()
+#os.system("pause")
+
+
+
+
+####### TODO #######
+# Race Menu version
+# Computer\HKEY_CURRENT_USER\System\GameConfigStore\Children\09acc3ff-bf5b-411c-8f5c-58fe16493122
+# MatchedExeFullPath
+
+#import winreg
+#def read_registry_value(key_path, value_name):
+#    try:
+#        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key_path)
+#        value, _ = winreg.QueryValueEx(key, value_name)
+#        return value
+#    except WindowsError:
+#        return None
+#key_path = r"Computer\HKEY_CURRENT_USER\System\GameConfigStore\Children\09acc3ff-bf5b-411c-8f5c-58fe16493122"
+#value_name = "MatchedExeFullPath"
+#skyrim_path = read_registry_value(key_path, value_name)
+#print(f"Skyrim Path: {skyrim_path}")
+
+
+### exe version
+## pip install pywin32 
+#import win32api
+#def get_file_version(file_path):
+#    info = win32api.GetFileVersionInfo(file_path, "\\")
+#    major_version = info['FileVersionMS'] >> 16
+#    minor_version = info['FileVersionMS'] & 0xFFFF
+#    return major_version, minor_version
+#file_path = r"D:\SteamLibrary\steamapps\common\Skyrim Special Edition\Data\RaceMenu.esp"
+#major, minor = get_file_version(file_path)
+#print(f"File Version: {major}.{minor}")
+
+
+import configparser
+# Create a ConfigParser object
+config = configparser.ConfigParser()
+config_file = "CLASSE.ini"
+config_section = "CLA"
+config_option_stagedir = "stagedir"
+
+# Check if file exists
+if not os.path.isfile(config_file):
+    p_title("First Time Setup")
+    print("Please enter the stagedir of your mod manager (where the extracted zip files are).")
+    print("You can either type, or copy then right-click to paste.")
+    stagedir = input("Path: ")
+    config.add_section(config_section)
+    config.set(config_section,config_option_stagedir,stagedir)
+    with open(config_file,'w') as configfile:
+        config.write(configfile)
+
+# Read the INI file
+config.read(config_file)
+stagedir = config.get(config_section, config_option_stagedir)
+print(f"stagedir: {stagedir}")
+
+#sys.stdout.close()
+#os.system("pause")

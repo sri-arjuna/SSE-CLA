@@ -19,3 +19,4 @@ build/CLA_SSE/CLA_SSE.pkg
 build/CLA_SSE/CLA_SSE.exe.manifest
 build/CLA_SSE/base_library.zip
 build/CLA_SSE/Analysis-00.toc
+*.ini
