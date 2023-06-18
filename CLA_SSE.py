@@ -66,7 +66,7 @@ script_title = script_name+" ("+script_version+") / "+script_changed
 ### This provides list of known issues
 ### that are looked for within the logfile
 ######################################
-list_chance = ["skse64_loader.exe", "SkyrimSE.exe","skee64.dll", "Trishape", "NiNode", "mesh", "hdtSMP64.dll", "cbp.dll", "bad_alloc", "no_alloc", " Dawnguard.esm", " Dragonborn.esm", " Hearthfire.esm", "SchlongsOfSkyrim.dll", "nvwgf2umx.dll", "0x0 on thread ", "HUD", ]
+list_chance = ["skse64_loader.exe", "SkyrimSE.exe","skee64.dll", "Trishape", "NiNode", "mesh", "hdtSMP64.dll", "cbp.dll", "bad_alloc", "no_alloc", " Dawnguard.esm", " Dragonborn.esm", " Hearthfire.esm", "SchlongsOfSkyrim.dll", "nvwgf2umx.dll", "0x0 on thread ", "HUD", "tbbmalloc.dll" ]
 list_chance_SkyrimAdd = ["A0D789", "67B88B", "D6DDDA", "D02C2C", "5999C7", "12FDD00", "7428B1", "D2B923", "12F5590", "132BEF", "C0EB6A", "8BDA97", "5E1F22", "C1315C", "A" ]
 ######################################
 ### Dictionary
@@ -94,6 +94,7 @@ reasons_Chance = {
 'nvwgf2umx.dll': "Update your NVidia driver!\n\tOr your PC is too weak - aka - try fewer / lighter mods.",
 '0x0 on thread ': "This actualy is an engine issue of Skyrim, but rare.\nMost often caused by 'Face lighting' / 'Face shadow' issues. Best chance to avoid: Make sure have the newest SSE Engine Fix!\nNow parsing some keywords that might (or not) give some additional indiciation.",
 'HUD': "There seems to be an issue with your HUD / UI.\nNordic UI using the TDM patch might be the cause (at the very least in combination with Skyrim Souls).\nIf that is not what you are using, please figure out a fix and send me your crashlog and solution.",
+'tbbmalloc.dll': "Threading Building Blocks Memory Allocator\n\tThis is either part of:\n\t- the CreationKit Fixes: https://www.nexusmods.com/skyrimspecialedition/mods/20061 \n\t- the Engine Fixes (part 2): https://www.nexusmods.com/skyrimspecialedition/mods/17230 \n\n\tEither way, make sure to have the 'latest' version variant for your Skyrim edition.",
 }
 # Dialogue - no detailed description, summarizing in if block
 reasons_Dialog = {
