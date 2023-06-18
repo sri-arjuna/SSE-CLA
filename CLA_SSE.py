@@ -79,12 +79,12 @@ reasons_Chance = {
 'SkyrimSE.exe': "This file on its own is not the cause, however, we'll do further parsing...",
 'skse64_loader.exe': "At best, this entry is an indication that the culprint is a mod that is using SKSE...",
 'SkyrimSE.exe': "This file on its own is not the cause, however, we'll do further parsing...",
-'skee64.dll': "Some mod might be incompatible with RaceMenu, or your body.\n\tYou might want to read: https://www.nexusmods.com/skyrimspecialedition/articles/1372 and/or https://www.nexusmods.com/skyrimspecialedition/mods/44252?tab=description\n\tIf there are any further entries below this, it might be a strong indicator for its cause.",
+'skee64.dll': "Some mod might be incompatible with RaceMenu, or your body.\n\tYou might want to read: https://www.nexusmods.com/skyrimspecialedition/articles/1372 and/or https://www.nexusmods.com/skyrimspecialedition/mods/44252?tab=description\n\tIf there are any further entries below this, it might be a strong indicator for its cause.\n\tAlso, please make sure to have this installed:\n\t- Race Compatibility: https://www.nexusmods.com/skyrimspecialedition/mods/2853",
 'Trishape': "Trishapes are related to meshes, specifically a mod supplying a bad mesh. ",
-'NiNode': "Ninodes are related to skeletons. Probably (but does not have to be) an xpmsse overwrite.\n\tIf there are any 'indent' lines, they might give a more precice of what _could_ be the reason.\n\t-- This is beta detection, and might not be accurate --\n\t-- This is showing previous lines 6 & 5, and is considered WIP --",
+'NiNode': "Ninodes are related to skeletons. It could be a wrong loadorder for skeleton based mods.\n\tIf you use HDT/SMP, make sure to load it like: Body (CBBE or BH/UNP) -> FNIS/Nemesis -> DAR -> HDT -> XP32\n\tAlso make sure that you've chosen the HDT/SMP variant of xpmsse.\n\tIf you find a mod name in the following list, try disabling it and rerurn FNIS or Nemesis.",
 'mesh': "Some generic mesh issue, yet to be defined...\n\tIf there are any 'indent' lines, they might give a more precice of what _could_ be the reason.\n\t-- This is beta detection, and might not be accurate --\n\t-- This is showing previous lines 1 & 2, and is considered WIP --",
-'hdtSMP64.dll': "If this appears often, it might indicate a bad config (rare). However, it might also just indicate that there were NPCs around that were wearing hdt/SMP enabled clothing...",
-'cbp.dll': "If this appears often, it might indicate a bad config (rare). However, it might also just indicate that there were NPCs around that were wearing SMP/cbp enabled clothing...",
+'hdtSMP64.dll': "If this appears often, it might indicate a bad config (rare). However, it might also just indicate that there were NPCs around that were wearing hdt/SMP enabled clothing...\n\tAlso make sure you have these installed:\n\t- HDT SMP XMLs (for Artesian Cloaks): https://www.nexusmods.com/skyrimspecialedition/mods/25240\n\t- SMP NPC fix: https://www.nexusmods.com/skyrimspecialedition/mods/91616 ",
+'cbp.dll': "If this appears often, it might indicate a bad config (rare). However, it might also just indicate that there were NPCs around that were wearing SMP/cbp enabled clothing...\n\tMake sure to have this installed:\n\t\n\t- SMP NPC fix: https://www.nexusmods.com/skyrimspecialedition/mods/91616 ",
 'bad_alloc': "100% your issue! Free RAM, buy more RAM or increase the swap-file... either way, this IS the cause!",
 'no_alloc': "Could not find the proper memory allocation provided by reference\nIf this happens often, you might want to run a 'MemCheck' to check your RAM for faulty hardware.",
 ' Dawnguard.esm': "Your missing the required DLC!",
@@ -588,7 +588,9 @@ for thisLOG in worklist:
                                 if "MODULES:" in rLine or "Modules" in rLine:
                                     # Do not print after MODULES / Loadorder
                                     break
-                                print_line(rLine.strip(),printed,"- ")
+                                if raceM in rLine:
+                                    if rLine not in printed:
+                                        print_line(rLine.strip(),printed,"- ")
                     
                     # Simple solutions, less, "sub parsing"
                     for aLine in DATA:
