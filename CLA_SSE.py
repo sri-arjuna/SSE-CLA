@@ -86,7 +86,7 @@ reasons_Chance = {
 'hdtSMP64.dll': "If this appears often, it might indicate a bad config (rare). However, it might also just indicate that there were NPCs around that were wearing hdt/SMP enabled clothing...\n\tAlso make sure you have these installed:\n\t- SMP NPC fix: https://www.nexusmods.com/skyrimspecialedition/mods/91616 ",
 'cbp.dll': "If this appears often, it might indicate a bad config (rare). However, it might also just indicate that there were NPCs around that were wearing SMP/cbp enabled clothing...\n\tMake sure to have this installed:\n\t\n\t- SMP NPC fix: https://www.nexusmods.com/skyrimspecialedition/mods/91616 ",
 'bad_alloc': "100% your issue! Free RAM, buy more RAM or increase the swap-file... either way, this IS the cause!",
-'no_alloc': "Could not find the proper memory allocation provided by reference\nIf this happens often, you might want to run a 'MemCheck' to check your RAM for faulty hardware.",
+'no_alloc': "Could not find the proper memory allocation provided by reference\n\tIf this happens often, you might want to run a 'MemCheck' to check your RAM for faulty hardware.",
 ' Dawnguard.esm': "Your missing the required DLC!",
 ' Dragonborn.esm': "Your missing the required DLC!",
 ' Hearthfire.esm': "Your missing the required DLC!",
