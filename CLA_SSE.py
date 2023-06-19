@@ -58,7 +58,7 @@ original_stdout = sys.stdout
 ### Script Variables
 ######################################
 script_name = "CLA SSE - Sephs Skyrim Experimental Crash Log Analyzer"
-script_version = "0.8"
+script_version = "0.8a"
 script_changed = "2023.06.19"
 script_title = script_name+" ("+script_version+") / "+script_changed
 ######################################
@@ -66,8 +66,9 @@ script_title = script_name+" ("+script_version+") / "+script_changed
 ### This provides list of known issues
 ### that are looked for within the logfile
 ######################################
-list_chance = ["skse64_loader.exe", "SkyrimSE.exe","skee64.dll", "Trishape", "NiNode", "mesh", "hdtSMP64.dll", "cbp.dll", "bad_alloc", "no_alloc", " Dawnguard.esm", " Dragonborn.esm", " Hearthfire.esm", "SchlongsOfSkyrim.dll", "nvwgf2umx.dll", "0x0 on thread ", "HUD", "tbbmalloc.dll" ]
+list_chance = ["skse64_loader.exe", "SkyrimSE.exe","SkyrimVR.exe","skee64.dll", "Trishape", "NiNode", "mesh", "hdtSMP64.dll", "cbp.dll", "bad_alloc", "no_alloc", " Dawnguard.esm", " Dragonborn.esm", " Hearthfire.esm", "SchlongsOfSkyrim.dll", "nvwgf2umx.dll", "0x0 on thread ", "HUD", "tbbmalloc.dll" ]
 list_chance_SkyrimAdd = ["A0D789", "67B88B", "D6DDDA", "D02C2C", "5999C7", "12FDD00", "7428B1", "D2B923", "12F5590", "132BEF", "C0EB6A", "8BDA97", "5E1F22", "C1315C", "A" ]
+list_chance_VR = ["0B7D4DA", "ViewYourselfVR.esp"]
 ######################################
 ### Dictionary
 ### Provide the item of a list to get an according response.
@@ -79,6 +80,7 @@ reasons_Chance = {
 'SkyrimSE.exe': "This file on its own is not the cause, however, we'll do further parsing...",
 'skse64_loader.exe': "At best, this entry is an indication that the culprint is a mod that is using SKSE...",
 'SkyrimSE.exe': "This file on its own is not the cause, however, we'll do further parsing...",
+'SkyrimVR.exe': "This file on its own is not the cause, however, we'll do further parsing...",
 'skee64.dll': "Some mod might be incompatible with RaceMenu, or your body.\n\tYou might want to read:\n\t -  https://www.nexusmods.com/skyrimspecialedition/articles/1372 \n\t - https://www.nexusmods.com/skyrimspecialedition/mods/44252?tab=description\n\tIf there are any further entries below this, it might be a strong indicator for its cause.\n\tAlso, please make sure to have this installed:\n\t- Race Compatibility: https://www.nexusmods.com/skyrimspecialedition/mods/2853",
 'Trishape': "Trishapes are related to meshes, specifically a mod supplying a bad mesh. ",
 'NiNode': "Ninodes are related to skeletons. It could be a wrong loadorder for skeleton based mods.\n\tIf you use HDT/SMP, make sure to load it like: Body (CBBE or BH/UNP) -> FNIS/Nemesis -> DAR -> HDT -> XP32\n\tAlso make sure that you've chosen the HDT/SMP variant of xpmsse.\n\tIf you find a mod name in the following list, try disabling it and rerurn FNIS or Nemesis.",
@@ -119,7 +121,7 @@ reasons_Engine = {
 'BSFadeNode(Name: `skeleton.nif`)': "",
 'NiCamera': "Unproven, but could indicate cause by combination of multiple lighting mods.",
 }
-# Skyrim
+# Skyrim SE
 reasons_Skyrim = {
 '12FDD00': "Probable Callstack: BSShader::unk_xxxxxxx+xx mentioned FIRST or with the HIGHEST PRIORITY\nBroken NIF\nBest apporach, disable some of your NIF mods and figure out which one is causing it by starting a new game to reproduce the error, once figured, report to the mod author so they can create a fix.\nOR, use CAO(Cathedral Assets Optimizer), but that could lead to other issues.. so... its up to you.",
 '12F5590': "Facegen issue:\nRegenerate the Face in CK, search for 'BSDynamicTriShape' as a hint, or check the  HDT-SMP log for the last NPC used. You might need to increase the log level if you havent dont so already.",
@@ -137,6 +139,13 @@ reasons_Skyrim = {
 'D2B923': "Save game issue:\nCould be related to either: Save System Overhaul(SSO) or users of the mod Alternate Start-LAL\nMaybe also related to or fixable by SkyUI SE - Flashing Savegame fix",
 'D6DDDA': "Stack: BSResource::anonymous_namespace::LooseFileStream* OR BSResource::ArchiveStream* OR BSResource::CompressedArchiveStream**\nEither you do not have a pagefile that is large enough, or there is an issue with a texture of one of your mods. ",
 }
+# Skyrim VR
+reasons_VR = {
+'0B7D4DA': "Could be related to 'View yourself VR' or PLANCK (Physical Animation and Character Kinetics)",
+'ViewYourselfVR.esp': "Has been reported to cause CTD and other bugs.\n\tIf this CTD happened when opening your inventory, try downgrading to 1.1.\n\t - https://www.nexusmods.com/skyrimspecialedition/mods/16809"
+}
+
+
 
 ######################################
 ### Functions : Tools
@@ -209,6 +218,10 @@ def s_explain_topic(topic):
         printed.append(topic)
     elif topic in list_chance_SkyrimAdd:
         txt = reasons_Skyrim[topic]
+        iCulprintSolved = iCulprintSolved + 1
+        printed.append(topic)
+    elif topic in list_chance_VR:
+        txt = reasons_VR[topic]
         iCulprintSolved = iCulprintSolved + 1
         printed.append(topic)
     else:
@@ -558,6 +571,18 @@ for thisLOG in worklist:
                         if skyrimexe_counter == 0:
                             print("\tCould not find any known issues related to SkyrimSE.exe.\n\tSkyrimSE.exe _might_ be listed for the sole reason of... you're playing this game!!")
                     
+                    if item == "SkyrimVR.exe":
+                        print("todo VR")
+                        vr_counter = 0
+                        for thisAdd in list_chance_SkyrimAdd:
+                            for vrLine in DATA:
+                                #if "SkyrimVR.exe"+thisAdd in vrLine or 
+                                if thisAdd in vrLine:
+                                    vr_counter = vr_counter + 1
+                                    print("\t-" + str_Add )#+ ":\n")
+                                    print("\t\t" + reasons_VR[thisAdd])
+                                    print_line(vrLine.strip(),printed,"\t\t\t")
+                     
                     if item == "0x0":
                         zero_lines = []
                         for zLine in DATA:
