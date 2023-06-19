@@ -387,7 +387,8 @@ for thisLOG in worklist:
                 if 6 >= len(line_Unhandled.split(" ")):
                     print("here")
                     thisMEM = subparts[0]
-                    culprint.append("0x0")
+                    # TODO, skip this for now!
+                    # culprint.append("0x0")
                     thisFile = "n/a"
                     thisFileAdd = "n/a"
                     thisAssembler = "n/a"
