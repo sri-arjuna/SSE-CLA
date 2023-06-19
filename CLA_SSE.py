@@ -571,14 +571,11 @@ for thisLOG in worklist:
                         ninode_lines = []
                         for nLine in DATA:
                             ninode_lines.append(nLine)
-                            if "NiNode" in nLine:
-                                if nLine.strip() not in printed:
-                                    print("-" * 80 )
-                                    print_line(nLine.strip()+" "+s_Count(nLine.strip(),DATA),printed,"")
-                                    print_line(ninode_lines[-6].strip()+" "+s_Count(nLine.strip(),DATA),printed,"")
-                                    print_line(ninode_lines[-5].strip()+" "+s_Count(nLine.strip(),DATA).strip(),printed,"")
-                                    #print("\n")
-                                    #
+                            if "NiNode" in nLine and not any(nLine.strip() in p for p in printed):
+                                print("-" * 80 )
+                                print_line(nLine.strip()+" "+s_Count(nLine.strip(),DATA),printed,"")
+                                print_line(ninode_lines[-6].strip()+" "+s_Count(nLine.strip(),DATA),printed,"")
+                                print_line(ninode_lines[-5].strip()+" "+s_Count(nLine.strip(),DATA).strip(),printed,"")
                                 
                     if item.lower == "mesh":
                         mesh_lines = []
@@ -666,9 +663,10 @@ for thisLOG in worklist:
             # End of parsing thisLOG
             sys.stdout = original_stdout
             i += 1
+    # Now we're done
     print(".....DONE")
-#sys.stdout.close()
-#os.system("pause")
+sys.stdout.close()
+os.system("pause")
 
 
 
@@ -705,28 +703,29 @@ for thisLOG in worklist:
 #print(f"File Version: {major}.{minor}")
 
 
-import configparser
+### Handle config file.... later use:
+#import configparser
 # Create a ConfigParser object
-config = configparser.ConfigParser()
-config_file = "CLASSE.ini"
-config_section = "CLA"
-config_option_stagedir = "stagedir"
+#config = configparser.ConfigParser()
+#config_file = "CLASSE.ini"
+#config_section = "CLA"
+#config_option_stagedir = "stagedir"
 
 # Check if file exists
-if not os.path.isfile(config_file):
-    p_title("First Time Setup")
-    print("Please enter the stagedir of your mod manager (where the extracted zip files are).")
-    print("You can either type, or copy then right-click to paste.")
-    stagedir = input("Path: ")
-    config.add_section(config_section)
-    config.set(config_section,config_option_stagedir,stagedir)
-    with open(config_file,'w') as configfile:
-        config.write(configfile)
+#if not os.path.isfile(config_file):
+#    p_title("First Time Setup")
+#    print("Please enter the stagedir of your mod manager (where the extracted zip files are).")
+#    print("You can either type, or copy then right-click to paste.")
+#    stagedir = input("Path: ")
+#    config.add_section(config_section)
+#    config.set(config_section,config_option_stagedir,stagedir)
+#    with open(config_file,'w') as configfile:
+#        config.write(configfile)
 
 # Read the INI file
-config.read(config_file)
-stagedir = config.get(config_section, config_option_stagedir)
-print(f"stagedir: {stagedir}")
+#config.read(config_file)
+#stagedir = config.get(config_section, config_option_stagedir)
+#print(f"stagedir: {stagedir}")
 
 #sys.stdout.close()
 #os.system("pause")
