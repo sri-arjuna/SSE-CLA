@@ -383,7 +383,9 @@ for thisLOG in worklist:
                 line_Unhandled = str(DATA[3].strip())
                 parts = line_Unhandled.split(" at ")
                 subparts = parts[1].split(" ")
-                if "0x000000000000" == subparts[0]:
+                #if "0x000000000000" == subparts[0]:
+                if 6 >= len(line_Unhandled.split(" ")):
+                    print("here")
                     thisMEM = subparts[0]
                     culprint.append("0x0")
                     thisFile = "n/a"
@@ -401,7 +403,7 @@ for thisLOG in worklist:
                             thisAssembler = parts[1].split(" ")[1]
                             #continue
                         else:
-                            thisAssembler = "n/a"
+                            thisAssembler = "n/a:: "+parts[0]
                     else:
                         thisAssembler = "n/a"
                     
