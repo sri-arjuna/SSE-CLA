@@ -555,7 +555,7 @@ for thisLOG in worklist:
                                     print("\t\t" + reasons_Skyrim[thisAdd])
                                     print_line(aLine.strip(),printed,"\t\t\t")
                         if skyrimexe_counter == 0:
-                            print("\tCould not find any known issues related to SkyrimSE.exe.\n\tSkyrimSE.exe might be listed for the sole reason of... you're playing this game!!")
+                            print("\tCould not find any known issues related to SkyrimSE.exe.\n\tSkyrimSE.exe _might_ be listed for the sole reason of... you're playing this game!!")
                     
                     if item == "0x0":
                         zero_lines = []
