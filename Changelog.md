@@ -8,7 +8,7 @@ Until then, its only a log of what I've changed to prepare update info on Nexus.
 
 ----
 
-# 2023.06.20 - 0.8
+# 2023.06.19 - 0.8
 - Improved: NiNode & Mesh output, prints fewer lines now (provides a counter for their respective occourences)
 - Improved texts for: RaceMenu, NiNode, Mesh, hdtsmp64.dll, cbp.dll
 - Added: Message if no SkyrimSE.exe issues were found
