@@ -539,6 +539,7 @@ for thisLOG in worklist:
                     print(s_explain_topic(item))
                     # Check for more details:
                     if item == "SkyrimSE.exe":
+                        skyrimexe_counter = 0
                         for thisAdd in list_chance_SkyrimAdd:
                             str_Add = item+"+"+thisAdd
                             for aLine in DATA:
@@ -549,9 +550,12 @@ for thisLOG in worklist:
                                     # Do not print after MODULES / Loadorder
                                     break
                                 if str_Add in aLine:
+                                    skyrimexe_counter = skyrimexe_counter + 1
                                     print("\t-" + str_Add )#+ ":\n")
                                     print("\t\t" + reasons_Skyrim[thisAdd])
                                     print_line(aLine.strip(),printed,"\t\t\t")
+                        if skyrimexe_counter == 0:
+                            print("\tCould not find any known issues related to SkyrimSE.exe.\n\tSkyrimSE.exe might be listed for the sole reason of... you're playing this game!!")
                     
                     if item == "0x0":
                         zero_lines = []
