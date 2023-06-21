@@ -67,7 +67,7 @@ script_title = script_name+" ("+script_version+") / "+script_changed
 ### that are looked for within the logfile
 ######################################
 list_chance = ["skse64_loader.exe", "SkyrimSE.exe","SkyrimVR.exe","skee64.dll", "Trishape", "NiNode", "mesh", "hdtSMP64.dll", "cbp.dll", "bad_alloc", "no_alloc", " Dawnguard.esm", " Dragonborn.esm", " Hearthfire.esm", "SchlongsOfSkyrim.dll", "nvwgf2umx.dll", "0x0 on thread ", "HUD", "tbbmalloc.dll" ]
-list_chance_SkyrimAdd = ["A0D789", "67B88B", "D6DDDA", "D02C2C", "5999C7", "12FDD00", "7428B1", "D2B923", "12F5590", "132BEF", "C0EB6A", "8BDA97", "5E1F22", "C1315C", "A" ]
+list_chance_SkyrimAdd = ["A0D789", "67B88B", "D6DDDA", "D02C2C", "0CB748E", "5999C7", "12FDD00", "7428B1", "D2B923", "12F5590", "132BEF", "C0EB6A", "8BDA97", "5E1F22", "C1315C", "A" ]
 list_chance_VR = ["0B7D4DA", "ViewYourselfVR.esp"]
 ######################################
 ### Dictionary
@@ -123,6 +123,7 @@ reasons_Engine = {
 }
 # Skyrim SE
 reasons_Skyrim = {
+'0CB748E': "Have you closed Skyrim 'from the outside' aka with Taskmanager? -- Verification appreciated.",
 '12FDD00': "Probable Callstack: BSShader::unk_xxxxxxx+xx mentioned FIRST or with the HIGHEST PRIORITY\nBroken NIF\nBest apporach, disable some of your NIF mods and figure out which one is causing it by starting a new game to reproduce the error, once figured, report to the mod author so they can create a fix.\nOR, use CAO(Cathedral Assets Optimizer), but that could lead to other issues.. so... its up to you.",
 '12F5590': "Facegen issue:\nRegenerate the Face in CK, search for 'BSDynamicTriShape' as a hint, or check the  HDT-SMP log for the last NPC used. You might need to increase the log level if you havent dont so already.",
 '132BEF': "Head Mesh Issue:\nCheck the HDT-SMP log where the last NPC most probably could be the issue.\nIf you use 'Ordinary Women', make sure that mod gets loaded last among mods that change body/heads.",
@@ -408,7 +409,7 @@ for thisLOG in worklist:
                 else:
                     thisMEM = subparts[0]
                     thisFile = subparts[1].split('+')[0]
-                    thisFileAdd = subparts[1].split("+")[1][:6]
+                    thisFileAdd = subparts[1].split("+")[1][:7]
                     if len(parts) >= 1:
                         if "\t" in parts[1]:
                             thisAssembler = parts[1].split("\t")[1]
