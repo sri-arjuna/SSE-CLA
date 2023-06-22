@@ -231,7 +231,8 @@ def s_explain_topic(topic):
 def p_solve_GameVer(g_ver, s_ver):
     # SKSE version might be empty...
     if s_ver is None or s_ver == "":
-        return "Error: Script Extender version not found.\n"
+        missing_SKSE = "Error: Script Extender version not found.\n\nPlease make sure you have downloaded and installed SKSE properly to your root game directory (where the game exe is.\nLaunch the game with skse_launcher.exe, not with SkyrimSE.exe.\n\t- https://skse.silverlock.org/ (Original: recomended)\n\t- https://www.nexusmods.com/skyrimspecialedition/mods/30379 (Wrapper: preferable for Vortex Collections)"
+        return missing_SKSE
     # Basic versions
     GameVer_Result = ""
     GameVer_Result += "Game Version:   \t" + str(g_ver) + "\n"
