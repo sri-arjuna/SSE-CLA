@@ -8,6 +8,20 @@ Until then, its only a log of what I've changed to prepare update info on Nexus.
 
 ----
 
+# 2023.06.22 - 0.9
+- Removed: lists that also had an according dictionary
+- Removed: DLC.esm entries, since I cant disable the DLC from the steam-property 'page' (SSE)
+- Improved: Handler for missing SKSE
+- Improved: tbbmalloc text, covering SrtCrashFix64.dll now as well.
+- Improved: HUD message display (alignment)
+- Added: VR, created basic framework
+- Added: probably "outside quit" ADR for SkyrimSE
+- Added: DynamicCollisionAdjustment
+- Added: Modified by (should help to figure wrong load orders)
+- Added: Lanterns (LoS II)
+- Added: Chance to retrieve FSMP version
+
+
 # 2023.06.19 - 0.8
 - Improved: NiNode & Mesh output, prints fewer lines now (provides a counter for their respective occourences)
 - Improved texts for: RaceMenu, NiNode, Mesh, hdtsmp64.dll, cbp.dll
