@@ -58,8 +58,8 @@ original_stdout = sys.stdout
 ### Script Variables
 ######################################
 script_name = "CLA SSE - Sephs Skyrim Experimental Crash Log Analyzer"
-script_version = "0.8a"
-script_changed = "2023.06.19"
+script_version = "0.9"
+script_changed = "2023.06.22"
 script_title = script_name+" ("+script_version+") / "+script_changed
 ######################################
 ### Dictionary
