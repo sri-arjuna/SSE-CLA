@@ -89,6 +89,7 @@ reasons_Chance = {
 '0x0 on thread ': "This actualy is an engine issue of Skyrim, but rare.\nMost often caused by 'Face lighting' / 'Face shadow' issues. Best chance to avoid: Make sure have the newest SSE Engine Fix!\nNow parsing some keywords that might (or not) give some additional indiciation.",
 'HUD': "There seems to be an issue with your HUD / UI.\nNordic UI using the TDM patch might be the cause (at the very least in combination with Skyrim Souls).\nIf that is not what you are using, please figure out a fix and send me your crashlog and solution.",
 'tbbmalloc.dll': "Threading Building Blocks Memory Allocator\n\tThis is either part of:\n\t- the CreationKit Fixes: https://www.nexusmods.com/skyrimspecialedition/mods/20061 \n\t- the Engine Fixes (part 2): https://www.nexusmods.com/skyrimspecialedition/mods/17230 \n\n\tEither way, make sure to have the 'latest' version variant for your Skyrim edition.\n\tHowever, this probably is not the cause, but the causing mod relies on excessive memory handling.",
+'DynamicCollisionAdjustment.dll': "General statement, this one is incompatible with the PLANCK for VR.\n\tWhile the name is tempting and promising, bug reports since october 2022 seems to be left untouched by the mod auther.\n\tPlease check your issue with the bugs listed there:\n\t- https://www.nexusmods.com/skyrimspecialedition/mods/76783?tab=bugs\n\n\t",
 }
 # Dialogue - no detailed description, summarizing in if block
 reasons_Dialog = {
