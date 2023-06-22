@@ -571,7 +571,7 @@ for thisLOG in worklist:
                     
                     if item == "hdtSMP64.dll":
                         for line in DATA:
-                            if "src\skse64\hdtSMP64" in line:
+                            if "hdtSMP64\Hooks" in line:
                                 pattern = r"skse64_(\d+)_(\d+)_(\d+)"
                                 match = re.search(pattern, line)
                                 
