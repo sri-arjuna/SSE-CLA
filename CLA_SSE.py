@@ -138,7 +138,7 @@ reasons_Skyrim = {
 # Skyrim VR
 reasons_VR = {
 '0B7D4DA': "Could be related to 'View yourself VR' or PLANCK (Physical Animation and Character Kinetics)",
-'ViewYourselfVR.esp': "Has been reported to cause CTD and other bugs.\n\tIf this CTD happened when opening your inventory, try downgrading to 1.1.\n\t - https://www.nexusmods.com/skyrimspecialedition/mods/16809"
+'ViewYourselfVR.esp': "Has been reported to cause CTD and other bugs.\n\tIf this CTD happened when opening your inventory, try downgrading to 1.1.\n\t - https://www.nexusmods.com/skyrimspecialedition/mods/16809",
 }
 
 
@@ -601,10 +601,10 @@ for thisLOG in worklist:
                     if item == "SkyrimVR.exe":
                         print("todo VR")
                         vr_counter = 0
-                        for thisAdd in reasons_Skyrim:
+                        for thisAdd in reasons_VR:
                             for vrLine in DATA:
                                 #if "SkyrimVR.exe"+thisAdd in vrLine or 
-                                if thisAdd in vrLine:
+                                if thisAdd in vrLine and not any(vrLine.strip() in p for p in printed):
                                     vr_counter = vr_counter + 1
                                     print("\t-" + str_Add )#+ ":\n")
                                     print("\t\t" + reasons_VR[thisAdd])
