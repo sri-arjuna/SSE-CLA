@@ -255,7 +255,8 @@ def p_solve_GameVer(g_ver, s_ver):
         GameVer_Result += "\nWarning: Game and Script Extender versions may not be compatible.\n"
     # Return string to print
     return GameVer_Result + "\n"
-        
+      
+
 # Print solution to RAM related issues
 def p_solve_RAM(ram_use, ram_avail, ram_free):
     str_result = ""
@@ -568,6 +569,35 @@ for thisLOG in worklist:
                         if skyrimexe_counter == 0:
                             print("\tCould not find any known issues related to SkyrimSE.exe.\n\tSkyrimSE.exe _might_ be listed for the sole reason of... you're playing this game!!")
                     
+                    if item == "hdtSMP64.dll":
+                        for line in DATA:
+                            if "src\skse64\hdtSMP64" in line:
+                                pattern = r"skse64_(\d+)_(\d+)_(\d+)"
+                                match = re.search(pattern, line)
+                                
+                                if match:
+                                    hMajor = int(match.group(1))
+                                    hMinor = int(match.group(2))
+                                    hBuild = int(match.group(3))
+                                    
+                                    #print("hMajor:", hMajor)
+                                    #print("hMinor:", hMinor)
+                                    #print("hBuild:", hBuild)
+                                    
+                                    #print("SKSE: ",ver_SKSE)
+                                    SKSE_Major = ver_SKSE.split("_")[1]
+                                    SKSE_Minor = ver_SKSE.split("_")[2]
+                                    SKSE_Build = ver_SKSE.split("_")[3].split(".")[0]
+                                    
+                                    print("\tYou are using FSMP version: " + str(hMajor) + "." + str(hMinor) + "." + str(hBuild))
+                                    print("\tPlease ensure that this is compatible with your SKSE version: " + str(SKSE_Major) + "." + str(SKSE_Minor) + "." + str(SKSE_Build))
+
+                                else:
+                                    print("Version number not found in the string.")
+                            #else:
+                            #    print("Version number not found in the string.")
+                                
+                            
                     if item == "SkyrimVR.exe":
                         print("todo VR")
                         vr_counter = 0
