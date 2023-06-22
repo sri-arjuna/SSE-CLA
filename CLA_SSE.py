@@ -62,14 +62,6 @@ script_version = "0.8a"
 script_changed = "2023.06.19"
 script_title = script_name+" ("+script_version+") / "+script_changed
 ######################################
-### Lists
-### This provides list of known issues
-### that are looked for within the logfile
-######################################
-list_chance = ["skse64_loader.exe", "SkyrimSE.exe","SkyrimVR.exe","skee64.dll", "Trishape", "NiNode", "mesh", "hdtSMP64.dll", "cbp.dll", "bad_alloc", "no_alloc", " Dawnguard.esm", " Dragonborn.esm", " Hearthfire.esm", "SchlongsOfSkyrim.dll", "nvwgf2umx.dll", "0x0 on thread ", "HUD", "tbbmalloc.dll" ]
-list_chance_SkyrimAdd = ["A0D789", "67B88B", "D6DDDA", "D02C2C", "0CB748E", "5999C7", "12FDD00", "7428B1", "D2B923", "12F5590", "132BEF", "C0EB6A", "8BDA97", "5E1F22", "C1315C", "A" ]
-list_chance_VR = ["0B7D4DA", "ViewYourselfVR.esp"]
-######################################
 ### Dictionary
 ### Provide the item of a list to get an according response.
 ######################################
@@ -213,15 +205,15 @@ def s_explain_topic(topic):
     txt = ""
     global iCulprintSolved
     global printed
-    if topic in list_chance:
+    if topic in reasons_Chance:
         txt = reasons_Chance[topic]
         iCulprintSolved = iCulprintSolved + 1
         printed.append(topic)
-    elif topic in list_chance_SkyrimAdd:
+    elif topic in reasons_Skyrim:
         txt = reasons_Skyrim[topic]
         iCulprintSolved = iCulprintSolved + 1
         printed.append(topic)
-    elif topic in list_chance_VR:
+    elif topic in reasons_VR:
         txt = reasons_VR[topic]
         iCulprintSolved = iCulprintSolved + 1
         printed.append(topic)
@@ -516,7 +508,7 @@ for thisLOG in worklist:
                     # Stop parsing (Load Order) to prevent false-positives
                     break
                 # for list chance
-                for low in list_chance:
+                for low in reasons_Chance:
                     if low in line:
                         culprint = list_add(low,culprint)
                 
@@ -549,13 +541,13 @@ for thisLOG in worklist:
                 # Print 'title' for current item
                 print("\n"+item+" "+s_Count(item,DATA))
                 # Reasons
-                if item in list_chance:
+                if item in reasons_Chance:
                     # Show basic reason
                     print(s_explain_topic(item))
                     # Check for more details:
                     if item == "SkyrimSE.exe":
                         skyrimexe_counter = 0
-                        for thisAdd in list_chance_SkyrimAdd:
+                        for thisAdd in reasons_Skyrim:
                             str_Add = item+"+"+thisAdd
                             for aLine in DATA:
                                 if "Unhandled exception" in line:
@@ -575,7 +567,7 @@ for thisLOG in worklist:
                     if item == "SkyrimVR.exe":
                         print("todo VR")
                         vr_counter = 0
-                        for thisAdd in list_chance_SkyrimAdd:
+                        for thisAdd in reasons_Skyrim:
                             for vrLine in DATA:
                                 #if "SkyrimVR.exe"+thisAdd in vrLine or 
                                 if thisAdd in vrLine:
