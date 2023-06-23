@@ -321,12 +321,16 @@ https://learn.microsoft.com/en-us/sharepoint/technical-reference/the-paging-file
 ######################################
 ### Generic User Info
 ######################################
+total_issues = 0
+total_issues = len(reasons_Chance) + len(reasons_Skyrim) + len(reasons_Engine) + len(reasons_Dialog) + len(reasons_Racemenu)
 print("=====================================================================================")
 print("THE SCRIPT MUST BE IN THE SAME FOLDER AS YOUR CRASH LOGS, WHICH MUST BE 'crash-*.log'")
 print("Usualy this is:          %userprofile%\Documents\My Games\Skyrim Special Edition\SKSE")
 print("-------------------------------------------------------------------------------------")
 print("If you get an error 'File not found', make sure that have applied the exception for")
 print("this script to allow it to have read/write access within this folder.")
+print("=====================================================================================")
+print("Covered issues/topics on Skyrim: " , total_issues , "\t\t\tSkyrim VR specific issues:" , len(reasons_VR))
 print("=====================================================================================")
 ######################################
 ### main()
