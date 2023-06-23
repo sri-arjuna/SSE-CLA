@@ -613,7 +613,7 @@ for thisLOG in worklist:
                                     # Lets figure out proper FOMOD selections:
                                     info = cpuinfo.get_cpu_info()
                                     ## (CUDA might return false eventhough your GPU supports it, you might need to install: https://developer.nvidia.com/cuda-toolkit for a proper result):\n\t
-                                    print("\n\tPossible FOMOD settings for installation\n\tYou might want to try different AVX options, because eventhough supported, thy might cause shutter/'lag' in populated areas...\n\tCPU:")
+                                    print("\n\tPossible FOMOD settings for installation\n\tYou might want to try different AVX options, because eventhough supported, they might cause shutter/'lag' in populated areas...\n\tCPU:")
                                     avx_available = 'avx' in info['flags']
                                     print("\t\tAVX:", avx_available)
                                     avx2_available = 'avx2' in info['flags']
