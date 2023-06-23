@@ -512,8 +512,13 @@ for thisLOG in worklist:
             
             # Applies to / Works for all loggers
             # or variables have been prepared.
-            
-            
+            pat_mods = r"Light: (\d+)." #	Regular: (\d+)	Total: (\d+)" #_(\d+)_(\d+)"
+            for line in DATA:
+                match = re.search(pat_mods, line)
+                if match:
+                    p_section("Mod Count:")
+                    print(line)
+                    
             # Start actual parsing...
             for line in DATA:
                 if "MODULES:" in line:
