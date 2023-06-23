@@ -8,6 +8,17 @@ Until then, its only a log of what I've changed to prepare update info on Nexus.
 
 ----
 
+# 2023.06.22 - 0.9b
+- Added: Covered topics count
+- Fix: Print faster hdtsmp version only once
+- Added: AVX detection (skiped CUDA detection, because of false-positives and exe would be over 200mb)
+- Improved: Basic version check recomendations for FSMP
+- Added: CompressedArchiveStream (Corrupt Texture)
+- Added: Mod Count
+
+# 2023.06.22 - 0.9a
+- Hotfix: VR crashlog can be read again.
+
 # 2023.06.22 - 0.9
 - Removed: lists that also had an according dictionary
 - Removed: DLC.esm entries, since I cant disable the DLC from the steam-property 'page' (SSE)
