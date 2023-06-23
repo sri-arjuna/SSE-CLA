@@ -80,7 +80,7 @@ reasons_Chance = {
 'NiNode': "Ninodes are related to skeletons. It could be a wrong loadorder for skeleton based mods.\n\tIf you use HDT/SMP, make sure to load it like: Body (CBBE or BH/UNP) -> FNIS/Nemesis -> DAR -> HDT -> XP32\n\tAlso make sure that you've chosen the HDT/SMP variant of xpmsse.\n\tIf you find a mod name in the following list, try disabling it and rerurn FNIS or Nemesis.",
 'mesh': "Some generic mesh issue, yet to be defined...\n\tIf there are any 'indent' lines, they might give a more precice of what _could_ be the reason.\n\t-- This is beta detection, and might not be accurate --\n\t-- This is showing previous lines 1 & 2, and is considered WIP --",
 'hdtSMP64.dll': "If this appears often, it might indicate a bad config (rare). However, it might also just indicate that there were NPCs around that were wearing hdt/SMP enabled clothing...\n\tPlease increase the log level for hdtsmp64 (if you have not done so yet) and check its content.\n\tMake sure to have Faster HDT-SMP that suits your Skyrim Version:\n\t- https://www.nexusmods.com/skyrimspecialedition/mods/57339 \n\tAlso make sure you have these installed:\n\t- SMP NPC fix: https://www.nexusmods.com/skyrimspecialedition/mods/91616 ",
-'cbp.dll': "If this appears often, it might indicate a bad config (rare). However, it might also just indicate that there were NPCs around that were wearing SMP/cbp enabled clothing...\n\tMake sure to have this installed:\n\t\n\t- SMP NPC fix: https://www.nexusmods.com/skyrimspecialedition/mods/91616 ",
+'cbp.dll': "If this appears often, it might indicate a bad config (rare). \n\tHowever, it might also just indicate that there were NPCs around that were wearing SMP/cbp enabled clothing...\n\tMake sure to have this installed:\n\t\n\t- SMP NPC fix: https://www.nexusmods.com/skyrimspecialedition/mods/91616 ",
 'bad_alloc': "100% your issue! Free RAM, buy more RAM or increase the swap-file (pagefile)... either way, this IS the cause!\n\tTry this:\n\t\t- https://learn.microsoft.com/en-us/sharepoint/technical-reference/the-paging-file-size-should-exceed-the-amount-of-physical-ram-in-the-system",
 'no_alloc': "Could not find the proper memory allocation provided by reference\n\tIf this happens often, you might want to run a 'MemCheck' to check your RAM for faulty hardware.",
 #' Dawnguard.esm': "Your missing the required DLC!\n\tThis might be a false-positive, or not... Needs further investigation!",
@@ -607,11 +607,11 @@ for thisLOG in worklist:
                                     
                                     # Lets figure out proper FOMOD selections:
                                     info = cpuinfo.get_cpu_info()
-                                    print("\n\tPossible FOMOD settings for installation\n\t(CUDA might return false eventhough your GPU supports it, you might need to install: https://developer.nvidia.com/cuda-toolkit for a proper result):\n\tCPU:")
+                                    print("\n\tPossible FOMOD settings for installation\n\t(CUDA might return false eventhough your GPU supports it, you might need to install: https://developer.nvidia.com/cuda-toolkit for a proper result):\n\tYou might want to try different AVX options, because eventhough supported, thy might cause shutter/'lag' in populated areas...\n\tCPU:")
                                     avx_available = 'avx' in info['flags']
                                     print("\t\tAVX:", avx_available)
                                     avx2_available = 'avx2' in info['flags']
-                                    print("\t\tAVX2:", avx2_available , "\t(if true, this one is recomended)")
+                                    print("\t\tAVX2:", avx2_available)
                                     avx512_available = 'avx512' in info['flags']
                                     print("\t\tAVX-512:", avx512_available)
                                     
@@ -651,8 +651,11 @@ for thisLOG in worklist:
                             if "NiNode" in nLine and not any(nLine.strip() in p for p in printed):
                                 print("-" * 80 )
                                 print_line(nLine.strip()+" "+s_Count(nLine.strip(),DATA),printed,"")
+                                print_line(ninode_lines[-10].strip()+" "+s_Count(nLine.strip(),DATA).strip(),printed,"")
+                                print_line(ninode_lines[-8].strip()+" "+s_Count(nLine.strip(),DATA).strip(),printed,"")
                                 print_line(ninode_lines[-6].strip()+" "+s_Count(nLine.strip(),DATA),printed,"")
                                 print_line(ninode_lines[-5].strip()+" "+s_Count(nLine.strip(),DATA).strip(),printed,"")
+                                
                     
                     if item.lower == "mesh":
                         mesh_lines = []
@@ -705,8 +708,8 @@ for thisLOG in worklist:
                                 ninode_lines.append(nLine)
                                 if "Modified by" in nLine and not any(nLine.strip() in p for p in printed):
                                     print("-" * 80 )
-                                    print_line(nLine.strip()+" "+s_Count(nLine.strip(),DATA),printed,"")
-                                    print_line(ninode_lines[-1].strip()+" "+s_Count(nLine.strip(),DATA),printed,"")
+                                    print_line(nLine.strip()+" "+s_Count(nLine.strip(),DATA),printed,"\t")
+                                    print_line(ninode_lines[-1].strip()+" "+s_Count(nLine.strip(),DATA),printed,"\t")
                                     #print_line(ninode_lines[-5].strip()+" "+s_Count(nLine.strip(),DATA).strip(),printed,"")
                         
                         if item in aLine and not any(item in p for p in printed):
