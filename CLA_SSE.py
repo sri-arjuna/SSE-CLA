@@ -94,6 +94,7 @@ reasons_Chance = {
 'DynamicCollisionAdjustment.dll': "General statement, this one is incompatible with the PLANCK for VR.\n\tWhile the name is tempting and promising, bug reports since october 2022 seems to be left untouched by the mod author.\n\tPlease check your issue with the bugs listed there:\n\t- https://www.nexusmods.com/skyrimspecialedition/mods/76783?tab=bugs\n\n\t",
 'Modified by': "These are only listed as additional hints for probably debugging. If you have no other indicators, this might be worth investigating. \n\tIf you do have other indicators, try to solve those first!\n\tThat said, it is common to have 2-4 mods listed in a row, however, \n\tlists of 5 or more _might_ cause issuses by the sheer amount of what possibly could be overwritten several times.",
 'lanterns\lantern.dds': "If you are using: 'Lanterns of Skyrim II' and 'JK Skyrim' do not install the 'No Lights Patch' since LoS II patch is meant to be used without it.",
+'CompressedArchiveStream': "Indicates an issue with a corrupted texture.\n\tIf the results show a DLC, it is probable that another mod overwrites that texture.\n\tIf you do not get a specific texture name, you might want to extract the according '*.BSA' of any found '*.esp' or '*.esm', that is not a DLC.esm.\n\tHowever, best practice would probably be to disable texture mods that change locations you crashed in."
 }
 # Dialogue - no detailed description, summarizing in if block
 reasons_Dialog = {
@@ -617,12 +618,9 @@ for thisLOG in worklist:
                                     print("\tGPU:")
                                     cuda_available = torch.cuda.is_available()
                                     print("\t\tCUDA:", cuda_available)
-                                    
-                                    
 
                                 else:
                                     print("\tVersion number not found in the string.")
-                                
                             
                     if item == "SkyrimVR.exe":
                         print("todo VR")
@@ -677,6 +675,12 @@ for thisLOG in worklist:
                                     if rLine not in printed:
                                         print_line(rLine.strip(),printed,"- ")
                     
+                    if item == "CompressedArchiveStream":
+                        printed = list_add("CompressedArchiveStream", printed)
+                        for esp_Line in DATA:
+                            if ".esp" in esp_Line or ".esm" in esp_Line or ".dds" in esp_Line and not any(esp_Line.strip() in p for p in printed):
+                                print_line(esp_Line.strip()+" "+s_Count(esp_Line.strip(),DATA),printed,"\t")                            
+                            
                     # Simple solutions, less, "sub parsing"
                     for aLine in DATA:
                         if "Unhandled exception" in line:
@@ -704,8 +708,8 @@ for thisLOG in worklist:
                                     print_line(nLine.strip()+" "+s_Count(nLine.strip(),DATA),printed,"")
                                     print_line(ninode_lines[-1].strip()+" "+s_Count(nLine.strip(),DATA),printed,"")
                                     #print_line(ninode_lines[-5].strip()+" "+s_Count(nLine.strip(),DATA).strip(),printed,"")
-                                
-                        if item in aLine:
+                        
+                        if item in aLine and not any(item in p for p in printed):
                             # This should avoid double prints
                             if item in printed:
                                 continue
