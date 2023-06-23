@@ -590,8 +590,16 @@ for thisLOG in worklist:
                                     SKSE_Minor = ver_SKSE.split("_")[2]
                                     SKSE_Build = ver_SKSE.split("_")[3].split(".")[0]
                                     
-                                    print("\tYou are using FSMP version: " + str(hMajor) + "." + str(hMinor) + "." + str(hBuild))
+                                    s_hVersion = str(hMajor) + "." + str(hMinor) + "." + str(hBuild)
+                                    print("\tYou are using FSMP version: " + s_hVersion)
                                     print("\tPlease ensure that this is compatible with your SKSE version: " + str(SKSE_Major) + "." + str(SKSE_Minor) + "." + str(SKSE_Build))
+                                    
+                                    # Lets print a recomended version ??
+                                    #2.0.2 =   1.6.353,  1.6.640 , 1.6.659
+                                    if s_hVersion == "2.0.2" or s_hVersion == "2.2.2":
+                                        print("\n\tThis one is marked as BETA.\n\tYou might want to downgrade to one of the RC: 1.50.7-rc1 or 1.50.9-rc1\n\tRelease Candidates (rc) are usualy more stable than a beta.")
+                                    if "1.5.97" in ver_SKSE:
+                                        print("\n\tYou should be using the FSMP version that is marked as: 1.18\n\tBecause you are using a Skyrim version that is marked as Legacy.")
                                     
                                     # Its printed once, now add it to: printed
                                     printed = list_add("hdtSMP64\\Hooks", printed)
@@ -610,20 +618,10 @@ for thisLOG in worklist:
                                     cuda_available = torch.cuda.is_available()
                                     print("\t\tCUDA:", cuda_available)
                                     
-                                    # Lets print a recomended version ??
-                                    #2.0.2 =   1.6.353,  1.6.640 , 1.6.659
                                     
-                                    
-                                    
-                                    # Check if CUDA is available
-                                    
-
-                                    # Check if AVX is available
-                                    #avx_available = torch.backends.quantized.supports(torch.device("cpu"))  # AVX is usually supported on CPUs
-                                    #print("AVX available:", avx_available)
 
                                 else:
-                                    print("Version number not found in the string.")
+                                    print("\tVersion number not found in the string.")
                                 
                             
                     if item == "SkyrimVR.exe":
