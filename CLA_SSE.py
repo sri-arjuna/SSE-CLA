@@ -60,8 +60,8 @@ original_stdout = sys.stdout
 ### Script Variables
 ######################################
 script_name = "CLA SSE - Sephs Skyrim Experimental Crash Log Analyzer"
-script_version = "0.9"
-script_changed = "2023.06.22"
+script_version = "0.9b"
+script_changed = "2023.06.23"
 script_title = script_name+" ("+script_version+") / "+script_changed
 ######################################
 ### Dictionary
@@ -74,7 +74,7 @@ reasons_Chance = {
 'SkyrimSE.exe': "This file on its own is not the cause, however, we'll do further parsing...",
 'skse64_loader.exe': "At best, this entry is an indication that the culprint is a mod that is using SKSE...",
 'SkyrimSE.exe': "This file on its own is not the cause, however, we'll do further parsing...",
-'SkyrimVR.exe': "This file on its own is not the cause, however, we'll do further parsing...",
+'SkyrimVR.exe': "This file on its own is not the cause, however, we'll do further parsing...\n\tBe aware, VR has a lot fewer players, so much less issues are covered...",
 'skee64.dll': "Some mod might be incompatible with RaceMenu, or your body.\n\tYou might want to read:\n\t -  https://www.nexusmods.com/skyrimspecialedition/articles/1372 \n\t - https://www.nexusmods.com/skyrimspecialedition/mods/44252?tab=description\n\tIf there are any further entries below this, it might be a strong indicator for its cause.\n\tAlso, please make sure to have this installed:\n\t- Race Compatibility: https://www.nexusmods.com/skyrimspecialedition/mods/2853",
 'Trishape': "Trishapes are related to meshes, specifically a mod supplying a bad mesh. ",
 'NiNode': "Ninodes are related to skeletons. It could be a wrong loadorder for skeleton based mods.\n\tIf you use HDT/SMP, make sure to load it like: Body (CBBE or BH/UNP) -> FNIS/Nemesis -> DAR -> HDT -> XP32\n\tAlso make sure that you've chosen the HDT/SMP variant of xpmsse.\n\tIf you find a mod name in the following list, try disabling it and rerurn FNIS or Nemesis.",
