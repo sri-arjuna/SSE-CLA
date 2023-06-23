@@ -575,7 +575,7 @@ for thisLOG in worklist:
                     
                     if item == "hdtSMP64.dll":
                         for line in DATA:
-                            if "hdtSMP64\Hooks" in line:
+                            if "hdtSMP64\Hooks" in line and not any("hdtSMP64\Hooks" == p.strip() for p in printed):
                                 pattern = r"skse64_(\d+)_(\d+)_(\d+)"
                                 match = re.search(pattern, line)
                                 
@@ -584,22 +584,18 @@ for thisLOG in worklist:
                                     hMinor = int(match.group(2))
                                     hBuild = int(match.group(3))
                                     
-                                    #print("hMajor:", hMajor)
-                                    #print("hMinor:", hMinor)
-                                    #print("hBuild:", hBuild)
-                                    
-                                    #print("SKSE: ",ver_SKSE)
                                     SKSE_Major = ver_SKSE.split("_")[1]
                                     SKSE_Minor = ver_SKSE.split("_")[2]
                                     SKSE_Build = ver_SKSE.split("_")[3].split(".")[0]
                                     
                                     print("\tYou are using FSMP version: " + str(hMajor) + "." + str(hMinor) + "." + str(hBuild))
                                     print("\tPlease ensure that this is compatible with your SKSE version: " + str(SKSE_Major) + "." + str(SKSE_Minor) + "." + str(SKSE_Build))
+                                    
+                                    #Its printed once, now add it to: printed
+                                    printed = list_add("hdtSMP64\\Hooks", printed)
 
                                 else:
                                     print("Version number not found in the string.")
-                            #else:
-                            #    print("Version number not found in the string.")
                                 
                             
                     if item == "SkyrimVR.exe":
