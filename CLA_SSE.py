@@ -40,6 +40,8 @@ import os
 import re
 import random
 import logging
+import torch    # GPU
+import cpuinfo  # CPU
 ######################################
 ### Initialize Global Variables 
 ######################################
@@ -591,8 +593,34 @@ for thisLOG in worklist:
                                     print("\tYou are using FSMP version: " + str(hMajor) + "." + str(hMinor) + "." + str(hBuild))
                                     print("\tPlease ensure that this is compatible with your SKSE version: " + str(SKSE_Major) + "." + str(SKSE_Minor) + "." + str(SKSE_Build))
                                     
-                                    #Its printed once, now add it to: printed
+                                    # Its printed once, now add it to: printed
                                     printed = list_add("hdtSMP64\\Hooks", printed)
+                                    
+                                    # Lets figure out proper FOMOD selections:
+                                    info = cpuinfo.get_cpu_info()
+                                    print("\n\tPossible FOMOD settings for installation\n\t(CUDA might return false eventhough your GPU supports it, you might need to install: https://developer.nvidia.com/cuda-toolkit for a proper result):\n\tCPU:")
+                                    avx_available = 'avx' in info['flags']
+                                    print("\t\tAVX:", avx_available)
+                                    avx2_available = 'avx2' in info['flags']
+                                    print("\t\tAVX2:", avx2_available , "\t(if true, this one is recomended)")
+                                    avx512_available = 'avx512' in info['flags']
+                                    print("\t\tAVX-512:", avx512_available)
+                                    
+                                    print("\tGPU:")
+                                    cuda_available = torch.cuda.is_available()
+                                    print("\t\tCUDA:", cuda_available)
+                                    
+                                    # Lets print a recomended version ??
+                                    #2.0.2 =   1.6.353,  1.6.640 , 1.6.659
+                                    
+                                    
+                                    
+                                    # Check if CUDA is available
+                                    
+
+                                    # Check if AVX is available
+                                    #avx_available = torch.backends.quantized.supports(torch.device("cpu"))  # AVX is usually supported on CPUs
+                                    #print("AVX available:", avx_available)
 
                                 else:
                                     print("Version number not found in the string.")
