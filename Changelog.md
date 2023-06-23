@@ -8,7 +8,7 @@ Until then, its only a log of what I've changed to prepare update info on Nexus.
 
 ----
 
-# 2023.06.22 - 0.9b
+# 2023.06.23 - 0.9b
 - Added: Covered topics count
 - Fix: Print faster hdtsmp version only once
 - Added: AVX detection (skiped CUDA detection, because of false-positives and exe would be over 200mb)
