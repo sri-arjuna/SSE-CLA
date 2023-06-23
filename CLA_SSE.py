@@ -40,7 +40,7 @@ import os
 import re
 import random
 import logging
-import torch    # GPU
+#import torch    # GPU  // this would increase filesize to over 200mb
 import cpuinfo  # CPU
 ######################################
 ### Initialize Global Variables 
@@ -607,7 +607,8 @@ for thisLOG in worklist:
                                     
                                     # Lets figure out proper FOMOD selections:
                                     info = cpuinfo.get_cpu_info()
-                                    print("\n\tPossible FOMOD settings for installation\n\t(CUDA might return false eventhough your GPU supports it, you might need to install: https://developer.nvidia.com/cuda-toolkit for a proper result):\n\tYou might want to try different AVX options, because eventhough supported, thy might cause shutter/'lag' in populated areas...\n\tCPU:")
+                                    ## (CUDA might return false eventhough your GPU supports it, you might need to install: https://developer.nvidia.com/cuda-toolkit for a proper result):\n\t
+                                    print("\n\tPossible FOMOD settings for installation\n\tYou might want to try different AVX options, because eventhough supported, thy might cause shutter/'lag' in populated areas...\n\tCPU:")
                                     avx_available = 'avx' in info['flags']
                                     print("\t\tAVX:", avx_available)
                                     avx2_available = 'avx2' in info['flags']
@@ -615,9 +616,9 @@ for thisLOG in worklist:
                                     avx512_available = 'avx512' in info['flags']
                                     print("\t\tAVX-512:", avx512_available)
                                     
-                                    print("\tGPU:")
-                                    cuda_available = torch.cuda.is_available()
-                                    print("\t\tCUDA:", cuda_available)
+                                    #print("\tGPU:")
+                                    #cuda_available = torch.cuda.is_available()
+                                    #print("\t\tCUDA:", cuda_available)
 
                                 else:
                                     print("\tVersion number not found in the string.")
