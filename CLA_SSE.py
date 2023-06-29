@@ -43,6 +43,7 @@ from enum import Enum
 from cpuinfo import get_cpu_info				# pip install py-cpuinfo
 from multiprocessing import freeze_support		# pip install multiprocessing
 from tqdm import tqdm							# Progress bar
+from dataclasses import dataclass				# dict_RAM and others
 
 ######################################
 ### Dictionaries
@@ -340,6 +341,95 @@ def print_line(line2print, list2add, prefix="") -> list:
 	return list2add
 
 
+@dataclass
+class RamData:
+	total: float
+	used: float
+	free: float
+
+def get_RAM(FileContent) -> RamData | None:
+	"""Parses rString and returns a dict with: Total, Used, Free"""
+	match = re.search(r'PHYSICAL MEMORY: (\d+\.\d+) GB/(\d+\.\d+) GB', FileContent)
+	dict_RAM = {}
+	if match:
+		total = float(match.group(2))
+		used = float(match.group(1))
+		free = round(total - used, 2)
+		return RamData(total, used, free)
+	else:
+		return None
+
+
+def solve_RAM(ram_data: RamData) -> str:
+	"""Expands ram_dict and returns possible solution"""
+	if ram_data:
+		str_result = ""
+		bol_maybe = 0
+		if ram_data.free <= 1.5:
+			str_result += "RAM (critical):\n"
+				+ "There is a very high chance that the main reason for the crash was lack of free ram: " \
+				+ str(ram_free)
+			bol_maybe = 1
+		elif ram_data.free <= 2.0:
+			str_result += "RAM (maybe, probably not):\n"
+				+ "Allthough unlikely, there is a slim chance that the crash might have happend due to lack of free ram: " \
+				+ str(ram_free)
+			bol_maybe = 1
+		else:
+			str_result += "RAM (all good):\n"
+				+ "It is absolute unlikely that the crash was due to RAM."
+
+		if bol_maybe:
+			str_result += '''
+
+		First and foremost, try to close any other application and background processes that might be running that you do not need.
+		Like, but not limited to, game launchers, web browsers with 20 open tabs, Spotify, even Discord.
+		Also, you might want to consider using lower texture mods, aka, use a 2k instead of a 4k texture mod, or just a 1k texture.
+
+		If the above did not help, you could try apply these config tweaks to: __Skyrim.ini___
+		Make sure to comment out (#) any existing variantes of these, so you can go back if they dont help or make things worse.
+
+		This is most applicable if you're using 4-8 GB ram or less, you game addicted freak! ;) (said the guy who was playing WoW raids at 3 fps).
+
+		==================================
+
+		[Display]
+		iTintTextureResolution=2048
+
+		[General]
+		ClearInvalidRegistrations=1
+
+		[Memory]
+		DefaultHeapInitialAllocMB=768
+		ScrapHeapSizeMB=256
+
+		==================================
+
+		Last but not least, increasing your pagefile is a good and simple way to avoid this.
+		Best practice: pagefile-size > RAM
+		Example: 24 GB > 16 GB RAM
+
+		Please read / follow:
+		1. In the Taskbar Search, type “Advanced System“. ...
+		2. In System Properties, click Advanced tab.
+		3. In Performance section click Settings button.
+		4. Performance Options will open. ...
+		5. Here, under Virtual memory, select Change.
+		6. Uncheck Automatically manage paging file size for all drives.
+		7. Select a Drive that hardly use (as in not often)
+		8. Set manual size
+		9. Set value to ~ 150% of your RAM (as shown in example)
+		10. Confirm with "OK".
+
+		If you want to read more about (allthough, not related to sharepoint server):
+		https://learn.microsoft.com/en-us/sharepoint/technical-reference/the-paging-file-size-should-exceed-the-amount-of-physical-ram-in-the-system
+
+		'''
+		return str_result
+	else:
+		return "RAM could not be detected...\nSkipping..."
+
+
 def get_crash_logs(logdir='.') -> list:
 	"""Get Crash logs that do not have a report yet."""
 	pattern = re.compile(r'crash-.*\.log$')
@@ -449,7 +539,7 @@ def main(file_list):
 						#ApplicationName: SkyrimSE.exe
 			except Exception:
 				# Print error and exit
-				print_error(err_CLA.NoCrashLogger)
+				print_err(eType=err_CLA.NoCrashLogger)
 			finally:
 				# Apply to both, if and elif...
 				# Get SKSE version
