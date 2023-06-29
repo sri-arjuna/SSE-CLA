@@ -268,15 +268,13 @@ def console_Header(total_Skyrim=0, total_VR=0):
 ######################################
 def p_title(msg) -> str:
 	"""Print regular title strings with an underline"""
-	sReturn = ""
-	sReturn += msg + "\n"
+	sReturn = msg + "\n"
 	sReturn += "-" * len(msg) #+ "\n"
 	return sReturn
 
 
 def p_section(msg) -> str:
 	"""Print string with a line of # on top and bottom"""
-	sReturn = ""
 	sReturn = "\n" + "#" * 80 + "\n"
 	sReturn += msg + "\n"
 	sReturn += "#" * 80 + "\n"
@@ -285,7 +283,6 @@ def p_section(msg) -> str:
 
 def p_debug_status(debugList, iCount=0, iSolved=0) -> str:
 	"""Shows statistic & closing debug info"""
-	sReturn = ""
 	sReturn = p_section("Success Statistic: (this has been detected/handled, does not mean it's the cause)")
 	sReturn += "Issues Found:\t" + str(iCount) + "\nIssues Solved:\t" + str(iSolved) + "\n"
 	sReturn += p_section("DEBUG State:")
@@ -295,17 +292,17 @@ def p_debug_status(debugList, iCount=0, iSolved=0) -> str:
 	return sReturn
 
 
-def show_Simple(itm, logfile) -> str:
+def show_Simple(itm, logfile) -> str | None:
 	"""Check dict's for itm and prints the according entry, while printing nice 'section'"""
 	# Print simple solution
-	sReturn = ""
 	for lad in list_all_dict:
 		# Expand var to dict:
 		d = globals()[lad]
 		if itm in d:
-			sReturn += itm + ": " + s_Count(itm, logfile)
+			sReturn = itm + ": " + s_Count(itm, logfile) + "\n"
 			sReturn +="\t" + d[itm]
-		return sReturn
+			return sReturn
+	return None
 
 ######################################
 ### Functions:		Strings & Lists
@@ -423,11 +420,10 @@ def solve_RAM(ram_data: RamData) -> str:
 
 		If you want to read more about (allthough, not related to sharepoint server):
 		https://learn.microsoft.com/en-us/sharepoint/technical-reference/the-paging-file-size-should-exceed-the-amount-of-physical-ram-in-the-system
-
 		'''
-		return str_result
+		return str_result + "\n"
 	else:
-		return "RAM could not be detected...\nSkipping..."
+		return "RAM could not be detected...\nSkipping...\n"
 
 
 @dataclass
@@ -525,7 +521,6 @@ def get_version_Mod(str_Mod: str) -> VersionData:
 	return VersionData(dict_ver["Full"], dict_ver["Major"], dict_ver["Minor"], dict_ver["Build"])
 
 
-
 def solve_SKSE(skyrim: VersionData, skse: VersionData) -> str:
 	"""Compares the versions of Skyrim and SKSE and returns an according answer"""
 	if skse.Full is None or skse.Full == "":
@@ -543,16 +538,16 @@ def solve_SKSE(skyrim: VersionData, skse: VersionData) -> str:
 	if skyrim.Major != skse.Major or skyrim.Minor != skse.Minor:
 		GameVer_Result += "\nWarning: Game and Script Extender versions may not be compatible.\n"
 	# Return string to print
-	return GameVer_Result + "\n"
+	return GameVer_Result
 
 def solve_Mods(FileContent) -> str:
 	"""Print section 'Mods' if line with mods are found	"""
-	pat_mods = r"Light: (\d+)."  # Regular: (\d+)	Total: (\d+)" #_(\d+)_(\d+)"
+	pat_mods = r"Light: (\d+)."
 	for line in FileContent:
 		match = re.search(pat_mods, line)
 		if match:
 			sReturn = p_section("Mod Count:")
-			sReturn += line + "\n"
+			sReturn += line
 			break
 	return sReturn
 
@@ -568,6 +563,9 @@ def main(file_list):
 	if __name__ == '__main__':
 		freeze_support()
 		info_cpu = get_cpu_info()
+	# Update counter for soluztions:
+	list_dict = list_all_dict.copy()
+	list_dict.remove("simple_Skyrim")
 	# Start parsing passed files:
 	for thisLOG in file_list:
 		files_cur += 1
@@ -580,9 +578,9 @@ def main(file_list):
 		with open(thisLOG, 'r', encoding="utf-8", errors="ignore") as LOG:
 			DATA = LOG.readlines()
 			print("\t",end="")
-			with tqdm(total=count_solution_All, desc="* Searching...", unit=" culprint") as progress_bar:
+			with tqdm(total=(count_solution_All - len(simple_Skyrim)), desc="* Searching...", unit=" culprint") as progress_bar:
 				# Expand list of all dictionaries
-				for lad in list_all_dict:
+				for lad in list_dict:
 					# Expand var to dict:
 					d = globals()[lad]
 					for itm in d:
@@ -686,10 +684,40 @@ def main(file_list):
 				# 3
 				print(solve_Mods(DATA), file=REPORT)
 				progress_bar.update(1)
+				# Start with culprints
+				c = 0
+				for cul in culprints:
+					# Show basic solution
+					tmp_val = show_Simple(cul, DATA)
+					# Goto next culprint if no simple soloution could be found
+					if tmp_val == None:
+						continue
+					# A solution was found, print and analyze
+					print(tmp_val, file=REPORT)
+					# Start detailed analysis...
+					if r"modules(:)" in cul.lower():
+						# Reached module list, skip to avoid false positves
+						print("Skip modules")
+						continue
+					if r"Skyrim*.dll" in cul:
+						# Should cover both, VR and S/SE
+						for ad in simple_Skyrim:
+							addr = cul + ad
+							for adLine in DATA:
+								if addr in adLine:
+									print_line(adLine,printed,"")
+
+
+					# Count "solved issues" and check whether more culprints are in the list...
+					c += 1
+					if c < len(culprints):
+						print("-" * 80 + "\n", file=REPORT)
+					# End of for cul in culprints
+					progress_bar.update(1)
 
 
 				# Finals
-				print(p_debug_status(debugList=culprints, iCount=len(culprints), iSolved=0), file=REPORT)
+				print(p_debug_status(debugList=culprints, iCount=len(culprints), iSolved=c), file=REPORT)
 	return
 
 ######################################
