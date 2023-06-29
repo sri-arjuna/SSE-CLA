@@ -239,7 +239,6 @@ def print_error(eType, eStr=""):
 	os.system("pause")
 	sys.exit(1)
 
-
 def print_err(eType):
 	"""Prints formatted error"""
 	print(eType.value)
@@ -250,7 +249,6 @@ def print_err(eType):
 ######################################
 ### Functions:		Console Output
 ######################################
-
 
 def console_Header(total_Skyrim=0, total_VR=0):
 	"""Prints basic disclaimer-heading on the console"""
@@ -268,44 +266,46 @@ def console_Header(total_Skyrim=0, total_VR=0):
 ######################################
 ### Functions:		File Output
 ######################################
-def p_title(msg):
+def p_title(msg) -> str:
 	"""Print regular title strings with an underline"""
-	print(msg)
-	print("-" * len(msg) + "\n")
+	sReturn = ""
+	sReturn += msg + "\n"
+	sReturn += "-" * len(msg) + "\n"
+	return sReturn
 
 
-def p_section(msg):
+def p_section(msg) -> str:
 	"""Print string with a line of # on top and bottom"""
-	print("\n" + "#" * 80)
-	print(msg)
-	print("#" * 80 + "\n")
+	sReturn = ""
+	sReturn = "\n" + "#" * 80 + "\n"
+	sReturn += msg + "\n"
+	sReturn += "#" * 80 + "\n"
+	return sReturn
 
 
-def p_debug_status(debugList, iCount=0, iSolved=0):
+def p_debug_status(debugList, iCount=0, iSolved=0) -> str:
 	"""Shows statistic & closing debug info"""
-	p_section("Success Statistic: (this has been detected/handled, does not mean it's the cause)")
-	print("Issues Found:\t" + str(iCount) + "\nIssues Solved:\t" + str(iSolved))
-	p_section("DEBUG State:")
-	print("Culprit list content: (just a list)")
-	for s in debugList: print(s + ", ", end="")
+	sReturn = ""
+	sReturn = p_section("Success Statistic: (this has been detected/handled, does not mean it's the cause)")
+	sReturn += "Issues Found:\t" + str(iCount) + "\nIssues Solved:\t" + str(iSolved) + "\n"
+	sReturn += p_section("DEBUG State:")
+	sReturn += "Culprit list content: (just a list)" + "\n"
+	for s in debugList:
+		sReturn += s + ", "
+	return sReturn
 
 
-def show_Simple(itm, logfile, ShowDivider=True):
-	"""Check dict's for itm and prints the according entry, 
-	while printing nice 'section'"""
-	if ShowDivider: print("-" * 80, "\n")
+def show_Simple(itm, logfile) -> str:
+	"""Check dict's for itm and prints the according entry, while printing nice 'section'"""
 	# Print simple solution
+	sReturn = ""
 	for lad in list_all_dict:
 		# Expand var to dict:
 		d = globals()[lad]
 		if itm in d:
-			print(itm + ": " + s_Count(itm, logfile))
-			print("\t" + d[itm])
-			return
-# def.... erm.. idk...
-#report = functools.partial(print, file=this_report)
-#def report(rString,tReport=thisReport):
-#	print(tString, file=thisReport)
+			sReturn += itm + ": " + s_Count(itm, logfile)
+			sReturn +="\t" + d[itm]
+		return sReturn
 
 ######################################
 ### Functions:		Strings & Lists
@@ -366,17 +366,17 @@ def solve_RAM(ram_data: RamData) -> str:
 		str_result = ""
 		bol_maybe = 0
 		if ram_data.free <= 1.5:
-			str_result += "RAM (critical):\n"
+			str_result += "RAM (critical):\n" \
 				+ "There is a very high chance that the main reason for the crash was lack of free ram: " \
-				+ str(ram_free)
+				+ str(ram_data.free)
 			bol_maybe = 1
 		elif ram_data.free <= 2.0:
-			str_result += "RAM (maybe, probably not):\n"
-				+ "Allthough unlikely, there is a slim chance that the crash might have happend due to lack of free ram: " \
-				+ str(ram_free)
+			str_result += "RAM (maybe, probably not):\n" \
+				+ "Although unlikely, there is a slim chance that the crash might have happened due to lack of free ram: " \
+				+ str(ram_data.free)
 			bol_maybe = 1
 		else:
-			str_result += "RAM (all good):\n"
+			str_result += "RAM (all good):\n" \
 				+ "It is absolute unlikely that the crash was due to RAM."
 
 		if bol_maybe:
@@ -387,7 +387,7 @@ def solve_RAM(ram_data: RamData) -> str:
 		Also, you might want to consider using lower texture mods, aka, use a 2k instead of a 4k texture mod, or just a 1k texture.
 
 		If the above did not help, you could try apply these config tweaks to: __Skyrim.ini___
-		Make sure to comment out (#) any existing variantes of these, so you can go back if they dont help or make things worse.
+		Make sure to comment out (#) any existing variants of these, so you can go back if they dont help or make things worse.
 
 		This is most applicable if you're using 4-8 GB ram or less, you game addicted freak! ;) (said the guy who was playing WoW raids at 3 fps).
 
@@ -429,6 +429,43 @@ def solve_RAM(ram_data: RamData) -> str:
 	else:
 		return "RAM could not be detected...\nSkipping..."
 
+
+@dataclass
+class UnhandledData:
+	mem: str
+	file: str
+	adress: str
+	assembler: str
+
+def get_Unhandled(sUnhandled: str) -> UnhandledData | None:
+	"""Returns a dataclass of UnhandledExceptions"""
+	parts = sUnhandled.split(" at ")
+	subparts = parts[1].split(" ")
+
+	if 6 >= len(sUnhandled.split(" ")):
+		# This is the short variant that does not have this data...
+		thisMEM = subparts[0]
+		thisFile = "n/a"
+		thisFileAdd = "n/a"
+		thisAssembler = "n/a"
+	else:
+		# This should be most cases:
+		thisMEM = subparts[0]
+		thisFile = subparts[1].split('+')[0]
+		thisFileAdd = subparts[1].split("+")[1][:7]
+		# TODO check with Net Framework
+		if len(parts) >= 1:
+			if "\t" in parts[1]:
+				thisAssembler = parts[1].split("\t")[1]
+			# continue
+			elif " " in parts[1]:
+				thisAssembler = parts[1].split(" ")[1]
+			# continue
+			else:
+				thisAssembler = "n/a:: " + parts[0]
+		else:
+			thisAssembler = "n/a"
+	return UnhandledData(thisMEM, thisFile, thisFileAdd, thisAssembler)
 
 def get_crash_logs(logdir='.') -> list:
 	"""Get Crash logs that do not have a report yet."""
@@ -552,6 +589,7 @@ def main(file_list):
 				line_Unhandled = re.search(r"Unhandled(\s+native)?\s+exception.*", first_pass_str)
 				if line_Unhandled:
 					line_Unhandled = line_Unhandled.group(0)
+					# todo unhandled
 				else:
 					print("Fatal:\n\tCould not detect: 'Unhandled (native) exception")
 					os.system("pause")
@@ -587,13 +625,17 @@ def main(file_list):
 				
 		# Let's open the report for writing
 		thisReport = thisLOG.removesuffix(".log")  + '-REPORT.txt'
-		#with open(thisReport, "w", encoding="utf-8", errors="ignore") as REPORT:
-	#print(ver_SKSE)
-	return
+		with open(thisReport, "w", encoding="utf-8", errors="ignore") as REPORT:
+			# Basic Header
+			print(p_title(script_title), file=REPORT)
+			# Just a little READ ME
+			print("If you are asking others for assistance / help, ALWAYS provide the crashlog as well!\n" \
+				+ "#####################################################################################\n\n")
 
-			
-			# Open output stream
-	#		
+
+			# Finals
+			print(p_debug_status(debugList=culprints, iCount=len(culprints), iSolved=0), file=REPORT)
+	return
 
 ######################################
 ### Variables
