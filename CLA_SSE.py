@@ -537,8 +537,7 @@ def solve_SKSE(skyrim: VersionData, skse: VersionData) -> str:
 				+ "\t- https://www.nexusmods.com/skyrimspecialedition/mods/30379 (Wrapper: preferable for Vortex Collections)"
 		return missing_SKSE
 	# Show basic full versions
-	GameVer_Result = ""
-	GameVer_Result += "Game Version:   \t" + str(skyrim.Full) + "\n"
+	GameVer_Result = "Game Version:   \t" + str(skyrim.Full) + "\n"
 	GameVer_Result += "Script Extender:\t" + str(skse.Full) + "\n"
 	# Perform actual version check for possible issues
 	if skyrim.Major != skse.Major or skyrim.Minor != skse.Minor:
@@ -546,6 +545,16 @@ def solve_SKSE(skyrim: VersionData, skse: VersionData) -> str:
 	# Return string to print
 	return GameVer_Result + "\n"
 
+def solve_Mods(FileContent) -> str:
+	"""Print section 'Mods' if line with mods are found	"""
+	pat_mods = r"Light: (\d+)."  # Regular: (\d+)	Total: (\d+)" #_(\d+)_(\d+)"
+	for line in FileContent:
+		match = re.search(pat_mods, line)
+		if match:
+			sReturn = p_section("Mod Count:")
+			sReturn += line + "\n"
+			break
+	return sReturn
 
 ##################################################################################################################
 ### Main Function
@@ -571,7 +580,7 @@ def main(file_list):
 		with open(thisLOG, 'r', encoding="utf-8", errors="ignore") as LOG:
 			DATA = LOG.readlines()
 			print("\t",end="")
-			with tqdm(total=count_solution_All, desc="* Searching...", unit=" culprints") as progress_bar:
+			with tqdm(total=count_solution_All, desc="* Searching...", unit=" culprint") as progress_bar:
 				# Expand list of all dictionaries
 				for lad in list_all_dict:
 					# Expand var to dict:
@@ -583,7 +592,8 @@ def main(file_list):
 							if "modules" in culprint_Line.lower():
 								break
 							if itm in culprint_Line:
-								culprints.append(itm)
+								#culprints.append(itm)
+								culprints = list_add(itm, culprints)
 			# Some file specific tasks:
 			try:
 				if "Skyrim" == str(DATA[0].split(" ")[0]):
@@ -656,17 +666,30 @@ def main(file_list):
 				
 		# Let's open the report for writing
 		thisReport = thisLOG.removesuffix(".log")  + '-REPORT.txt'
-		with open(thisReport, "w", encoding="utf-8", errors="ignore") as REPORT:
-			# Basic Header
-			print(p_title(script_title), file=REPORT)
-			# Just a little READ ME
-			print("If you are asking others for assistance / help, ALWAYS provide the crashlog as well!\n" \
-				+ "#####################################################################################\n", file=REPORT)
-			# Print system basics
-			print(solve_SKSE(ver_Skyrim, ver_SKSE), file=REPORT)
+		with tqdm(total=abs(len(culprints) + 3), desc="* Solving...", unit=" issues") as progress_bar:
+			with open(thisReport, "w", encoding="utf-8", errors="ignore") as REPORT:
+				# Basic Header
+				print(p_title(script_title), file=REPORT)
+				# Just a little READ ME
+				print("If you are asking others for assistance / help, ALWAYS provide the crashlog as well!\n" \
+					+ "#####################################################################################\n", file=REPORT)
+				# Print system basics
+				# 1
+				print(solve_SKSE(ver_Skyrim, ver_SKSE), file=REPORT)
+				progress_bar.update(1)
+				# RAM
+				# 2
+				tRAM =get_RAM(first_pass_str)
+				print( p_section("RAM") + solve_RAM(tRAM), file=REPORT)
+				progress_bar.update(1)
+				# Mods
+				# 3
+				print(solve_Mods(DATA), file=REPORT)
+				progress_bar.update(1)
 
-			# Finals
-			print(p_debug_status(debugList=culprints, iCount=len(culprints), iSolved=0), file=REPORT)
+
+				# Finals
+				print(p_debug_status(debugList=culprints, iCount=len(culprints), iSolved=0), file=REPORT)
 	return
 
 ######################################
