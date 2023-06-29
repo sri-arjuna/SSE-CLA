@@ -685,6 +685,7 @@ def main(file_list):
 				print(solve_Mods(DATA), file=REPORT)
 				progress_bar.update(1)
 				# Start with culprints
+				print(p_section("Solutions"), file=REPORT)
 				c = 0
 				for cul in culprints:
 					# Show basic solution
@@ -699,13 +700,22 @@ def main(file_list):
 						# Reached module list, skip to avoid false positves
 						print("Skip modules")
 						continue
-					if r"Skyrim*.dll" in cul:
+					if re.search(r"Skyrim.*\.exe", cul):
+						print("check skyrim exe")
 						# Should cover both, VR and S/SE
 						for ad in simple_Skyrim:
 							addr = cul + ad
 							for adLine in DATA:
 								if addr in adLine:
+									if "VR" in cul:
+										print_line(simple_VR(ad),printed,"")
+									else:
+										print_line(simple_Skyrim(ad),printed,"")
+
 									print_line(adLine,printed,"")
+
+
+
 
 
 					# Count "solved issues" and check whether more culprints are in the list...
