@@ -270,7 +270,7 @@ def p_title(msg) -> str:
 	"""Print regular title strings with an underline"""
 	sReturn = ""
 	sReturn += msg + "\n"
-	sReturn += "-" * len(msg) + "\n"
+	sReturn += "-" * len(msg) #+ "\n"
 	return sReturn
 
 
@@ -489,7 +489,14 @@ def get_crash_logs(logdir='.') -> list:
 	return files
 
 
-def get_version_Mod(str_Mod) -> dict:
+@dataclass
+class VersionData:
+	Full: int
+	Major: int
+	Minor: int
+	Build: int
+
+def get_version_Mod(str_Mod: str) -> VersionData:
 	"""Parses str_Mod for regex based on prefix and suffix, then returns:
 	full, major, minor, build numbers"""
 	str_work = []
@@ -515,7 +522,30 @@ def get_version_Mod(str_Mod) -> dict:
 	# Print proper "full"
 	dict_ver["Full"] = dict_ver["Major"] + "." + dict_ver["Minor"] + "." + dict_ver["Build"]
 	# Return dictionary
-	return dict_ver
+	return VersionData(dict_ver["Full"], dict_ver["Major"], dict_ver["Minor"], dict_ver["Build"])
+
+
+
+def solve_SKSE(skyrim: VersionData, skse: VersionData) -> str:
+	"""Compares the versions of Skyrim and SKSE and returns an according answer"""
+	if skse.Full is None or skse.Full == "":
+		missing_SKSE = "Error:\n" \
+				+ "\tScript Extender version not found.\n\n" \
+				+ "Please make sure you have downloaded and installed SKSE properly to your root game directory (where the game exe is.\n" \
+				+ "Launch the game with skse_launcher.exe, not with SkyrimSE.exe.\n" \
+				+ "\t- https://skse.silverlock.org/ (Original: recomended)\n" \
+				+ "\t- https://www.nexusmods.com/skyrimspecialedition/mods/30379 (Wrapper: preferable for Vortex Collections)"
+		return missing_SKSE
+	# Show basic full versions
+	GameVer_Result = ""
+	GameVer_Result += "Game Version:   \t" + str(skyrim.Full) + "\n"
+	GameVer_Result += "Script Extender:\t" + str(skse.Full) + "\n"
+	# Perform actual version check for possible issues
+	if skyrim.Major != skse.Major or skyrim.Minor != skse.Minor:
+		GameVer_Result += "\nWarning: Game and Script Extender versions may not be compatible.\n"
+	# Return string to print
+	return GameVer_Result + "\n"
+
 
 ##################################################################################################################
 ### Main Function
@@ -590,6 +620,7 @@ def main(file_list):
 				if line_Unhandled:
 					line_Unhandled = line_Unhandled.group(0)
 					# todo unhandled
+					UnhandledData = get_Unhandled(line_Unhandled)
 				else:
 					print("Fatal:\n\tCould not detect: 'Unhandled (native) exception")
 					os.system("pause")
@@ -630,8 +661,9 @@ def main(file_list):
 			print(p_title(script_title), file=REPORT)
 			# Just a little READ ME
 			print("If you are asking others for assistance / help, ALWAYS provide the crashlog as well!\n" \
-				+ "#####################################################################################\n\n")
-
+				+ "#####################################################################################\n", file=REPORT)
+			# Print system basics
+			print(solve_SKSE(ver_Skyrim, ver_SKSE), file=REPORT)
 
 			# Finals
 			print(p_debug_status(debugList=culprints, iCount=len(culprints), iSolved=0), file=REPORT)
