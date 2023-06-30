@@ -703,8 +703,8 @@ def main(file_list):
 
 									print_line(adLine,printed,"")
 						if skyrimexe_counter == 0:
-							print("\n\tCould not find any known issues related to SkyrimSE.exe.\n" \
-								  + "\tSkyrimSE.exe _might_ be listed for the sole reason of... you're playing this game!!", file=REPORT)
+							print(f"\n\tCould not find any known issues related to {cul}.\n" \
+								  + f"\t{cul} _might_ be listed for the sole reason of... you're playing this game!!", file=REPORT)
 					if "NiNode" in cul:
 						ninode_lines = []
 						str_Ninode = ""
