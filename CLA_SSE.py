@@ -556,6 +556,20 @@ def solve_Mods(FileContent) -> str:
 			break
 	return sReturn
 
+import io
+def show_issue_occourence(issue: str, FileContent: io.TextIOWrapper,list2add: list) -> str:
+	"""Parses through 'FileContent' looking for 'str', prints 'str' if found, and adds line to 'list2add'"""
+	sReturn = ""
+	for tmp_Line in FileContent:
+		if issue in tmp_Line and not any(tmp_Line in t for t in list2add):
+			sReturn += f"{tmp_Line.strip()} -//- {s_Count(tmp_Line,FileContent)}\n"
+			list_add(tmp_Line.strip(),list2add)
+	if sReturn != "":
+		return f"\n{sReturn}"
+	else:
+		return sReturn
+
+
 ##################################################################################################################
 ### Main Function
 ##################################################################################################################
@@ -719,7 +733,10 @@ def main(file_list):
 								str_Ninode += print_line(f"{ninode_lines[-6].strip()} {s_Count(nLine.strip(), DATA).strip()}", printed, "")
 								str_Ninode += print_line(f"{ninode_lines[-5].strip()} {s_Count(nLine.strip(), DATA).strip()}", printed, "")
 						print(str_Ninode, file=REPORT)
-
+					if "Modified by" in cul:
+						print("modified")
+						tmp_val = show_issue_occourence(cul,DATA,printed)
+						print(tmp_val, file=REPORT)
 
 
 					# Count "solved issues" and check whether more culprints are in the list...
