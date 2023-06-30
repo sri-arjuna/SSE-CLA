@@ -313,7 +313,8 @@ def s_Count(txt, log):
 	for line in log:
 		if txt in line:
 			count += 1
-	return "(count: " + str(count) + ")"
+	#return "(count: " + str(count) + ")"
+	return f"count: ({count})"
 
 
 def list_add(item, list) -> list:
@@ -330,12 +331,16 @@ def list_remove(item, list) -> list:
 	return list
 
 
-def print_line(line2print, list2add, prefix="") -> list:
+def print_line(line2print, list2add, prefix="") -> str:
 	"""Print line if not printed yet and add to list2add """
+	str_tmp = ""
 	if line2print not in list2add:
 		list2add.append(line2print)
-		print(prefix + line2print)
-	return list2add
+		if prefix is not None and prefix != "":
+			str_tmp = prefix + line2print + "\n"
+		else:
+			str_tmp = line2print + "\n"
+	return str_tmp
 
 
 @dataclass
@@ -572,6 +577,7 @@ def main(file_list):
 		print("\n" + str(files_cur) + "/" + str(files_max) + " " + os.path.basename(thisLOG)) # + "\n")
 		# Reset variables 'per file'
 		culprints = []
+		printed = []
 		CrashLogger = "Unknown"
 		MODE = "64"
 		# Read the contents of the log file
@@ -682,18 +688,37 @@ def main(file_list):
 						continue
 					if re.search(r"Skyrim.*\.exe", cul):
 						# Should cover both, VR and S/SE
+						skyrimexe_counter = 0
 						for ad in simple_Skyrim:
 							addr = cul + ad
 							for adLine in DATA:
 								if addr in adLine:
+									# TODO: Verify counter for VR and regular
 									if "VR" in cul:
 										print_line(simple_VR(ad),printed,"")
+										skyrimexe_counter += 1
 									else:
 										print_line(simple_Skyrim(ad),printed,"")
+										skyrimexe_counter += 1
 
 									print_line(adLine,printed,"")
-
-
+						if skyrimexe_counter == 0:
+							print("\n\tCould not find any known issues related to SkyrimSE.exe.\n" \
+								  + "\tSkyrimSE.exe _might_ be listed for the sole reason of... you're playing this game!!", file=REPORT)
+					if "NiNode" in cul:
+						ninode_lines = []
+						str_Ninode = ""
+						for nLine in DATA:
+							ninode_lines.append(nLine)
+							if "NiNode" in nLine and not any(nLine.strip() in p for p in printed):
+								str_Ninode = "-" * 80 + "\n"
+								str_Ninode += print_line(f"{nLine.strip()} {s_Count(nLine.strip(), DATA)}", printed, "")
+								# Print some previous lines as they _might_ give more info
+								str_Ninode += print_line(f"{ninode_lines[-10].strip()} {s_Count(nLine.strip(), DATA).strip()}", printed, "")
+								str_Ninode += print_line(f"{ninode_lines[-8].strip()} {s_Count(nLine.strip(), DATA).strip()}", printed, "")
+								str_Ninode += print_line(f"{ninode_lines[-6].strip()} {s_Count(nLine.strip(), DATA).strip()}", printed, "")
+								str_Ninode += print_line(f"{ninode_lines[-5].strip()} {s_Count(nLine.strip(), DATA).strip()}", printed, "")
+						print(str_Ninode, file=REPORT)
 
 
 
