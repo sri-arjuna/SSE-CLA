@@ -37,8 +37,8 @@ if sys.version_info < (3, 3):
 ######################################
 import os
 import re
+import io
 import time		## Not really required, but otherwise we get 0 files on tqdm's progressbar...
-#import __main__ ## Is this one really required? - we'll see
 from enum import Enum
 from cpuinfo import get_cpu_info				# pip install py-cpuinfo
 from multiprocessing import freeze_support		# pip install multiprocessing
@@ -556,7 +556,7 @@ def solve_Mods(FileContent) -> str:
 			break
 	return sReturn
 
-import io
+
 def show_issue_occourence(issue: str, FileContent: io.TextIOWrapper,list2add: list) -> str:
 	"""Parses through 'FileContent' looking for 'str', prints 'str' if found, and adds line to 'list2add'"""
 	sReturn = ""
