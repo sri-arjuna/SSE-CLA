@@ -37,7 +37,6 @@ if sys.version_info < (3, 3):
 ######################################
 import os
 import re
-import io
 import time		## Not really required, but otherwise we get 0 files on tqdm's progressbar...
 from enum import Enum
 from cpuinfo import get_cpu_info				# pip install py-cpuinfo
@@ -118,10 +117,10 @@ simple_Chance = {
 	'hdtSMP64.dll': "If this appears often, it might indicate a bad config (rare).\n"
 				+ "\tHowever, it might also just indicate that there were NPCs around that were wearing hdt/SMP enabled clothing...\n"
 				+ "\tPlease increase the log level for hdtsmp64 (if you have not done so yet) and check its content.\n"
-				+ "\tMake sure to have Faster HDT-SMP that suits your Skyrim Version:\n"
+				+ "\n\tMake sure to have Faster HDT-SMP that suits your Skyrim Version:\n"
 				+ "\t- https://www.nexusmods.com/skyrimspecialedition/mods/57339 \n"
-				+ "\tAlso make sure you have these installed:\n"
-				+ "\t- SMP NPC fix: https://www.nexusmods.com/skyrimspecialedition/mods/91616 ",
+				+ "\n\tAlso make sure you have these installed:\n"
+				+ "\t- SMP NPC fix: https://www.nexusmods.com/skyrimspecialedition/mods/91616 \n",
 	'cbp.dll': "If this appears often, it might indicate a bad config (rare). \n"
 				+ "\tHowever, it might also just indicate that there were NPCs around that were wearing SMP/cbp enabled clothing...\n"
 				+ "\tMake sure to have this installed:\n\t\n"
@@ -146,7 +145,9 @@ simple_Chance = {
 	'tbbmalloc.dll': "Threading Building Blocks Memory Allocator\n"
 				+ "\tThis is either part of:\n"
 				+ "\t- the CreationKit Fixes: https://www.nexusmods.com/skyrimspecialedition/mods/20061 \n"
-				+ "\t- the Engine Fixes (part 2): https://www.nexusmods.com/skyrimspecialedition/mods/17230 \n\n"
+				+ "\t- the Engine Fixes (part 2): https://www.nexusmods.com/skyrimspecialedition/mods/17230 \n" \
+				+ f"\tI do recommend to use Engine Fixes (pick 'part 1' according to your SKSE)\n\n"
+				+ "\tThis message is shown without a check:\n" \
 				+ "\tMake sure to disable: SrtCrashFix64.dll (Animation Limit Crash fix SSE) as this is handled by the Engines Fixes, which is recommended to use!\n"
 				+ "\tEither way, make sure to have the 'latest' version variant for your Skyrim edition.\n"
 				+ "\tHowever, this probably is not the cause, but the causing mod relies on excessive memory handling.",
@@ -208,6 +209,12 @@ for lid in list_all_dict:
 	else:
 		count_solution_64+= len(dictionary)
 	count_solution_All = count_solution_64 +count_solution_VR
+# Update counter for soluztions:
+list_dict = list_all_dict.copy()
+list_dict.remove("simple_Skyrim")
+list_dict.remove("simple_Engine")
+list_dict.remove("simple_Racemenu")
+list_dict.remove("simple_Dialog")
 
 
 ######################################
@@ -550,6 +557,7 @@ def solve_SKSE(skyrim: VersionData, skse: VersionData) -> str:
 
 def solve_Mods(FileContent) -> str:
 	"""Print section 'Mods' if line with mods are found	"""
+	sReturn = ""
 	pat_mods = r"Light: (\d+)."
 	for line in FileContent:
 		match = re.search(pat_mods, line)
@@ -560,7 +568,7 @@ def solve_Mods(FileContent) -> str:
 	return sReturn
 
 from collections import Counter		# TODO maybe sometime later
-def show_issue_occourence(issue: str, FileContent: list, list2add: list) -> str:
+def show_issue_occourence__OLD(issue: str, FileContent: list, list2add: list) -> str:
 	"""Parses through 'FileContent' looking for 'issue', prints 'issue' if found and not in list2add yet"""
 	sReturn = ""
 	for tmp_Line in FileContent:
@@ -578,7 +586,19 @@ def show_issue_occourence(issue: str, FileContent: list, list2add: list) -> str:
 	else:
 		return sReturn
 
-
+def show_issue_occourence(issue: str, FileContent: list, list2add: list) -> str:
+    """Parses through 'FileContent' looking for 'issue', prints 'issue' if found and not in list2add yet"""
+    sReturn = ""
+    for tmp_Line in FileContent:
+        if "Unhandled " in tmp_Line:
+            continue
+        if issue in tmp_Line.strip() and tmp_Line.strip() not in list2add:
+            sReturn += f"{tmp_Line.strip()} -//- {s_Count(tmp_Line.strip(), FileContent)}\n"
+            list2add.append(tmp_Line.strip())
+    if sReturn != "":
+        return f"\n{sReturn}"
+    else:
+        return None
 
 ##################################################################################################################
 ### Main Function
@@ -592,9 +612,6 @@ def main(file_list):
 	if __name__ == '__main__':
 		freeze_support()
 		info_cpu = get_cpu_info()
-	# Update counter for soluztions:
-	list_dict = list_all_dict.copy()
-	list_dict.remove("simple_Skyrim")
 	# Start parsing passed files:
 	for thisLOG in file_list:
 		files_cur += 1
@@ -690,8 +707,8 @@ def main(file_list):
 				strUnhandled = p_section("Header indicators:")
 				strUnhandled += f"Memory:  		{UnhandledData.mem}		{s_Count(UnhandledData.mem, DATA)}\n"
 				strUnhandled += f"File:    		{UnhandledData.file}		{s_Count(UnhandledData.file, DATA)}\n"
-				strUnhandled += f"Address: 		{UnhandledData.adress}		{s_Count(UnhandledData.adress, DATA)}\n"
-				strUnhandled += f"Assembler:	{UnhandledData.assembler}	{s_Count(UnhandledData.assembler, DATA)}\n"
+				strUnhandled += f"Address: 		{UnhandledData.adress}			{s_Count(UnhandledData.adress, DATA)}\n"
+				strUnhandled += f"Assembler:		{UnhandledData.assembler}	{s_Count(UnhandledData.assembler, DATA)}\n"
 				# Print occoureces of Unhandled
 				ud_list = []
 				ud_list.append(UnhandledData.file)
@@ -700,20 +717,20 @@ def main(file_list):
 				ud_list.append(UnhandledData.assembler)
 				for ud in ud_list:
 					tmp_val = ""
-					# check exception
 					if "Skyrim" in ud:
 						for sS in simple_Skyrim:
 							check_Sky = f"{ud}+{sS}"
-							tmp_val = ""
-							tmp_val = show_issue_occourence(check_Sky,DATA,printed)
-							if tmp_val != "":
+							tmp_val = show_issue_occourence(check_Sky, DATA, printed)
+							if tmp_val is not None:
 								pass
 							else:
-								strUnhandled += f"{show_issue_occourence(ud,DATA,printed)}\n"
+								tmp_val = f"{show_issue_occourence(ud, DATA, printed)}\n"
+								if tmp_val is None:
+									pass
+								strUnhandled += tmp_val
 					else:
-						tmp_val = ""
-						tmp_val += f"{show_issue_occourence(ud,DATA,printed)}\n"
-						if tmp_val != "":
+						tmp_val = show_issue_occourence(ud, DATA, printed)
+						if tmp_val is not None:
 							strUnhandled += tmp_val
 
 				print(strUnhandled, file=REPORT)
@@ -790,7 +807,7 @@ def main(file_list):
 							str_Mesh += "\n"
 						print(str_Mesh, file=REPORT)
 
-					if "0x0" in cul or "0x0 on thread ":
+					if "0x0" in cul or "0x0 on thread " in cul:
 						tmp_val = ""
 						tmp_val = show_issue_occourence(cul, DATA, printed)
 						for engR in simple_Engine:
@@ -799,10 +816,20 @@ def main(file_list):
 						print(tmp_val, file=REPORT)
 
 					if "skee64.dll" in cul:
-						tmp_val = ""
 						for raceM in simple_Racemenu:
-							tmp_val = show_issue_occourence(cul, DATA, printed)
-							print(tmp_val, file=REPORT)
+							tmp_val = ""
+							tmp_val = show_Simple(raceM, DATA)
+							if tmp_val is not None:
+								tmp_val2 = ""
+								tmp_val2 = show_issue_occourence(cul, DATA, printed)
+								if tmp_val2 is not None:
+									tmp_val += tmp_val2
+							else:
+								continue
+							if tmp_val is not None:
+								print(tmp_val, file=REPORT)
+
+
 
 					if "Modified by" in cul:
 						tmp_val = ""
@@ -816,22 +843,22 @@ def main(file_list):
 						match = re.search(pattern, data_string)
 						if match:
 							ver_HDTSMP = get_version_Mod(match.group(0))
-
-						print(ver_HDTSMP)	# TODO just testing
+						else:
+							tmp_val = "Could not determine HDTSMP version."
 
 						# Prepare version comparision
-						tmp_val = f"\tYou are using FSMP version: {ver_HDTSMP.Full}"
-						tmp_val += f"\tPlease ensure that this is compatible with your SKSE version: {ver_SKSE.Full}"
+						tmp_val += f"\tYou are using FSMP version: {ver_HDTSMP.Full}\n"
+						tmp_val += f"\tPlease ensure that this is compatible with your SKSE version: {ver_SKSE.Full}\n"
 
 						# Lets print a recomended version ??
 						# 2.0.2 =   1.6.353,  1.6.640 , 1.6.659
 						if ver_HDTSMP.Full == "2.0.2" or ver_HDTSMP.Full == "2.02.02":
 							tmp_val += "\n\tThis one is marked as BETA.\n" \
 									+ "\tYou might want to downgrade to one of the RC: 1.50.7-rc1 or 1.50.9-rc1\n" \
-									+ "\tRelease Candidates (rc) are usualy more stable than a beta."
+									+ "\tRelease Candidates (rc) are usualy more stable than a beta.\n"
 						if ver_SKSE.Full == "1.5.97":
 							tmp_val += "\n\tYou should be using the FSMP version that is marked as: 1.18\n" \
-									+ "\tBecause you are using a Skyrim version that is marked as Legacy."
+									+ "\tBecause you are using a Skyrim version that is marked as Legacy.\n"
 
 						# Its printed once, now add it to: printed
 						printed.append("hdtSMP64\\Hooks")
@@ -840,18 +867,18 @@ def main(file_list):
 						# ## (CUDA might return false eventhough your GPU supports it, you might need to install: https://developer.nvidia.com/cuda-toolkit for a proper result):\n\t
 						tmp_val += "\n\tPossible FOMOD settings for installation\n" \
 								+ "\tYou might want to try different AVX options, because eventhough supported, they might cause shutter/'lag' in populated areas...\n" \
-								+ "\tCPU:"
+								+ "\tCPU:\n"
 						# Parse AVX
-						for ax in "avx" "avx2" "avx512":
+						avx_list = []
+						avx_list.append("avx")
+						avx_list.append("avx2")
+						avx_list.append("avx512")
+						for ax in avx_list:
 							avx_available = ""
 							avx_available = ax in info_cpu['flags']
 							if avx_available != "":
-								tmp_val += f"\t\t{ax}: \t{avx_available}"
+								tmp_val += f"\t\t{ax}:\t{avx_available}\n"
 						print(tmp_val, file=REPORT)
-
-
-
-
 
 
 
