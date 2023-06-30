@@ -633,38 +633,9 @@ def main(file_list):
 					print("Fatal:\n\tCould not detect: 'Unhandled (native) exception")
 					os.system("pause")
 					sys.exit(1)
-				#if not line_Unhandled:
-					
-				parts = line_Unhandled.split(" at ")
-				subparts = parts[1].split(" ")
-				#if "0x000000000000" == subparts[0]:
-				if 6 >= len(line_Unhandled.split(" ")):
-					print("here")
-					thisMEM = subparts[0]
-					# TODO, skip this for now!
-					# culprint.append("0x0")
-					thisFile = "n/a"
-					thisFileAdd = "n/a"
-					thisAssembler = "n/a"
-				else:
-					thisMEM = subparts[0]
-					thisFile = subparts[1].split('+')[0]
-					thisFileAdd = subparts[1].split("+")[1][:7]
-					if len(parts) >= 1:
-						if "\t" in parts[1]:
-							thisAssembler = parts[1].split("\t")[1]
-							#continue
-						elif " " in parts[1]:
-							thisAssembler = parts[1].split(" ")[1]
-							#continue
-						else:
-							thisAssembler = "n/a:: "+parts[0]
-					else:
-						thisAssembler = "n/a"
-				
 		# Let's open the report for writing
 		thisReport = thisLOG.removesuffix(".log")  + '-REPORT.txt'
-		with tqdm(total=abs(len(culprints) + 3), desc="* Solving...", unit=" issues") as progress_bar:
+		with tqdm(total=abs(len(culprints) + 4), desc="* Solving...", unit=" issues") as progress_bar:
 			with open(thisReport, "w", encoding="utf-8", errors="ignore") as REPORT:
 				# Basic Header
 				print(p_title(script_title), file=REPORT)
@@ -683,6 +654,15 @@ def main(file_list):
 				# Mods
 				# 3
 				print(solve_Mods(DATA), file=REPORT)
+				# Unhandled Exception Line
+				# 4
+				strUnhandled = ""
+				strUnhandled = p_section("Header indicators:")
+				strUnhandled += "Memory:  \t" + UnhandledData.mem + " " + s_Count(UnhandledData.mem, DATA) + "\n"
+				strUnhandled += "File:    \t" + UnhandledData.file + " " + s_Count(UnhandledData.file, DATA) + "\n"
+				strUnhandled += "Address: \t" + UnhandledData.adress + " " + s_Count(UnhandledData.adress, DATA) + "\n"
+				strUnhandled += "Assembler:\t" + UnhandledData.assembler + " " + s_Count(UnhandledData.assembler, DATA) + "\n"
+				print(strUnhandled, file=REPORT)
 				progress_bar.update(1)
 				# Start with culprints
 				print(p_section("Solutions"), file=REPORT)
@@ -701,7 +681,6 @@ def main(file_list):
 						print("Skip modules")
 						continue
 					if re.search(r"Skyrim.*\.exe", cul):
-						print("check skyrim exe")
 						# Should cover both, VR and S/SE
 						for ad in simple_Skyrim:
 							addr = cul + ad
