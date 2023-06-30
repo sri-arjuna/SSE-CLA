@@ -42,6 +42,7 @@ import random
 import logging
 #import torch    # GPU  // this would increase filesize to over 200mb
 import cpuinfo  # CPU
+import argparse
 ######################################
 ### Initialize Global Variables 
 ######################################
@@ -144,11 +145,16 @@ reasons_VR = {
 'ViewYourselfVR.esp': "Has been reported to cause CTD and other bugs.\n\tIf this CTD happened when opening your inventory, try downgrading to 1.1.\n\t - https://www.nexusmods.com/skyrimspecialedition/mods/16809",
 }
 
-
-
 ######################################
 ### Functions : Tools
 ######################################
+# Validate path from argument
+def dir_path(path):
+    if os.path.isdir(path):
+        return path
+    else:
+        raise argparse.ArgumentTypeError(f"{path} is not a valid path")
+
 # Add item to a list.
 def list_add(item, list):
     if item not in list:
@@ -171,9 +177,12 @@ def get_crash_logs():
     pattern = re.compile(r'crash-.*\.log$')
     patternR = re.compile(r'crash-.*REPORT\.txt$')
 
+    # use the path provided from the command line argument
+    path = args.path
+
     # Use list comprehension to create a list of files that match the pattern
-    files = [f for f in os.listdir('.') if os.path.isfile(f) and pattern.search(f)]
-    reports = [f for f in os.listdir('.') if os.path.isfile(f) and patternR.search(f)]
+    files = [f for f in os.listdir(path) if os.path.isfile(f) and pattern.search(f)]
+    reports = [f for f in os.listdir(path) if os.path.isfile(f) and patternR.search(f)]
     return files   # TODO Remove this when stable
     
     # Remove any log that already has a "-REPORT.txt" file
@@ -329,6 +338,7 @@ total_issues = len(reasons_Chance) + len(reasons_Skyrim) + len(reasons_Engine) +
 print("=====================================================================================")
 print("THE SCRIPT MUST BE IN THE SAME FOLDER AS YOUR CRASH LOGS, WHICH MUST BE 'crash-*.log'")
 print("Usualy this is:          %userprofile%\Documents\My Games\Skyrim Special Edition\SKSE")
+print("Or use the --path argument to provide the folder to the crash logs.")
 print("-------------------------------------------------------------------------------------")
 print("If you get an error 'File not found', make sure that have applied the exception for")
 print("this script to allow it to have read/write access within this folder.")
@@ -338,6 +348,10 @@ print("=========================================================================
 ######################################
 ### main()
 ######################################
+# parse arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('-p', '--path', nargs='?', default='.', help='Path to the crash logs', type=dir_path)
+args = parser.parse_args()
 # Retrieve crash logs that have no report file.
 worklist = get_crash_logs()
 # Prepare counter for nicer display
