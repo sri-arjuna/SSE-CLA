@@ -502,28 +502,31 @@ def get_version_Mod(str_Mod: str) -> VersionData:
 	full, major, minor, build numbers"""
 	str_work = []
 	full_tmp = ""
-	dict_ver = {}
+	sFull = 0
+	sMajor = 0
+	sMinor = 0
+	sBuild = 0
 	# Prepare string
 	exp = r"(?:(64_)?)((\d+[\._]){2}\d+)"
 	str_work = re.search(exp, str_Mod).groups()
 	full_tmp = str_work[1]
 	# Split to subsections
 	if "_" in full_tmp:
-		dict_ver["Major"] = full_tmp.split("_")[0]
-		dict_ver["Minor"] = full_tmp.split("_")[1]
-		dict_ver["Build"] = full_tmp.split("_")[2]
+		sMajor = full_tmp.split("_")[0]
+		sMinor = full_tmp.split("_")[1]
+		sBuild = full_tmp.split("_")[2]
 	elif "." in full_tmp:
-		dict_ver["Major"] = full_tmp.split(".")[0]
-		dict_ver["Minor"] = full_tmp.split(".")[1]
-		dict_ver["Build"] = full_tmp.split(".")[2]
+		sMajor = full_tmp.split(".")[0]
+		sMinor = full_tmp.split(".")[1]
+		sBuild = full_tmp.split(".")[2]
 	else:
 		#print("Error: \nCould find neither '.' nor '_' as seperator in string:\n" + full_tmp)
 		print_error(err_CLA.NoSeparator, full_tmp)
 		#return None
 	# Print proper "full"
-	dict_ver["Full"] = dict_ver["Major"] + "." + dict_ver["Minor"] + "." + dict_ver["Build"]
+	sFull = f"{sMajor}.{sMinor}.{sBuild}"
 	# Return dictionary
-	return VersionData(dict_ver["Full"], dict_ver["Major"], dict_ver["Minor"], dict_ver["Build"])
+	return VersionData(sFull, sMajor, sMinor, sBuild)
 
 
 def solve_SKSE(skyrim: VersionData, skse: VersionData) -> str:
@@ -556,14 +559,18 @@ def solve_Mods(FileContent) -> str:
 			break
 	return sReturn
 
-
-def show_issue_occourence(issue: str, FileContent: io.TextIOWrapper,list2add: list) -> str:
-	"""Parses through 'FileContent' looking for 'str', prints 'str' if found, and adds line to 'list2add'"""
+from collections import Counter		# TODO maybe sometime later
+def show_issue_occourence(issue: str, FileContent: list, list2add: list) -> str:
+	"""Parses through 'FileContent' looking for 'issue', prints 'issue' if found and not in list2add yet"""
 	sReturn = ""
 	for tmp_Line in FileContent:
-		if issue in tmp_Line and not any(tmp_Line in t for t in list2add):
-			sReturn += f"{tmp_Line.strip()} -//- {s_Count(tmp_Line,FileContent)}\n"
-			list_add(tmp_Line.strip(),list2add)
+		#if issue in tmp_Line and not any(tmp_Line in t for t in list2add):
+		if issue in tmp_Line.strip() and tmp_Line.strip() not in list2add:
+			sReturn += f"{tmp_Line.strip()} -//- {s_Count(tmp_Line.strip(),FileContent)}\n"
+		#	list_add(tmp_Line.strip(),list2add)
+		#line_counts = Counter(l.strip() for l in FileContent if issue in l)
+		#for line, count in line_counts:
+			list2add.append(tmp_Line.strip())
 	if sReturn != "":
 		return f"\n{sReturn}"
 	else:
@@ -703,28 +710,30 @@ def main(file_list):
 					if re.search(r"Skyrim.*\.exe", cul):
 						# Should cover both, VR and S/SE
 						skyrimexe_counter = 0
+						str_Skyrim = ""
 						for ad in simple_Skyrim:
 							addr = cul + ad
 							for adLine in DATA:
 								if addr in adLine:
 									# TODO: Verify counter for VR and regular
 									if "VR" in cul:
-										print_line(simple_VR(ad),printed,"")
+										str_Skyrim += print_line(simple_VR[ad],printed,"")
 										skyrimexe_counter += 1
 									else:
-										print_line(simple_Skyrim(ad),printed,"")
+										str_Skyrim += print_line(simple_Skyrim[ad],printed,"")
 										skyrimexe_counter += 1
 
 									print_line(adLine,printed,"")
 						if skyrimexe_counter == 0:
-							print(f"\n\tCould not find any known issues related to {cul}.\n" \
-								  + f"\t{cul} _might_ be listed for the sole reason of... you're playing this game!!", file=REPORT)
+							str_Skyrim = f"\n\tCould not find any known issues related to {cul}.\n" \
+								  + f"\t{cul} _might_ be listed for the sole reason of... you're playing this game!!"
+						print(str_Skyrim, file=REPORT)
 					if "NiNode" in cul:
 						ninode_lines = []
 						str_Ninode = ""
 						for nLine in DATA:
 							ninode_lines.append(nLine)
-							if "NiNode" in nLine and not any(nLine.strip() in p for p in printed):
+							if "NiNode" in nLine.strip() and not any(nLine.strip() in p for p in printed):
 								str_Ninode = "-" * 80 + "\n"
 								str_Ninode += print_line(f"{nLine.strip()} {s_Count(nLine.strip(), DATA)}", printed, "")
 								# Print some previous lines as they _might_ give more info
@@ -734,9 +743,33 @@ def main(file_list):
 								str_Ninode += print_line(f"{ninode_lines[-5].strip()} {s_Count(nLine.strip(), DATA).strip()}", printed, "")
 						print(str_Ninode, file=REPORT)
 					if "Modified by" in cul:
-						print("modified")
 						tmp_val = show_issue_occourence(cul,DATA,printed)
 						print(tmp_val, file=REPORT)
+					if "hdtSMP64.dll" == cul:
+						#TODO
+						pass
+
+					if "0x0" == cul:
+						#TODO
+						pass
+					if "mesh" == cul.lower():
+						mesh_lines = []
+						str_Mesh = ""
+						for mLine in DATA:
+							mesh_lines.append(mLine)
+							if "mesh" in mLine.lower and not any(mLine.strip() in p for p in printed):
+								list_add(mLine.strip(), printed)
+								str_Mesh += mLine
+								str_Mesh += mesh_lines[-1]
+								str_Mesh += mesh_lines[-2]
+						if str_Mesh != "":
+							str_Mesh += "\n"
+						print(str_Mesh, file=REPORT)
+						#TODO
+						#TODO
+						#TODO
+						#TODO
+
 
 
 					# Count "solved issues" and check whether more culprints are in the list...
@@ -800,10 +833,6 @@ else:
 	console_Header(count_solution_64, count_solution_VR)
 	# Start routine / handle file by file
 	main(workfiles)
-
-
-show_Simple("NiNode", "crash-VR---PortableFreezer.log")
-
 
 # Exit properly
 os.system("pause")
