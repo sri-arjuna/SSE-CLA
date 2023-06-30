@@ -564,6 +564,8 @@ def show_issue_occourence(issue: str, FileContent: list, list2add: list) -> str:
 	"""Parses through 'FileContent' looking for 'issue', prints 'issue' if found and not in list2add yet"""
 	sReturn = ""
 	for tmp_Line in FileContent:
+		if "Unhandled " in tmp_Line:
+			continue
 		#if issue in tmp_Line and not any(tmp_Line in t for t in list2add):
 		if issue in tmp_Line.strip() and tmp_Line.strip() not in list2add:
 			sReturn += f"{tmp_Line.strip()} -//- {s_Count(tmp_Line.strip(),FileContent)}\n"
@@ -575,6 +577,7 @@ def show_issue_occourence(issue: str, FileContent: list, list2add: list) -> str:
 		return f"\n{sReturn}"
 	else:
 		return sReturn
+
 
 
 ##################################################################################################################
@@ -685,10 +688,34 @@ def main(file_list):
 				# 4
 				strUnhandled = ""
 				strUnhandled = p_section("Header indicators:")
-				strUnhandled += "Memory:  \t" + UnhandledData.mem + " " + s_Count(UnhandledData.mem, DATA) + "\n"
-				strUnhandled += "File:    \t" + UnhandledData.file + " " + s_Count(UnhandledData.file, DATA) + "\n"
-				strUnhandled += "Address: \t" + UnhandledData.adress + " " + s_Count(UnhandledData.adress, DATA) + "\n"
-				strUnhandled += "Assembler:\t" + UnhandledData.assembler + " " + s_Count(UnhandledData.assembler, DATA) + "\n"
+				strUnhandled += f"Memory:  		{UnhandledData.mem}		{s_Count(UnhandledData.mem, DATA)}\n"
+				strUnhandled += f"File:    		{UnhandledData.file}		{s_Count(UnhandledData.file, DATA)}\n"
+				strUnhandled += f"Address: 		{UnhandledData.adress}		{s_Count(UnhandledData.adress, DATA)}\n"
+				strUnhandled += f"Assembler:	{UnhandledData.assembler}	{s_Count(UnhandledData.assembler, DATA)}\n"
+				# Print occoureces of Unhandled
+				ud_list = []
+				ud_list.append(UnhandledData.file)
+				ud_list.append(UnhandledData.mem)
+				ud_list.append(UnhandledData.adress)
+				ud_list.append(UnhandledData.assembler)
+				for ud in ud_list:
+					tmp_val = ""
+					# check exception
+					if "Skyrim" in ud:
+						for sS in simple_Skyrim:
+							check_Sky = f"{ud}+{sS}"
+							tmp_val = ""
+							tmp_val = show_issue_occourence(check_Sky,DATA,printed)
+							if tmp_val != "":
+								pass
+							else:
+								strUnhandled += f"{show_issue_occourence(ud,DATA,printed)}\n"
+					else:
+						tmp_val = ""
+						tmp_val += f"{show_issue_occourence(ud,DATA,printed)}\n"
+						if tmp_val != "":
+							strUnhandled += tmp_val
+
 				print(strUnhandled, file=REPORT)
 				progress_bar.update(1)
 				# Start with culprints
@@ -728,6 +755,12 @@ def main(file_list):
 							str_Skyrim = f"\n\tCould not find any known issues related to {cul}.\n" \
 								  + f"\t{cul} _might_ be listed for the sole reason of... you're playing this game!!"
 						print(str_Skyrim, file=REPORT)
+
+					if "CompressedArchiveStream" in cul:
+						for gamefile in ".esp" ".esm" ".dds":
+							str_Compressed = show_issue_occourence(gamefile, DATA, printed)
+							print(str_Compressed, file=REPORT)
+
 					if "NiNode" in cul:
 						ninode_lines = []
 						str_Ninode = ""
@@ -742,17 +775,8 @@ def main(file_list):
 								str_Ninode += print_line(f"{ninode_lines[-6].strip()} {s_Count(nLine.strip(), DATA).strip()}", printed, "")
 								str_Ninode += print_line(f"{ninode_lines[-5].strip()} {s_Count(nLine.strip(), DATA).strip()}", printed, "")
 						print(str_Ninode, file=REPORT)
-					if "Modified by" in cul:
-						tmp_val = show_issue_occourence(cul,DATA,printed)
-						print(tmp_val, file=REPORT)
-					if "hdtSMP64.dll" == cul:
-						#TODO
-						pass
 
-					if "0x0" == cul:
-						#TODO
-						pass
-					if "mesh" == cul.lower():
+					if "mesh" in cul.lower():
 						mesh_lines = []
 						str_Mesh = ""
 						for mLine in DATA:
@@ -765,6 +789,72 @@ def main(file_list):
 						if str_Mesh != "":
 							str_Mesh += "\n"
 						print(str_Mesh, file=REPORT)
+
+					if "0x0" in cul or "0x0 on thread ":
+						tmp_val = ""
+						tmp_val = show_issue_occourence(cul, DATA, printed)
+						for engR in simple_Engine:
+							tmp_val += show_Simple(engR, DATA)
+							tmp_val += show_issue_occourence(engR, DATA, printed)
+						print(tmp_val, file=REPORT)
+
+					if "skee64.dll" in cul:
+						tmp_val = ""
+						for raceM in simple_Racemenu:
+							tmp_val = show_issue_occourence(cul, DATA, printed)
+							print(tmp_val, file=REPORT)
+
+					if "Modified by" in cul:
+						tmp_val = ""
+						tmp_val = show_issue_occourence(cul,DATA,printed)
+						print(tmp_val, file=REPORT)
+
+					if "hdtSMP64.dll" in cul:
+						tmp_val = ""
+						pattern = r"skse64_(\d+)_(\d+)_(\d+)"
+						data_string = "\n".join(DATA)  # Join the list elements with a newline separator
+						match = re.search(pattern, data_string)
+						if match:
+							ver_HDTSMP = get_version_Mod(match.group(0))
+
+						print(ver_HDTSMP)	# TODO just testing
+
+						# Prepare version comparision
+						tmp_val = f"\tYou are using FSMP version: {ver_HDTSMP.Full}"
+						tmp_val += f"\tPlease ensure that this is compatible with your SKSE version: {ver_SKSE.Full}"
+
+						# Lets print a recomended version ??
+						# 2.0.2 =   1.6.353,  1.6.640 , 1.6.659
+						if ver_HDTSMP.Full == "2.0.2" or ver_HDTSMP.Full == "2.02.02":
+							tmp_val += "\n\tThis one is marked as BETA.\n" \
+									+ "\tYou might want to downgrade to one of the RC: 1.50.7-rc1 or 1.50.9-rc1\n" \
+									+ "\tRelease Candidates (rc) are usualy more stable than a beta."
+						if ver_SKSE.Full == "1.5.97":
+							tmp_val += "\n\tYou should be using the FSMP version that is marked as: 1.18\n" \
+									+ "\tBecause you are using a Skyrim version that is marked as Legacy."
+
+						# Its printed once, now add it to: printed
+						printed.append("hdtSMP64\\Hooks")
+
+						# Lets figure out proper FOMOD selections:
+						# ## (CUDA might return false eventhough your GPU supports it, you might need to install: https://developer.nvidia.com/cuda-toolkit for a proper result):\n\t
+						tmp_val += "\n\tPossible FOMOD settings for installation\n" \
+								+ "\tYou might want to try different AVX options, because eventhough supported, they might cause shutter/'lag' in populated areas...\n" \
+								+ "\tCPU:"
+						# Parse AVX
+						for ax in "avx" "avx2" "avx512":
+							avx_available = ""
+							avx_available = ax in info_cpu['flags']
+							if avx_available != "":
+								tmp_val += f"\t\t{ax}: \t{avx_available}"
+						print(tmp_val, file=REPORT)
+
+
+
+
+
+
+
 						#TODO
 						#TODO
 						#TODO
