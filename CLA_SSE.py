@@ -139,8 +139,8 @@ simple_Chance = {
 	'0x0 on thread ': "This actually is an engine issue of Skyrim, but rare.\n"
 				+ "\tMost often caused by 'Face lighting' / 'Face shadow' issues. Best chance to avoid: Make sure have the newest SSE Engine Fix!\n"
 				+ "Now parsing some keywords that might (or not) give some additional indication.",
-	'HUD': "There seems to be an issue with your HUD / UI.\n\""
-		   		+ "\tNordic UI using the TDM patch might be the cause (at the very least in combination with Skyrim Souls).\n*"
+	'HUD': "There seems to be an issue with your HUD / UI.\n" \
+		   		+ "\tNordic UI using the TDM patch might be the cause (at the very least in combination with Skyrim Souls).\n"
 				+ "\tIf that is not what you are using, please figure out a fix and send me your crashlog and solution.",
 	'tbbmalloc.dll': "Threading Building Blocks Memory Allocator\n"
 				+ "\tThis is either part of:\n"
@@ -188,7 +188,12 @@ simple_Engine = {
 	'BSFadeNode(Name: `skeleton.nif`)': "",
 	'NiCamera': "Unproven, but could indicate cause by combination of multiple lighting mods.",
 }
+# HUD related
+simple_HUD = {
+	'Nordic ': "If you're using Nordic UI's TDM patch together with Skyrim Souls, this might be the cause.\n",
+	'Skyrim Souls': "If you're using this mod, make sure to DISABLE the TDM patch of Nordic UI (if you're using that).\n",
 
+}
 
 ######################################
 ### Dictionaries	:	counter+
@@ -305,10 +310,11 @@ def show_Simple(itm, logfile) -> str | None:
 	for lad in list_all_dict:
 		# Expand var to dict:
 		d = globals()[lad]
-		if itm in d:
-			sReturn = itm + ": " + s_Count(itm, logfile) + "\n"
-			sReturn +="\t" + d[itm]
-			return sReturn
+		for l in logfile:
+			if itm in d and itm in l:
+				sReturn = itm + ": " + s_Count(itm, logfile) + "\n"
+				sReturn +="\t" + d[itm]
+				return sReturn
 	return None
 
 ######################################
@@ -839,7 +845,17 @@ def main(file_list):
 							if tmp_val is not None:
 								print(tmp_val, file=REPORT)
 
+					if "HUD" in cul:
+						for h in simple_HUD:
+							tmp_val = ""
+							tmp_val = show_Simple(h,DATA)
+							if tmp_val is not None:
+								print(tmp_val, file=REPORT)
 
+						tmp_val = ""
+						tmp_val = show_issue_occourence(cul,DATA,printed)
+						if tmp_val is not None:
+							print(tmp_val, file=REPORT)
 
 					if "Modified by" in cul:
 						tmp_val = ""
@@ -854,7 +870,7 @@ def main(file_list):
 						if match:
 							ver_HDTSMP = get_version_Mod(match.group(0))
 						else:
-							tmp_val = "Could not determine HDTSMP version."
+							tmp_val = "\tCould not determine HDTSMP version.\n"
 
 						# Prepare version comparision
 						tmp_val += f"\tYou are using FSMP version: {ver_HDTSMP.Full}\n"
