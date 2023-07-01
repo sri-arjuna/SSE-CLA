@@ -29,7 +29,6 @@ script_title = script_name + " (" + script_version + ") / " + script_changed
 ### Python Version Check
 ######################################
 import sys
-
 if sys.version_info[:2] < (3, 3):
 	print("This script requires Python 3.3 or higher.")
 	print("Please download and install it from https://www.python.org/downloads/")
@@ -578,9 +577,7 @@ def solve_Mods(FileContent) -> str:
 			break
 	return sReturn
 
-from collections import Counter  # TODO maybe sometime later
-
-
+from collections import Counter  # TODO maybe sometime later0
 def show_issue_occourence__OLD(issue: str, FileContent: list, list2add: list) -> str:
 	"""Parses through 'FileContent' looking for 'issue', prints 'issue' if found and not in list2add yet"""
 	sReturn = ""
