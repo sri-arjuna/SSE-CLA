@@ -577,7 +577,7 @@ def solve_Mods(FileContent) -> str:
 			break
 	return sReturn
 
-from collections import Counter  # TODO maybe sometime later0
+from collections import Counter  # TODO maybe sometime later
 def show_issue_occourence__OLD(issue: str, FileContent: list, list2add: list) -> str:
 	"""Parses through 'FileContent' looking for 'issue', prints 'issue' if found and not in list2add yet"""
 	sReturn = ""
