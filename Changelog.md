@@ -8,6 +8,18 @@ Until then, its only a log of what I've changed to prepare update info on Nexus.
 
 ----
 
+# 2023.07.01 - 1.0
+- Completly rewritten code from ground up
+- - Error message with pause on:
+- - - Permission issue
+- - - No Crashlogger detected
+- - - Most common parsing issues
+- - Made Console output more fancy
+- - - Should help (be more comfortable) on big files
+- - Supports path as argument, to read logs of other dirs. (see ReadMe.md for details)
+- Added HUD section (needs fine tuning)
+- Seperated XPMSE as independent issue
+
 # 2023.06.23 - 0.9b
 - Added: Covered topics count
 - Fix: Print faster hdtsmp version only once
