@@ -526,7 +526,7 @@ def get_version_Mod(str_Mod: str) -> VersionData:
 	sBuild = 0
 	# Prepare string
 	exp = r"(?:(64_)?)((\d+[\._]){2}\d+)"
-	str_work = re.search(exp, str_Mod).groups()  
+	str_work = re.search(exp, str_Mod).groups()
 	full_tmp = str_work[1]
 	# Split to subsections
 	if "_" in full_tmp:
@@ -544,7 +544,7 @@ def get_version_Mod(str_Mod: str) -> VersionData:
 	# Print proper "full"
 	sFull = f"{sMajor}.{sMinor}.{sBuild}"
 	# Return dictionary
-	return VersionData(sFull, sMajor, sMinor, sBuild) 
+	return VersionData(sFull, sMajor, sMinor, sBuild)
 
 
 def solve_SKSE(skyrim: VersionData, skse: VersionData) -> str:
@@ -611,7 +611,7 @@ def show_issue_occourence(issue: str, FileContent: list, list2add: list) -> str:
     if sReturn != "":
         return f"\n{sReturn}"
     else:
-        return None 
+        return None
 
 ##################################################################################################################
 ### Main Function
@@ -683,7 +683,7 @@ def main(file_list):
 				# Get SKSE version
 				first_pass_str = ''.join(DATA)
 				ver_SKSE = re.search("skse.*\\.dll", first_pass_str)
-				ver_SKSE = get_version_Mod(ver_SKSE.group(0)) 
+				ver_SKSE = get_version_Mod(ver_SKSE.group(0))
 				
 				# Unhandled Exception
 				#line_Unhandled = re.search(r"^Unhandled(\snative)?\s+exception", first_pass_str)
@@ -712,7 +712,7 @@ def main(file_list):
 				# RAM
 				# 2
 				tRAM =get_RAM(first_pass_str)
-				print( p_section("RAM") + solve_RAM(tRAM), file=REPORT) 
+				print( p_section("RAM") + solve_RAM(tRAM), file=REPORT)
 				progress_bar.update(1)
 				# Mods
 				# 3
@@ -721,16 +721,16 @@ def main(file_list):
 				# 4
 				strUnhandled = ""
 				strUnhandled = p_section("Header indicators:")
-				strUnhandled += f"Memory:  		{UnhandledData.mem}		{s_Count(UnhandledData.mem, DATA)}\n" 
-				strUnhandled += f"File:    		{UnhandledData.file}		{s_Count(UnhandledData.file, DATA)}\n" 
-				strUnhandled += f"Address: 		{UnhandledData.adress}			{s_Count(UnhandledData.adress, DATA)}\n" 
-				strUnhandled += f"Assembler:		{UnhandledData.assembler}	{s_Count(UnhandledData.assembler, DATA)}\n" 
+				strUnhandled += f"Memory:  		{UnhandledData.mem}		{s_Count(UnhandledData.mem, DATA)}\n"
+				strUnhandled += f"File:    		{UnhandledData.file}		{s_Count(UnhandledData.file, DATA)}\n"
+				strUnhandled += f"Address: 		{UnhandledData.adress}			{s_Count(UnhandledData.adress, DATA)}\n"
+				strUnhandled += f"Assembler:		{UnhandledData.assembler}	{s_Count(UnhandledData.assembler, DATA)}\n"
 				# Print occoureces of Unhandled
 				ud_list = []
-				ud_list.append(UnhandledData.file) 
-				ud_list.append(UnhandledData.mem) 
-				ud_list.append(UnhandledData.adress) 
-				ud_list.append(UnhandledData.assembler) 
+				ud_list.append(UnhandledData.file)
+				ud_list.append(UnhandledData.mem)
+				ud_list.append(UnhandledData.adress)
+				ud_list.append(UnhandledData.assembler)
 				for ud in ud_list:
 					if "Skyrim" in ud:
 						found_match = False
@@ -837,7 +837,7 @@ def main(file_list):
 						tmp_val = ""
 						tmp_val = show_issue_occourence(cul, DATA, printed)
 						for engR in simple_Engine:
-							tmp_val += show_Simple(engR, DATA) 
+							tmp_val += show_Simple(engR, DATA)
 							tmp_val += show_issue_occourence(engR, DATA, printed)
 						print(tmp_val, file=REPORT)
 
@@ -990,16 +990,16 @@ else:
 # This should retrieve files, 
 # and raise exception if permission is missing.
 try:
-	workfiles = get_crash_logs(logdir) 
+	workfiles = get_crash_logs(logdir)
 except Exception:
 	# Practical tests show, this is raised on permission issue:
-	print_error(err_CLA.NoPerm, logdir) 
+	print_error(err_CLA.NoPerm, logdir)
 	os.system("pause")
 	sys.exit(1)
 # Don't call main() if there is nothing to do
 if len(workfiles) == 0:
 	#print("\nEither there are no logs in: \n\t",logdir,"\n\nOr all logs have a Report.\nEither way, nothing to do...\n\n")
-	print_error(err_CLA.NoFiles, logdir) 
+	print_error(err_CLA.NoFiles, logdir)
 else:
 	# Start routine / handle file by file
 	main(workfiles)
