@@ -17,15 +17,6 @@
 
  -----------------------------------------------------------------------------
 """
-import os
-import re
-import time  # # Not really required, but otherwise we get 0 files on tqdm's progressbar...
-from dataclasses import dataclass  # dict_RAM and others
-from enum import Enum
-from multiprocessing import freeze_support  # pip install multiprocessing
-
-from cpuinfo import get_cpu_info  # pip install py-cpuinfo
-from tqdm import tqdm  # Progress bar
 
 ######################################
 ### Script Variables
@@ -46,7 +37,15 @@ if sys.version_info[:2] < (3, 3):
 ######################################
 ### Imports
 ######################################
+import os
+import re
+import time  # # Not really required, but otherwise we get 0 files on tqdm's progressbar...
+from dataclasses import dataclass  # dict_RAM and others
+from enum import Enum
+from multiprocessing import freeze_support  # pip install multiprocessing
 
+from cpuinfo import get_cpu_info  # pip install py-cpuinfo
+from tqdm import tqdm  # Progress bar
 ######################################
 ### Dictionaries
 ######################################
