@@ -164,6 +164,8 @@ simple_Chance = {
 				+ "\tIf the results show a DLC, it is probable that another mod overwrites that texture.\n"
 				+ "\tIf you do not get a specific texture name, you might want to extract the according '*.BSA' of any found '*.esp' or '*.esm', that is not a DLC.esm.\n"
 				+ "\tHowever, best practice would probably be to disable texture mods that change locations you crashed in.",
+	'XPMSE': "This _might_ shows a probable issue with animations.\n" \
+				+ "\tPlease check mods that add animations.",
 }
 # Dialogue - no detailed description, summarizing in if block
 simple_Dialog = {
@@ -862,6 +864,11 @@ def main(file_list):
 						tmp_val = show_issue_occourence(cul,DATA,printed)
 						print(tmp_val, file=REPORT)
 
+					if "XPMSE" in cul:
+						tmp_val = ""
+						tmp_val = show_issue_occourence(cul, DATA, printed)
+						print(tmp_val, file=REPORT)
+
 					if "hdtSMP64.dll" in cul:
 						tmp_val = ""
 						pattern = r"skse64_(\d+)_(\d+)_(\d+)"
@@ -923,8 +930,22 @@ def main(file_list):
 					progress_bar.update(1)
 
 
-				# Finals
+				# Finals (default handling)
 				print(p_debug_status(debugList=culprints, iCount=len(culprints), iSolved=c), file=REPORT)
+
+				# Random issues (fallback, additional, probably to figure unhandled:
+				lst_Random = []
+				lst_Random.append("File:")
+				lst_Random.append("Name:")
+				lst_Random.append("XPMSEWeaponStyleScaleEffect")
+				print(p_section("Random 'Fallback' Checks") , file=REPORT)
+				#lst_Random.append("")
+				for r in lst_Random:
+					tmp_val = ""
+					tmp_val = show_issue_occourence(r,DATA,printed)
+					if tmp_val is not None and tmp_val != "":
+						print(tmp_val, file=REPORT)
+
 	return
 
 ######################################
