@@ -222,6 +222,7 @@ list_dict.remove("simple_Skyrim")
 list_dict.remove("simple_Engine")
 list_dict.remove("simple_Racemenu")
 list_dict.remove("simple_Dialog")
+list_dict.remove("simple_HUD")
 
 
 ######################################
@@ -614,12 +615,15 @@ def show_issue_occourence(issue: str, FileContent: list, list2add: list) -> str:
 def main(file_list):
 	"""Get additional cpu info, loop all files and start related functions"""
 	# Variables
-	files_max = len(file_list)
+	files_max = len(file_list) - 1
 	files_cur = 0
 	# Multiprocess avoidance
 	if __name__ == '__main__':
 		freeze_support()
 		info_cpu = get_cpu_info()
+		# Count dictionary solutions and print console header
+		console_Header(count_solution_64, count_solution_VR)
+
 	# Start parsing passed files:
 	for thisLOG in file_list:
 		files_cur += 1
@@ -633,7 +637,7 @@ def main(file_list):
 		with open(thisLOG, 'r', encoding="utf-8", errors="ignore") as LOG:
 			DATA = LOG.readlines()
 			print("\t",end="")
-			with tqdm(total=(count_solution_All - len(simple_Skyrim)), desc="* Searching...", unit=" culprint") as progress_bar:
+			with tqdm(total=(count_solution_All - len(simple_Skyrim) - len(simple_Racemenu) - len(simple_Engine) - len(simple_Dialog) - len(simple_HUD) ), desc="* Searching...", unit=" culprint") as progress_bar:
 				# Expand list of all dictionaries
 				for lad in list_dict:
 					# Expand var to dict:
@@ -690,7 +694,7 @@ def main(file_list):
 					sys.exit(1)
 		# Let's open the report for writing
 		thisReport = thisLOG.removesuffix(".log")  + '-REPORT.txt'
-		with tqdm(total=abs(len(culprints) + 4), desc="* Solving...", unit=" issues") as progress_bar:
+		with tqdm(total=abs(len(culprints) + 3), desc="* Solving...", unit=" issues") as progress_bar:
 			with open(thisReport, "w", encoding="utf-8", errors="ignore") as REPORT:
 				# Basic Header
 				print(p_title(script_title), file=REPORT)
@@ -993,8 +997,6 @@ if len(workfiles) == 0:
 	#print("\nEither there are no logs in: \n\t",logdir,"\n\nOr all logs have a Report.\nEither way, nothing to do...\n\n")
 	print_error(err_CLA.NoFiles, logdir)
 else:
-	# Count dictionary solutions and print console header
-	console_Header(count_solution_64, count_solution_VR)
 	# Start routine / handle file by file
 	main(workfiles)
 
