@@ -2,38 +2,57 @@ CLA SSE - Sephs Skyrim Experimental Crash Log Analyzer
 -------------------------------------------------------
 
 # Goal:
-- Get an easy-to-read indication of the most probable cause for the crash.
-- Provide a list of 1 or more possible culprits (reasons) 
-- Print/Summarize original lines only once for easier debugging
-- Shorten the things to read compared to original (raw) crash log file
-
+-Obtain a user-friendly indication of the most likely cause of the crash.
+-Present a list of one or more potential culprits (reasons).
+- Condense the information from the original crash log file for easier debugging.
 
 ----
 
 # Reason:
-- Got tired of reading crash logs and there is nothing available like that for Skyrim.
-- So I decided to write one myself.
+- Addressing the need for a more accessible method of analyzing crash logs in Skyrim.
+- Developed this tool to streamline the process.
 
+----
+
+# FYI - Experimental:
+- An introductory project to familiarize myself with crash log analysis.
+- Limited knowledge of memory addresses.
+- Community-driven solutions.
 
 ----
 
 # Requirements:
-* [Crash Logger](https://www.nexusmods.com/skyrimspecialedition/mods/59596) or [Crash Logger SSE AE VR - PDB support](https://www.nexusmods.com/skyrimspecialedition/mods/59818)
-* [Python 3.3 or higher](https://www.python.org/downloads/) (this applies to the py script version only, obviously.)
+* General:
+* * Recomended: [Crash Logger SSE AE VR - PDB support](https://www.nexusmods.com/skyrimspecialedition/mods/59818)
+* * Alternative: [Crash Logger](https://www.nexusmods.com/skyrimspecialedition/mods/59596)
+* Github:
+* * Get Python script: from [GitHub](https://github.com/sri-arjuna/SSE-CLA)
+* * [Python 3.3 or higher](https://www.python.org/downloads/) 
+* * Multiple imports (sys, os, re, time, enum, cpuinfo, multiprocessing, tqdm, dataclass )
+* Nexus:
+* * Get compiled version: [CLA SSE](https://www.nexusmods.com/skyrimspecialedition/mods/89860)
 
-
-***Note:*** *if you are using my [Skyrim SE collection for Vortex](https://next.nexusmods.com/skyrimspecialedition/collections/1bxi7n), you only need to make sure that python is installed. (if you use the github version)*
 
 ### PS:
-*** While Crash Logger is listed as mandatory, I've added **basic** support for the NetScriptFramework, so that the scripot (should) run without failing. 
-However, the NetScriptFramework is __not__ supported as such.***
+*While Crash Logger is mandatory, I've added basic support for the NetScriptFramework to ensure the script runs without issues.* 
+
+*However, please note that the NetScriptFramework is not officially supported, and will result on weird and incomplete results.*
 
 ----
 
 # Installation:
 * Download file
 * Extract to \<My Games\>\Skyrim \<Version\>\SKSE
-* Make sure you have at least Python 3.3 installed on your system (See notes in Requirements)
+* Double click the file.
+
+### Alternative:
+
+- You can download the tool to any directory you want.
+- Start it like: 
+- - python.exe CLA_SSE.py "C:\Path with spaces\to\logs"
+- - CLA_SSE.exe "C:\Path with spaces\to\logs"
+- This will read the log files from that path, and write the reports there too.
+- Note that you still need to have write permission to do so.
 
 ----
 
@@ -43,30 +62,14 @@ However, the NetScriptFramework is __not__ supported as such.***
 * Fix issues
 * Profit
 
-### Important:
-
-Depending on the security settings of your system, Windows might block access for the script (as it needs read/write access).
-Be sure to give it the according permission, if required, there will be a notification right of the clock in the windows taskbar.
-
-Also, if the script / exe fails to execute, please send me the console output and the original crashlog.
-
-https://www.youtube.com/watch?v=SFw9HArJ-QI
-
-----
-
-# Experimental:
-- Allthough I'm able to read multiple code languages, I've never written anything in python.
-- Basicly, this is my "Hello World"
-
-
 ----
 
 # License:
 GNU GPL v2 --> [LICENSE](./LICENSE)
-
 
 ----
 
 # Credits
 - Bethesda for Skyrim
 - the Ostim community for their guide on how to read the Crashlogs and providing me textfiles with notes on solutions.
+- the Python Discord community for their help and patience
