@@ -17,6 +17,16 @@
 
  -----------------------------------------------------------------------------
 """
+import os
+import re
+import time  # # Not really required, but otherwise we get 0 files on tqdm's progressbar...
+from dataclasses import dataclass  # dict_RAM and others
+from enum import Enum
+from multiprocessing import freeze_support  # pip install multiprocessing
+
+from cpuinfo import get_cpu_info  # pip install py-cpuinfo
+from tqdm import tqdm  # Progress bar
+
 ######################################
 ### Script Variables
 ######################################
@@ -28,21 +38,14 @@ script_title = script_name + " (" + script_version + ") / " + script_changed
 ### Python Version Check
 ######################################
 import sys
-if sys.version_info < (3, 3):
+
+if sys.version_info[:2] < (3, 3):
 	print("This script requires Python 3.3 or higher.")
 	print("Please download and install it from https://www.python.org/downloads/")
 	sys.exit(1)
 ######################################
 ### Imports
 ######################################
-import os
-import re
-import time		## Not really required, but otherwise we get 0 files on tqdm's progressbar...
-from enum import Enum
-from cpuinfo import get_cpu_info				# pip install py-cpuinfo
-from multiprocessing import freeze_support		# pip install multiprocessing
-from tqdm import tqdm							# Progress bar
-from dataclasses import dataclass				# dict_RAM and others
 
 ######################################
 ### Dictionaries
@@ -159,7 +162,7 @@ simple_Chance = {
 				+ "\tIf you do have other indicators, try to solve those first!\n"
 				+ "\tThat said, it is common to have 2-4 mods listed in a row, however, \n"
 				+ "\tlists of 5 or more _might_ cause issues by the sheer amount of what possibly could be overwritten several times.",
-	'lanterns\lantern.dds': "If you are using: 'Lanterns of Skyrim II' and 'JK Skyrim' do not install the 'No Lights Patch' since LoS II patch is meant to be used without it.",
+	'lanterns\\lantern.dds': "If you are using: 'Lanterns of Skyrim II' and 'JK Skyrim' do not install the 'No Lights Patch' since LoS II patch is meant to be used without it.",
 	'CompressedArchiveStream': "Indicates an issue with a corrupted texture.\n"
 				+ "\tIf the results show a DLC, it is probable that another mod overwrites that texture.\n"
 				+ "\tIf you do not get a specific texture name, you might want to extract the according '*.BSA' of any found '*.esp' or '*.esm', that is not a DLC.esm.\n"
@@ -242,7 +245,7 @@ class err_CLA(Enum):
 		+ "\tPlease check your Windows security notifications (next to the clock in the taskbar).\n"
 	NoSeparator = "Error: \n" \
 		+ "Could find neither '.' nor '_' as seperator in string: %s\n"
-	Usage = "Usage: CLA_SSE.py [\"C:\some dir\\to\\logs\"]"
+	Usage = "Usage: CLA_SSE.py [\"C:\\some dir\\to\\logs\"]"
 
 	def format(self, err_msg):
 		return self.value % err_msg
@@ -269,7 +272,7 @@ def console_Header(total_Skyrim=0, total_VR=0):
 	"""Prints basic disclaimer-heading on the console"""
 	print("=====================================================================================")
 	print("THE SCRIPT MUST BE IN THE SAME FOLDER AS YOUR CRASH LOGS, WHICH MUST BE 'crash-*.log'")
-	print("Usually this is:		  %userprofile%\Documents\My Games\Skyrim Special Edition\SKSE")
+	print("Usually this is:		  %userprofile%\\Documents\\My Games\\Skyrim Special Edition\\SKSE")
 	#print("-------------------------------------------------------------------------------------")
 	#print("If you get an error 'File not found', make sure that have applied the exception for")
 	#print("this script to allow it to have read/write access within this folder.")
@@ -524,7 +527,7 @@ def get_version_Mod(str_Mod: str) -> VersionData:
 	sBuild = 0
 	# Prepare string
 	exp = r"(?:(64_)?)((\d+[\._]){2}\d+)"
-	str_work = re.search(exp, str_Mod).groups()
+	str_work = re.search(exp, str_Mod).groups()  # type: ignore
 	full_tmp = str_work[1]
 	# Split to subsections
 	if "_" in full_tmp:
@@ -542,7 +545,7 @@ def get_version_Mod(str_Mod: str) -> VersionData:
 	# Print proper "full"
 	sFull = f"{sMajor}.{sMinor}.{sBuild}"
 	# Return dictionary
-	return VersionData(sFull, sMajor, sMinor, sBuild)
+	return VersionData(sFull, sMajor, sMinor, sBuild) # type: ignore
 
 
 def solve_SKSE(skyrim: VersionData, skse: VersionData) -> str:
@@ -576,7 +579,9 @@ def solve_Mods(FileContent) -> str:
 			break
 	return sReturn
 
-from collections import Counter		# TODO maybe sometime later
+from collections import Counter  # TODO maybe sometime later
+
+
 def show_issue_occourence__OLD(issue: str, FileContent: list, list2add: list) -> str:
 	"""Parses through 'FileContent' looking for 'issue', prints 'issue' if found and not in list2add yet"""
 	sReturn = ""
@@ -607,7 +612,7 @@ def show_issue_occourence(issue: str, FileContent: list, list2add: list) -> str:
     if sReturn != "":
         return f"\n{sReturn}"
     else:
-        return None
+        return None # type: ignore
 
 ##################################################################################################################
 ### Main Function
@@ -678,8 +683,8 @@ def main(file_list):
 				# Apply to both, if and elif...
 				# Get SKSE version
 				first_pass_str = ''.join(DATA)
-				ver_SKSE = re.search("skse.*\.dll", first_pass_str)
-				ver_SKSE = get_version_Mod(ver_SKSE.group(0))
+				ver_SKSE = re.search("skse.*\\.dll", first_pass_str)
+				ver_SKSE = get_version_Mod(ver_SKSE.group(0)) # type: ignore
 				
 				# Unhandled Exception
 				#line_Unhandled = re.search(r"^Unhandled(\snative)?\s+exception", first_pass_str)
@@ -708,7 +713,7 @@ def main(file_list):
 				# RAM
 				# 2
 				tRAM =get_RAM(first_pass_str)
-				print( p_section("RAM") + solve_RAM(tRAM), file=REPORT)
+				print( p_section("RAM") + solve_RAM(tRAM), file=REPORT) # type: ignore
 				progress_bar.update(1)
 				# Mods
 				# 3
@@ -717,16 +722,16 @@ def main(file_list):
 				# 4
 				strUnhandled = ""
 				strUnhandled = p_section("Header indicators:")
-				strUnhandled += f"Memory:  		{UnhandledData.mem}		{s_Count(UnhandledData.mem, DATA)}\n"
-				strUnhandled += f"File:    		{UnhandledData.file}		{s_Count(UnhandledData.file, DATA)}\n"
-				strUnhandled += f"Address: 		{UnhandledData.adress}			{s_Count(UnhandledData.adress, DATA)}\n"
-				strUnhandled += f"Assembler:		{UnhandledData.assembler}	{s_Count(UnhandledData.assembler, DATA)}\n"
+				strUnhandled += f"Memory:  		{UnhandledData.mem}		{s_Count(UnhandledData.mem, DATA)}\n" # type: ignore
+				strUnhandled += f"File:    		{UnhandledData.file}		{s_Count(UnhandledData.file, DATA)}\n" # type: ignore
+				strUnhandled += f"Address: 		{UnhandledData.adress}			{s_Count(UnhandledData.adress, DATA)}\n" # type: ignore
+				strUnhandled += f"Assembler:		{UnhandledData.assembler}	{s_Count(UnhandledData.assembler, DATA)}\n" # type: ignore
 				# Print occoureces of Unhandled
 				ud_list = []
-				ud_list.append(UnhandledData.file)
-				ud_list.append(UnhandledData.mem)
-				ud_list.append(UnhandledData.adress)
-				ud_list.append(UnhandledData.assembler)
+				ud_list.append(UnhandledData.file) # type: ignore
+				ud_list.append(UnhandledData.mem) # type: ignore
+				ud_list.append(UnhandledData.adress) # type: ignore
+				ud_list.append(UnhandledData.assembler) # type: ignore
 				for ud in ud_list:
 					if "Skyrim" in ud:
 						found_match = False
@@ -820,7 +825,7 @@ def main(file_list):
 						str_Mesh = ""
 						for mLine in DATA:
 							mesh_lines.append(mLine)
-							if "mesh" in mLine.lower and not any(mLine.strip() in p for p in printed):
+							if "mesh" in mLine.lower() and not any(mLine.strip() in p for p in printed):
 								list_add(mLine.strip(), printed)
 								str_Mesh += mLine
 								str_Mesh += mesh_lines[-1]
@@ -833,7 +838,7 @@ def main(file_list):
 						tmp_val = ""
 						tmp_val = show_issue_occourence(cul, DATA, printed)
 						for engR in simple_Engine:
-							tmp_val += show_Simple(engR, DATA)
+							tmp_val += show_Simple(engR, DATA) # type: ignore
 							tmp_val += show_issue_occourence(engR, DATA, printed)
 						print(tmp_val, file=REPORT)
 
@@ -986,16 +991,16 @@ else:
 # This should retrieve files, 
 # and raise exception if permission is missing.
 try:
-	workfiles = get_crash_logs(logdir)
+	workfiles = get_crash_logs(logdir) # type: ignore
 except Exception:
 	# Practical tests show, this is raised on permission issue:
-	print_error(err_CLA.NoPerm, logdir)
+	print_error(err_CLA.NoPerm, logdir) # type: ignore
 	os.system("pause")
 	sys.exit(1)
 # Don't call main() if there is nothing to do
 if len(workfiles) == 0:
 	#print("\nEither there are no logs in: \n\t",logdir,"\n\nOr all logs have a Report.\nEither way, nothing to do...\n\n")
-	print_error(err_CLA.NoFiles, logdir)
+	print_error(err_CLA.NoFiles, logdir) # type: ignore
 else:
 	# Start routine / handle file by file
 	main(workfiles)
