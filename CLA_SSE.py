@@ -716,22 +716,22 @@ def main(file_list):
 				ud_list.append(UnhandledData.adress)
 				ud_list.append(UnhandledData.assembler)
 				for ud in ud_list:
-					tmp_val = ""
 					if "Skyrim" in ud:
+						found_match = False
 						for sS in simple_Skyrim:
 							check_Sky = f"{ud}+{sS}"
 							tmp_val = show_issue_occourence(check_Sky, DATA, printed)
 							if tmp_val is not None:
-								pass
-							else:
-								tmp_val = f"{show_issue_occourence(ud, DATA, printed)}\n"
-								if tmp_val is None:
-									pass
-								strUnhandled += tmp_val
+								found_match = True
+								break
+						if not found_match:
+							tmp_val = show_issue_occourence(ud, DATA, printed)
+							if tmp_val is not None:
+								strUnhandled += tmp_val + "\n"
 					else:
 						tmp_val = show_issue_occourence(ud, DATA, printed)
 						if tmp_val is not None:
-							strUnhandled += tmp_val
+							strUnhandled += tmp_val + "\n"
 
 				print(strUnhandled, file=REPORT)
 				progress_bar.update(1)
@@ -757,21 +757,31 @@ def main(file_list):
 						str_Skyrim = ""
 						for ad in simple_Skyrim:
 							addr = cul + ad
+							tmp_val2 = ""
 							for adLine in DATA:
+								tmp_val
 								if addr in adLine:
 									# TODO: Verify counter for VR and regular
 									if "VR" in cul:
-										str_Skyrim += print_line(simple_VR[ad],printed,"")
-										skyrimexe_counter += 1
+										tmp_val = print_line(simple_VR[ad],printed,"")
+										if tmp_val is not None or tmp_val != "":
+											str_Skyrim += tmp_val
+											skyrimexe_counter += 1
 									else:
-										str_Skyrim += print_line(simple_Skyrim[ad],printed,"")
-										skyrimexe_counter += 1
+										tmp_val = print_line(simple_Skyrim[ad],printed,"")
+										if tmp_val is not None or tmp_val != "":
+											str_Skyrim += tmp_val
+											skyrimexe_counter += 1
 
-									print_line(adLine,printed,"")
+									tmp_val2 = print_line(adLine,printed,"")
+								if tmp_val2 is not None or tmp_val2 != "":
+									str_Skyrim += tmp_val2
+						if str_Skyrim is not None or str_Skyrim != "":
+							print(str_Skyrim, file=REPORT)
 						if skyrimexe_counter == 0:
 							str_Skyrim = f"\n\tCould not find any known issues related to {cul}.\n" \
 								  + f"\t{cul} _might_ be listed for the sole reason of... you're playing this game!!"
-						print(str_Skyrim, file=REPORT)
+
 
 					if "CompressedArchiveStream" in cul:
 						for gamefile in ".esp" ".esm" ".dds":
