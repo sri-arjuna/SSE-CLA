@@ -307,15 +307,15 @@ def p_debug_status(debugList, iCount=0, iSolved=0) -> str:
 	return sReturn
 
 
-def show_Simple(itm, logfile) -> str | None:
+def show_Simple(itm, FileContent) -> str | None:
 	"""Check dict's for itm and prints the according entry, while printing nice 'section'"""
 	# Print simple solution
 	for lad in list_all_dict:
 		# Expand var to dict:
 		d = globals()[lad]
-		for l in logfile:
+		for l in FileContent:
 			if itm in d and itm in l:
-				sReturn = itm + ": " + s_Count(itm, logfile) + "\n"
+				sReturn = itm + ": " + s_Count(itm, FileContent) + "\n"
 				sReturn +="\t" + d[itm]
 				return sReturn
 	return None
@@ -323,10 +323,10 @@ def show_Simple(itm, logfile) -> str | None:
 ######################################
 ### Functions:		Strings & Lists
 ######################################
-def s_Count(txt, log):
+def s_Count(txt, FileContent):
 	"""Returns 'count' of 'txt' found in 'log'"""
 	count = 0
-	for line in log:
+	for line in FileContent:
 		if txt in line:
 			count += 1
 	#return "(count: " + str(count) + ")"
@@ -334,7 +334,7 @@ def s_Count(txt, log):
 
 
 def list_add(item, list) -> list:
-	"""Add item to a list."""
+	"""Add item to a list if not in list already."""
 	if item not in list:
 		list.append(item)
 	return list
@@ -366,7 +366,7 @@ class RamData:
 	free: float
 
 def get_RAM(FileContent) -> RamData | None:
-	"""Parses rString and returns a dict with: Total, Used, Free"""
+	"""Parses FileContent and returns a Dataclass with: Total, Used, Free"""
 	match = re.search(r'PHYSICAL MEMORY: (\d+\.\d+) GB/(\d+\.\d+) GB', FileContent)
 	dict_RAM = {}
 	if match:
@@ -457,7 +457,7 @@ class UnhandledData:
 	assembler: str
 
 def get_Unhandled(sUnhandled: str) -> UnhandledData | None:
-	"""Returns a dataclass of UnhandledExceptions"""
+	"""Returns a dataclass of UnhandledExceptions: file, mem, address, assembler"""
 	parts = sUnhandled.split(" at ")
 	subparts = parts[1].split(" ")
 
@@ -623,7 +623,7 @@ def main(file_list):
 	if __name__ == '__main__':
 		freeze_support()
 		info_cpu = get_cpu_info()
-		# Count dictionary solutions and print console header
+		# Print console header only once, idk why this otherwise gets printed twice when compiled
 		console_Header(count_solution_64, count_solution_VR)
 
 	# Start parsing passed files:
@@ -684,7 +684,6 @@ def main(file_list):
 				ver_SKSE = get_version_Mod(ver_SKSE.group(0))
 				
 				# Unhandled Exception
-				#line_Unhandled = re.search(r"^Unhandled(\snative)?\s+exception", first_pass_str)
 				line_Unhandled = re.search(r"Unhandled(\s+native)?\s+exception.*", first_pass_str)
 				if line_Unhandled:
 					line_Unhandled = line_Unhandled.group(0)
@@ -696,6 +695,7 @@ def main(file_list):
 					sys.exit(1)
 		# Let's open the report for writing
 		thisReport = thisLOG.removesuffix(".log")  + '-REPORT.txt'
+		# has to be 1 less than counted to fix 0 index
 		with tqdm(total=abs(len(culprints) + 3), desc="* Solving...", unit=" issues") as progress_bar:
 			with open(thisReport, "w", encoding="utf-8", errors="ignore") as REPORT:
 				# Basic Header
@@ -763,6 +763,7 @@ def main(file_list):
 					# Start detailed analysis...
 					if r"modules(:)" in cul.lower():
 						# Reached module list, skip to avoid false positves
+						# TODO modules in culprint?
 						print("Skip modules")
 						continue
 					if re.search(r"Skyrim.*\.exe", cul):
@@ -786,7 +787,6 @@ def main(file_list):
 										if tmp_val is not None or tmp_val != "":
 											str_Skyrim += tmp_val
 											skyrimexe_counter += 1
-
 									tmp_val2 = print_line(adLine,printed,"")
 								if tmp_val2 is not None or tmp_val2 != "":
 									str_Skyrim += tmp_val2
@@ -795,8 +795,6 @@ def main(file_list):
 										 + f"\t{cul} _might_ be listed for the sole reason of... you're playing this game!!"
 						if str_Skyrim is not None or str_Skyrim != "":
 							print(str_Skyrim, file=REPORT)
-
-
 
 					if "CompressedArchiveStream" in cul:
 						for gamefile in ".esp" ".esm" ".dds":
@@ -860,7 +858,6 @@ def main(file_list):
 							tmp_val = show_Simple(h,DATA)
 							if tmp_val is not None:
 								print(tmp_val, file=REPORT)
-
 						tmp_val = ""
 						tmp_val = show_issue_occourence(cul,DATA,printed)
 						if tmp_val is not None:
@@ -920,14 +917,7 @@ def main(file_list):
 								tmp_val += f"\t\t{ax}:\t{avx_available}\n"
 						print(tmp_val, file=REPORT)
 
-
-
-						#TODO
-						#TODO
-						#TODO
-						#TODO
-
-
+						#TODO more keywords / culprints ?
 
 					# Count "solved issues" and check whether more culprints are in the list...
 					c += 1
@@ -967,6 +957,7 @@ ver_SKSE = {}
 ver_HDTSMP = {}
 
 # Do path detection if required:
+#TODO: write logs to script dir?
 if contains_path:
 	args_possible = False
 	#work_dir = script_path
