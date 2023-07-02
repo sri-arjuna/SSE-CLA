@@ -28,7 +28,7 @@ script_title = script_name + " (" + script_version + ") / " + script_changed
 ### Python Version Check
 ######################################
 import sys
-if sys.version_info < (3, 3):
+if sys.version_info[:2] < (3, 3):
 	print("This script requires Python 3.3 or higher.")
 	print("Please download and install it from https://www.python.org/downloads/")
 	sys.exit(1)
@@ -37,13 +37,13 @@ if sys.version_info < (3, 3):
 ######################################
 import os
 import re
-import time		## Not really required, but otherwise we get 0 files on tqdm's progressbar...
+import time  # # Not really required, but otherwise we get 0 files on tqdm's progressbar...
+from dataclasses import dataclass  # dict_RAM and others
 from enum import Enum
-from cpuinfo import get_cpu_info				# pip install py-cpuinfo
-from multiprocessing import freeze_support		# pip install multiprocessing
-from tqdm import tqdm							# Progress bar
-from dataclasses import dataclass				# dict_RAM and others
+from multiprocessing import freeze_support  # pip install multiprocessing
 
+from cpuinfo import get_cpu_info  # pip install py-cpuinfo
+from tqdm import tqdm  # Progress bar
 ######################################
 ### Dictionaries
 ######################################
@@ -159,7 +159,7 @@ simple_Chance = {
 				+ "\tIf you do have other indicators, try to solve those first!\n"
 				+ "\tThat said, it is common to have 2-4 mods listed in a row, however, \n"
 				+ "\tlists of 5 or more _might_ cause issues by the sheer amount of what possibly could be overwritten several times.",
-	'lanterns\lantern.dds': "If you are using: 'Lanterns of Skyrim II' and 'JK Skyrim' do not install the 'No Lights Patch' since LoS II patch is meant to be used without it.",
+	'lanterns\\lantern.dds': "If you are using: 'Lanterns of Skyrim II' and 'JK Skyrim' do not install the 'No Lights Patch' since LoS II patch is meant to be used without it.",
 	'CompressedArchiveStream': "Indicates an issue with a corrupted texture.\n"
 				+ "\tIf the results show a DLC, it is probable that another mod overwrites that texture.\n"
 				+ "\tIf you do not get a specific texture name, you might want to extract the according '*.BSA' of any found '*.esp' or '*.esm', that is not a DLC.esm.\n"
@@ -242,7 +242,7 @@ class err_CLA(Enum):
 		+ "\tPlease check your Windows security notifications (next to the clock in the taskbar).\n"
 	NoSeparator = "Error: \n" \
 		+ "Could find neither '.' nor '_' as seperator in string: %s\n"
-	Usage = "Usage: CLA_SSE.py [\"C:\some dir\\to\\logs\"]"
+	Usage = "Usage: CLA_SSE.py [\"C:\\some dir\\to\\logs\"]"
 
 	def format(self, err_msg):
 		return self.value % err_msg
@@ -269,7 +269,7 @@ def console_Header(total_Skyrim=0, total_VR=0):
 	"""Prints basic disclaimer-heading on the console"""
 	print("=====================================================================================")
 	print("THE SCRIPT MUST BE IN THE SAME FOLDER AS YOUR CRASH LOGS, WHICH MUST BE 'crash-*.log'")
-	print("Usually this is:		  %userprofile%\Documents\My Games\Skyrim Special Edition\SKSE")
+	print("Usually this is:		  %userprofile%\\Documents\\My Games\\Skyrim Special Edition\\SKSE")
 	#print("-------------------------------------------------------------------------------------")
 	#print("If you get an error 'File not found', make sure that have applied the exception for")
 	#print("this script to allow it to have read/write access within this folder.")
@@ -576,7 +576,7 @@ def solve_Mods(FileContent) -> str:
 			break
 	return sReturn
 
-from collections import Counter		# TODO maybe sometime later
+from collections import Counter  # TODO maybe sometime later
 def show_issue_occourence__OLD(issue: str, FileContent: list, list2add: list) -> str:
 	"""Parses through 'FileContent' looking for 'issue', prints 'issue' if found and not in list2add yet"""
 	sReturn = ""
@@ -678,7 +678,7 @@ def main(file_list):
 				# Apply to both, if and elif...
 				# Get SKSE version
 				first_pass_str = ''.join(DATA)
-				ver_SKSE = re.search("skse.*\.dll", first_pass_str)
+				ver_SKSE = re.search("skse.*\\.dll", first_pass_str)
 				ver_SKSE = get_version_Mod(ver_SKSE.group(0))
 				
 				# Unhandled Exception
@@ -820,7 +820,7 @@ def main(file_list):
 						str_Mesh = ""
 						for mLine in DATA:
 							mesh_lines.append(mLine)
-							if "mesh" in mLine.lower and not any(mLine.strip() in p for p in printed):
+							if "mesh" in mLine.lower() and not any(mLine.strip() in p for p in printed):
 								list_add(mLine.strip(), printed)
 								str_Mesh += mLine
 								str_Mesh += mesh_lines[-1]
