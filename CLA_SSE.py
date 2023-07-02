@@ -931,13 +931,10 @@ def main(file_list):
 				print(p_debug_status(debugList=culprints, iCount=len(culprints), iSolved=c), file=REPORT)
 
 				# Random issues (fallback, additional, probably to figure unhandled:
-				lst_Random = []
-				lst_Random.append("File:")
-				lst_Random.append("Name:")
-				lst_Random.append("XPMSEWeaponStyleScaleEffect")
+				lst_random = ["File:","Name:","XPMSEWeaponStyleScaleEffect"]
 				print(p_section("Random 'Fallback' Checks") , file=REPORT)
 				#lst_Random.append("")
-				for r in lst_Random:
+				for r in lst_random:
 					tmp_val = ""
 					tmp_val = show_issue_occourence(r,DATA,printed)
 					if tmp_val is not None and tmp_val != "":
