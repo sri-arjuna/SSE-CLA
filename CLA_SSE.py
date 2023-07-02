@@ -790,11 +790,12 @@ def main(file_list):
 									tmp_val2 = print_line(adLine,printed,"")
 								if tmp_val2 is not None or tmp_val2 != "":
 									str_Skyrim += tmp_val2
-						if str_Skyrim is not None or str_Skyrim != "":
-							print(str_Skyrim, file=REPORT)
 						if skyrimexe_counter == 0:
 							str_Skyrim = f"\n\tCould not find any known issues related to {cul}.\n" \
-								  + f"\t{cul} _might_ be listed for the sole reason of... you're playing this game!!"
+										 + f"\t{cul} _might_ be listed for the sole reason of... you're playing this game!!"
+						if str_Skyrim is not None or str_Skyrim != "":
+							print(str_Skyrim, file=REPORT)
+
 
 
 					if "CompressedArchiveStream" in cul:
