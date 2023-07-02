@@ -382,24 +382,26 @@ def solve_RAM(ram_data: RamData) -> str:
 	"""Expands ram_dict and returns possible solution"""
 	if ram_data:
 		str_result = ""
+		str_result = f"RAM Total:	{ram_data.total} GB\n"
+		str_result += f"RAM Used:	{ram_data.used} GB\n"
+		str_result += f"RAM Free:	{ram_data.free} GB\n"
 		bol_maybe = 0
+		str_result += "\nAnalysis "
 		if ram_data.free <= 1.5:
 			str_result += "RAM (critical):\n" \
-				+ "There is a very high chance that the main reason for the crash was lack of free ram: " \
-				+ str(ram_data.free)
+				+ f"\t\tThere is a very high chance that the main reason for the crash was lack of free ram: {ram_data.free} GB\n"
 			bol_maybe = 1
 		elif ram_data.free <= 2.0:
 			str_result += "RAM (maybe, probably not):\n" \
-				+ "Although unlikely, there is a slim chance that the crash might have happened due to lack of free ram: " \
-				+ str(ram_data.free)
+				+ "\t\tAlthough unlikely, there is a slim chance that the crash might have happened due to lack of free ram: " \
+				+ str(ram_data.free) + " GB\n"
 			bol_maybe = 1
 		else:
 			str_result += "RAM (all good):\n" \
-				+ "It is absolute unlikely that the crash was due to RAM."
+				+ "\t\tIt is absolute unlikely that the crash was due to RAM.\n"
 
 		if bol_maybe:
 			str_result += '''
-
 		First and foremost, try to close any other application and background processes that might be running that you do not need.
 		Like, but not limited to, game launchers, web browsers with 20 open tabs, Spotify, even Discord.
 		Also, you might want to consider using lower texture mods, aka, use a 2k instead of a 4k texture mod, or just a 1k texture.
@@ -708,7 +710,7 @@ def main(file_list):
 				# RAM
 				# 2
 				tRAM =get_RAM(first_pass_str)
-				print( p_section("RAM") + solve_RAM(tRAM), file=REPORT)
+				print(p_section("RAM") + solve_RAM(tRAM), file=REPORT)
 				progress_bar.update(1)
 				# Mods
 				# 3
