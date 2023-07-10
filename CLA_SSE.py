@@ -21,8 +21,8 @@
 ### Script Variables
 ######################################
 script_name = "CLA SSE - Sephs Skyrim Experimental Crash Log Analyzer"
-script_version = "1.0"
-script_changed = "2023.06.27"
+script_version = "1.0.1"
+script_changed = "2023.07.10"
 script_title = script_name + " (" + script_version + ") / " + script_changed
 ######################################
 ### Python Version Check
@@ -92,6 +92,7 @@ simple_VR = {
 	'ViewYourselfVR.esp': "Has been reported to cause CTD and other bugs.\n"
 			+ "\tIf this CTD happened when opening your inventory, try downgrading to 1.1.\n"
 			+ "\t - https://www.nexusmods.com/skyrimspecialedition/mods/16809",
+	'FPSFixPlugin.dll': "",
 }
 # Both
 simple_Chance = {
@@ -166,6 +167,13 @@ simple_Chance = {
 				+ "\tHowever, best practice would probably be to disable texture mods that change locations you crashed in.",
 	'XPMSE': "This _might_ shows a probable issue with animations.\n" \
 				+ "\tPlease check mods that add animations.",
+	'XAudio': "Despite the leading X, xaudio is part of Windows base installations and NOT part of DirectX.\n"
+				+ "\tGeneral info on xaudio:\n\t\t\t https://learn.microsoft.com/en-us/windows/win32/xaudio2/xaudio2-redistributable \n\n"
+				+ "\tYou can download an xaudio redist version directly form:\n\t\t\t https://www.nuget.org/packages/Microsoft.XAudio2.Redist \n"
+				+ "\tUsualy, the later the better, however it also depends on which version you are missing.\n"
+				+ "\tThe nuget site is linked to from the official Microsoft website.",
+	'BGSSaveLoadManager': "Once you've managed to load the last working save, try this:\tplayer.kill \n"
+				+ "\tThis has to be confirmed to be working (guess, I'll be told when its not).",
 }
 # Dialogue - no detailed description, summarizing in if block
 simple_Dialog = {
@@ -235,13 +243,13 @@ class err_CLA(Enum):
 		+ "\thttps://www.nexusmods.com/skyrimspecialedition/mods/59818"
 	NoFiles = "\nEither there are no logs in: \n"\
 		+ "\t\t%s\n"\
-		+ "\tnOr all logs have a Report.\n" \
-		+ "Either way, nothing to do...\n\n"
+		+ "\tOr all logs have a Report.\n" \
+		+ "\tEither way, nothing to do...\n\n"
 	NoPerm = "\nPermissionError:\n"\
 		+ "\tPath exists, but you have no permission to it: %s\n"\
 		+ "\tPlease check your Windows security notifications (next to the clock in the taskbar).\n"
 	NoSeparator = "Error: \n" \
-		+ "Could find neither '.' nor '_' as seperator in string: %s\n"
+		+ "\tCould find neither '.' nor '_' as seperator in string: %s\n"
 	Usage = "Usage: CLA_SSE.py [\"C:\\some dir\\to\\logs\"]"
 
 	def format(self, err_msg):
@@ -496,7 +504,7 @@ def get_crash_logs(logdir='.') -> list:
 	# Use list comprehension to create a list of files that match the pattern
 	files = [os.path.join(logdir, f) for f in os.listdir(logdir.strip()) if os.path.isfile(os.path.join(logdir, f)) and pattern.search(f)]
 	reports = [os.path.join(logdir, f) for f in os.listdir(logdir.strip()) if os.path.isfile(os.path.join(logdir, f)) and patternR.search(f)]
-	return files	## TODO: Remove when rewrite is done
+	#return files	## TODO: Remove when rewrite is done
 	# Remove any log that already has a "-REPORT.txt" file
 	with tqdm(total=len(files), desc="Removing duplicates", unit="Report") as progress_bar:
 		for f in files.copy():
@@ -664,6 +672,7 @@ def main(file_list):
 					MODE = DATA[0].split(" ")[1]
 				elif "NetScriptFramework" in str(DATA[2].strip()):
 					CrashLogger = ".NET Script Framework"
+					ver_Logger = str(DATA[2])
 					for SF_Line in DATA:
 						# GameLibrary: SkyrimSE
 						if "GameLibrary" in SF_Line:
@@ -705,6 +714,7 @@ def main(file_list):
 					+ "#####################################################################################\n", file=REPORT)
 				# Print system basics
 				# 1
+				print(f"Crashlog Tool: \t\t{ver_Logger}", file=REPORT)
 				print(solve_SKSE(ver_Skyrim, ver_SKSE), file=REPORT)
 				progress_bar.update(1)
 				# RAM
@@ -985,8 +995,8 @@ except Exception:
 	sys.exit(1)
 # Don't call main() if there is nothing to do
 if len(workfiles) == 0:
-	#print("\nEither there are no logs in: \n\t",logdir,"\n\nOr all logs have a Report.\nEither way, nothing to do...\n\n")
 	print_error(err_CLA.NoFiles, logdir)
+	print("Chance of false positive... idk")
 else:
 	# Start routine / handle file by file
 	main(workfiles)

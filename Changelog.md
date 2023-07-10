@@ -8,6 +8,16 @@ Until then, its only a log of what I've changed to prepare update info on Nexus.
 
 ----
 
+# 2023.07.10 - 1.0.1
+- Fixed: actual RAM values & analysis display formating
+- Fixed: switched if block to return str_Skyrim summary
+- Fixed: 80% parsing display
+- Fixed: Minor typos in err_CLA
+- Added: xaudio
+- Added: BGSSaveLoadManager (1 of 2 save game issues)
+- Added: CrashLogger version (ok ok, full line)
+- Changed: CLA will no longer overwrite existing crashlogs
+
 # 2023.07.01 - 1.0-beta
 - Completly rewritten code from ground up
 - - Error message with pause on:
