@@ -223,6 +223,7 @@ simple_Chance = {
 				+ "\tThat said, it is common to have 2-4 mods listed in a row, however, \n"
 				+ "\tlists of 5 or more _might_ cause issues by the sheer amount of what possibly could be overwritten several times.",
 	'lanterns\\lantern.dds': "If you are using: 'Lanterns of Skyrim II' and 'JK Skyrim' do not install the 'No Lights Patch' since LoS II patch is meant to be used without it.",
+	'Lanterns Of Skyrim II.esm': f"If you are using: 'Lanterns of Skyrim II' and 'JK Skyrim' do not install the 'No Lights Patch' since LoS II patch is meant to be used without it.",
 	'CompressedArchiveStream': "Indicates an issue with a corrupted texture.\n"
 				+ "\tIf the results show a DLC, it is probable that another mod overwrites that texture.\n"
 				+ "\tIf you do not get a specific texture name, you might want to extract the according '*.BSA' of any found '*.esp' or '*.esm', that is not a DLC.esm.\n"

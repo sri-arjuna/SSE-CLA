@@ -22,6 +22,7 @@ Until then, its only a log of what I've changed to prepare update info on Nexus.
 - Added: 2 Possible ImprovedCamera solutions
 - Added: Very basic possible "unbound" fix
 - Added: Check for Upscaler issues.
+- Added: Latern of Skyrim II... again but different..
 
 # 2023.07.10 - 1.0.1
 - Fixed: actual RAM values & analysis display formating
