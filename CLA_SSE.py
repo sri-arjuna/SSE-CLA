@@ -25,17 +25,32 @@ script_version = "1.0.1"
 script_changed = "2023.07.10"
 script_title = script_name + " (" + script_version + ") / " + script_changed
 ######################################
+### Windows Version Check
+######################################
+import platform
+import sys
+import os
+# Get the Windows version string
+windows_version = platform.release()
+# Check if the version is 7 or lower than 10
+if windows_version.startswith("6.") or windows_version.startswith("5."):
+	print("Windows version is 7 or lower than 10.")
+	print("You will need to install the following, in order for the tool to work:")
+	print("--> https://github.com/adang1345/PythonWin7/tree/master/3.12.0b4")
+	os.system("pause")
+	sys.exit(1)
+######################################
 ### Python Version Check
 ######################################
-import sys
+
 if sys.version_info[:2] < (3, 3):
 	print("This script requires Python 3.3 or higher.")
 	print("Please download and install it from https://www.python.org/downloads/")
+	os.system("pause")
 	sys.exit(1)
 ######################################
 ### Imports
 ######################################
-import os
 import re
 import time  # # Not really required, but otherwise we get 0 files on tqdm's progressbar...
 from dataclasses import dataclass  # dict_RAM and others
