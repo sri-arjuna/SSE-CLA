@@ -21,8 +21,8 @@
 ### Script Variables
 ######################################
 script_name = "CLA SSE - Sephs Skyrim Experimental Crash Log Analyzer"
-script_version = "1.0.1"
-script_changed = "2023.07.10"
+script_version = "1.1.0"
+script_changed = "2023.08.19"
 script_title = script_name + " (" + script_version + ") / " + script_changed
 ######################################
 ### Windows Version Check
@@ -56,9 +56,8 @@ import time  # # Not really required, but otherwise we get 0 files on tqdm's pro
 from dataclasses import dataclass  # dict_RAM and others
 from enum import Enum
 from multiprocessing import freeze_support  # pip install multiprocessing
-
 from cpuinfo import get_cpu_info  # pip install py-cpuinfo
-from tqdm import tqdm  # Progress bar
+from tqdm import tqdm  # Progress bar -- pip install tqdm
 ######################################
 ### Dictionaries
 ######################################
@@ -1070,5 +1069,5 @@ os.system("pause")
 sys.exit(1)
 
 
-
+# Should have added some context.. needs research... i wrote it for a reason.. just dont remember why...
 # https://www.nexusmods.com/skyrimspecialedition/mods/10547

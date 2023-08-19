@@ -9,6 +9,9 @@ Until then, its only a log of what I've changed to prepare update info on Nexus.
 ----
 
 # 2023.08.20 - 1.1.0
+These changes helped to remove ~45 different crashlogs from my todo-testing list.
+Hope they help.
+
 ##  CLA SSE - itself
 - Fixed: tbbmalloc / low ram - now share same text (partialy)
 - Fixed: regex handling for certain SKSE occourences/detections
