@@ -640,8 +640,20 @@ def show_issue_occourence(issue: str, FileContent: list, list2add: list) -> str:
         if "Unhandled " in tmp_Line:
             continue
         if issue in tmp_Line.strip() and tmp_Line.strip() not in list2add:
-            sReturn += f"{tmp_Line.strip()} -//- {s_Count(tmp_Line.strip(), FileContent)}\n"
+            # Not yet added, so add anyway..
             list2add.append(tmp_Line.strip())
+            # Handle Exception for pre-text
+            if issue == "Modified by":
+                val_count = tmp_Line.strip().count("->")
+                if val_count >= 10:
+                    sReturn += f"\nChance: HIGH ({val_count})\n"
+                elif val_count >= 5:
+                    sReturn += f"\nChance: MEDIUM ({val_count})\n"
+                else:
+                    sReturn += f"\nChance: LOW ({val_count})\n"
+            # Regular returns
+            sReturn += f"{tmp_Line.strip()} -//- {s_Count(tmp_Line.strip(), FileContent)}\n"
+            
     if sReturn != "":
         return f"\n{sReturn}"
     else:

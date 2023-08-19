@@ -13,6 +13,7 @@ Until then, its only a log of what I've changed to prepare update info on Nexus.
 - Fixed: tbbmalloc / low ram - now share same text (partialy)
 - Fixed: regex handling for certain SKSE occourences/detections
 - Added: Windows Version check to install proper Python.. idk why that is required...
+- Improved: Display of "Modified by" issues
 
 ## Mod Issues
 - Added: (basic) Check for missing masters
