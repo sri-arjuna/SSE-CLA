@@ -694,7 +694,7 @@ def main(file_list):
 				# Apply to both, if and elif...
 				# Get SKSE version
 				first_pass_str = ''.join(DATA)
-				ver_SKSE = re.search("skse.*\\.dll", first_pass_str)
+				ver_SKSE = re.search("skse.*\d+\\.dll", first_pass_str)
 				ver_SKSE = get_version_Mod(ver_SKSE.group(0))
 				
 				# Unhandled Exception
