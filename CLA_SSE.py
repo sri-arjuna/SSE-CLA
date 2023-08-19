@@ -1000,8 +1000,14 @@ def main(file_list):
 
 				# Random issues (fallback, additional, probably to figure unhandled:
 				lst_random = ["File:","Name:","XPMSEWeaponStyleScaleEffect", "ID:", "BGS", "Manager"]
-				print(p_section("Random 'Fallback' Checks") , file=REPORT)
-				#lst_Random.append("")
+				print(p_section("Random 'Fallback' Checks", file=REPORT)
+				txt_Random = """Howe to read these results?
+- They are simple keywords that may appear when you have a lot of issues.
+- They do NOT have to mean anything.
+- Only if the "regular" results / solutions do not help, they might provide an indication to the reason for this crash.
+
+"""
+				print(txt_Random, file=REPORT)
 
 				for r in lst_random:
 					tmp_val = ""

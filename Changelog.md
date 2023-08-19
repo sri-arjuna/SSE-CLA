@@ -14,7 +14,7 @@ Until then, its only a log of what I've changed to prepare update info on Nexus.
 - Fixed: regex handling for certain SKSE occourences/detections
 - Added: Windows Version check to install proper Python.. idk why that is required...
 - Improved: Display of "Modified by" issues
-- Added: More keywords to "random fallback checks"
+- Added: More keywords and description to "random fallback checks"
 
 ## Mod Issues
 - Added: (basic) Check for missing masters
