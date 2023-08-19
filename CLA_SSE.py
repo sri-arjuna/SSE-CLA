@@ -224,6 +224,11 @@ simple_Chance = {
 	'textures': "There is a chance for an issue with textures.\n" \
 				+ "\tThe following tool might be of help to solve that issue:\n" \
 				+ "\t- Cathedral Assets Optimizer: https://www.nexusmods.com/skyrimspecialedition/mods/23316",
+	'ImprovedCameraSE.dll+': "It is not yet clear what can cause this...\n" \
+				+ "\t- Some report to add: '-forcesteamloader' (without quotes) to SKSE arguments for your mod manager.\n" \
+				+ "\t- If running ReShade, try changing the ini to 'MenuMode=0'\n"\
+				+ "\n\tIf neither of this works, please ask for help on: https://www.nexusmods.com/skyrimspecialedition/mods/93962 \n" \
+				+ "\tand let me know about the solution as well, so i'll be able to include it in the 'next update'.",
 }
 # Dialogue - no detailed description, summarizing in if block
 simple_Dialog = {
