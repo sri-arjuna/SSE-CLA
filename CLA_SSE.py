@@ -764,6 +764,21 @@ def main(file_list):
 
 				print(strUnhandled, file=REPORT)
 				progress_bar.update(1)
+				
+				# Check for missing masters
+				pattern_masters = r"\.esp"
+				missing_masters = re.search(pattern_masters, first_pass_str)
+				if missing_masters:
+					# Well it did fine esp, so ... NO missing masters
+					continue
+				else:
+					print(p_section("Missing Masters"), file=REPORT)
+					txt_missing_masters = """	1. Please check the notification of your Mod Manager!
+	2. If you cant find any entries there, try LOOT.
+	3. If this yields nothing, you'll have to manualy check every mod of yours if you might have missed a dependency.
+"""
+					print(txt_missing_masters, file=REPORT)
+					
 				# Start with culprints
 				print(p_section("Solutions"), file=REPORT)
 				c = 0
@@ -949,6 +964,7 @@ def main(file_list):
 				lst_random = ["File:","Name:","XPMSEWeaponStyleScaleEffect"]
 				print(p_section("Random 'Fallback' Checks") , file=REPORT)
 				#lst_Random.append("")
+
 				for r in lst_random:
 					tmp_val = ""
 					tmp_val = show_issue_occourence(r,DATA,printed)
