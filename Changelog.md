@@ -8,6 +8,11 @@ Until then, its only a log of what I've changed to prepare update info on Nexus.
 
 ----
 
+# 2023.08.20 - 1.1.0
+- Fixed: tbbmalloc / low ram - now share same text (partialy) TODO
+
+
+
 # 2023.07.10 - 1.0.1
 - Fixed: actual RAM values & analysis display formating
 - Fixed: switched if block to return str_Skyrim summary

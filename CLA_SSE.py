@@ -47,6 +47,52 @@ from tqdm import tqdm  # Progress bar
 ######################################
 ### Dictionaries
 ######################################
+# Exception due to recently shared "same solution"...
+txt_solution_low_ram = '''
+		First and foremost, try to close any other application and background processes that might be running that you do not need.
+		Like, but not limited to, game launchers, web browsers with 20 open tabs, Spotify, even Discord.
+		Also, you might want to consider using lower texture mods, aka, use a 2k instead of a 4k texture mod, or just a 1k texture.
+
+		If the above did not help, you could try apply these config tweaks to: __Skyrim.ini___
+		Make sure to comment out (#) any existing variants of these, so you can go back if they dont help or make things worse.
+
+		This is most applicable if you're using 4-8 GB ram or less, you game addicted freak! ;) (said the guy who was playing WoW raids at 3 fps).
+
+		==================================
+
+		[Display]
+		iTintTextureResolution=2048
+
+		[General]
+		ClearInvalidRegistrations=1
+
+		[Memory]
+		DefaultHeapInitialAllocMB=768
+		ScrapHeapSizeMB=256
+
+		==================================
+
+		Last but not least, increasing your pagefile is a good and simple way to avoid this.
+		Best practice: pagefile-size > RAM
+		Example: 24 GB > 16 GB RAM
+
+		Please read / follow:
+		1. In the Taskbar Search, type “Advanced System“. ...
+		2. In System Properties, click Advanced tab.
+		3. In Performance section click Settings button.
+		4. Performance Options will open. ...
+		5. Here, under Virtual memory, select Change.
+		6. Uncheck Automatically manage paging file size for all drives.
+		7. Select a Drive that hardly use (as in not often)
+		8. Set manual size
+		9. Set value to ~ 150% of your RAM (as shown in example)
+		10. Confirm with "OK".
+
+		If you want to read more about (allthough, not related to sharepoint server):
+		https://learn.microsoft.com/en-us/sharepoint/technical-reference/the-paging-file-size-should-exceed-the-amount-of-physical-ram-in-the-system
+		'''
+
+
 # Skyrim SE
 simple_Skyrim = {
 	'0CB748E': "Have you closed Skyrim 'from the outside' aka with Taskmanager? -- Verification appreciated.",
@@ -151,7 +197,8 @@ simple_Chance = {
 				+ "\tThis message is shown without a check:\n" \
 				+ "\tMake sure to disable: SrtCrashFix64.dll (Animation Limit Crash fix SSE) as this is handled by the Engines Fixes, which is recommended to use!\n"
 				+ "\tEither way, make sure to have the 'latest' version variant for your Skyrim edition.\n"
-				+ "\tHowever, this probably is not the cause, but the causing mod relies on excessive memory handling.",
+				+ "\tHowever, this probably is not the cause, but the causing mod relies on excessive memory handling."\
+				+ txt_solution_low_ram	,
 	'DynamicCollisionAdjustment.dll': "General statement, this one is incompatible with the PLANCK for VR.\n"
 				+ "\tWhile the name is tempting and promising, bug reports since october 2022 seems to be left untouched by the mod author.\n"
 				+ "\tPlease check your issue with the bugs listed there:\n"
@@ -409,49 +456,7 @@ def solve_RAM(ram_data: RamData) -> str:
 				+ "\t\tIt is absolute unlikely that the crash was due to RAM.\n"
 
 		if bol_maybe:
-			str_result += '''
-		First and foremost, try to close any other application and background processes that might be running that you do not need.
-		Like, but not limited to, game launchers, web browsers with 20 open tabs, Spotify, even Discord.
-		Also, you might want to consider using lower texture mods, aka, use a 2k instead of a 4k texture mod, or just a 1k texture.
-
-		If the above did not help, you could try apply these config tweaks to: __Skyrim.ini___
-		Make sure to comment out (#) any existing variants of these, so you can go back if they dont help or make things worse.
-
-		This is most applicable if you're using 4-8 GB ram or less, you game addicted freak! ;) (said the guy who was playing WoW raids at 3 fps).
-
-		==================================
-
-		[Display]
-		iTintTextureResolution=2048
-
-		[General]
-		ClearInvalidRegistrations=1
-
-		[Memory]
-		DefaultHeapInitialAllocMB=768
-		ScrapHeapSizeMB=256
-
-		==================================
-
-		Last but not least, increasing your pagefile is a good and simple way to avoid this.
-		Best practice: pagefile-size > RAM
-		Example: 24 GB > 16 GB RAM
-
-		Please read / follow:
-		1. In the Taskbar Search, type “Advanced System“. ...
-		2. In System Properties, click Advanced tab.
-		3. In Performance section click Settings button.
-		4. Performance Options will open. ...
-		5. Here, under Virtual memory, select Change.
-		6. Uncheck Automatically manage paging file size for all drives.
-		7. Select a Drive that hardly use (as in not often)
-		8. Set manual size
-		9. Set value to ~ 150% of your RAM (as shown in example)
-		10. Confirm with "OK".
-
-		If you want to read more about (allthough, not related to sharepoint server):
-		https://learn.microsoft.com/en-us/sharepoint/technical-reference/the-paging-file-size-should-exceed-the-amount-of-physical-ram-in-the-system
-		'''
+			str_result += txt_solution_low_ram
 		return str_result + "\n"
 	else:
 		return "RAM could not be detected...\nSkipping...\n"
@@ -1004,3 +1009,7 @@ else:
 # Exit properly
 os.system("pause")
 sys.exit(1)
+
+
+
+# https://www.nexusmods.com/skyrimspecialedition/mods/10547
