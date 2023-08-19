@@ -244,6 +244,8 @@ simple_Chance = {
 				+ "\t- If running ReShade, try changing the ini to 'MenuMode=0'\n"\
 				+ "\n\tIf neither of this works, please ask for help on: https://www.nexusmods.com/skyrimspecialedition/mods/93962 \n" \
 				+ "\tand let me know about the solution as well, so i'll be able to include it in the 'next update'.",
+	'Skyrim unbound': "If you have not already, you can try installing (one of) these fixes:" \
+				+ "\t- https://www.nexusmods.com/skyrimspecialedition/mods/30536" ,
 }
 # Dialogue - no detailed description, summarizing in if block
 simple_Dialog = {
