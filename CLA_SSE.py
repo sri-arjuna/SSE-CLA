@@ -736,7 +736,13 @@ def main(file_list):
 				# Get SKSE version
 				first_pass_str = ''.join(DATA)
 				ver_SKSE = re.search("skse.*\d+\\.dll", first_pass_str)
-				ver_SKSE = get_version_Mod(ver_SKSE.group(0))
+				try:
+					ver_SKSE = get_version_Mod(ver_SKSE.group(0))
+				except Exception:
+					print("NO SKSE FOUND -> Try starting the game via SKSE_Launcher.exe !!!!")
+					os.system("pause")
+					#sys.exit(1)
+					continue
 				
 				# Unhandled Exception
 				line_Unhandled = re.search(r"Unhandled(\s+native)?\s+exception.*", first_pass_str)

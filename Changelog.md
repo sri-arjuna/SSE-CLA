@@ -18,6 +18,7 @@ Hope they help.
 - Added: Windows Version check to install proper Python.. idk why that is required...
 - Improved: Display of "Modified by" issues
 - Added: More keywords and description to "random fallback checks"
+- Added: Catch if game was not started via SKSE, or SKSE could not be detected at all
 
 ## Mod Issues
 - Added: (basic) Check for missing masters
