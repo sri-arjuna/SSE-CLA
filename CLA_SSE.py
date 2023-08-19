@@ -993,7 +993,7 @@ def main(file_list):
 				print(p_debug_status(debugList=culprints, iCount=len(culprints), iSolved=c), file=REPORT)
 
 				# Random issues (fallback, additional, probably to figure unhandled:
-				lst_random = ["File:","Name:","XPMSEWeaponStyleScaleEffect"]
+				lst_random = ["File:","Name:","XPMSEWeaponStyleScaleEffect", "ID:", "BGS", "Manager"]
 				print(p_section("Random 'Fallback' Checks") , file=REPORT)
 				#lst_Random.append("")
 
