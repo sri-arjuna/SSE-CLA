@@ -246,6 +246,10 @@ simple_Chance = {
 				+ "\tand let me know about the solution as well, so i'll be able to include it in the 'next update'.",
 	'Skyrim unbound': "If you have not already, you can try installing (one of) these fixes:" \
 				+ "\t- https://www.nexusmods.com/skyrimspecialedition/mods/30536" ,
+	'Upscaler.dll+': "This crash could be related to Upscaler.\n" \
+				+ "\t- Try disabling it to figure it it really is. (aka cant reproduce issue)\n" \
+				+ f"\t- If is, you might want to check: %userprofile%\Documents\My Games\Skyrim Special Edition\SKSE\SkyrimUpscaler.log\n" \
+				+ "\n\tThen Report your issues to: https://www.nexusmods.com/skyrimspecialedition/mods/80343" ,
 }
 # Dialogue - no detailed description, summarizing in if block
 simple_Dialog = {
