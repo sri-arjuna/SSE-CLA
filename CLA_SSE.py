@@ -768,10 +768,7 @@ def main(file_list):
 				# Check for missing masters
 				pattern_masters = r"\.esp"
 				missing_masters = re.search(pattern_masters, first_pass_str)
-				if missing_masters:
-					# Well it did fine esp, so ... NO missing masters
-					continue
-				else:
+				if not missing_masters:
 					print(p_section("Missing Masters"), file=REPORT)
 					txt_missing_masters = """	1. Please check the notification of your Mod Manager!
 	2. If you cant find any entries there, try LOOT.
