@@ -221,6 +221,9 @@ simple_Chance = {
 				+ "\tThe nuget site is linked to from the official Microsoft website.",
 	'BGSSaveLoadManager': "Once you've managed to load the last working save, try this:\tplayer.kill \n"
 				+ "\tThis has to be confirmed to be working (guess, I'll be told when its not).",
+	'textures': "There is a chance for an issue with textures.\n" \
+				+ "\tThe following tool might be of help to solve that issue:\n" \
+				+ "\t- Cathedral Assets Optimizer: https://www.nexusmods.com/skyrimspecialedition/mods/23316",
 }
 # Dialogue - no detailed description, summarizing in if block
 simple_Dialog = {

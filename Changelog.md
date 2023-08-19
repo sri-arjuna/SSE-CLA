@@ -15,8 +15,7 @@ Until then, its only a log of what I've changed to prepare update info on Nexus.
 
 ## Mod Issues
 - Added: (basic) Check for missing masters
-
-
+- Added: Possible texture fix - Cathedral Assets Optimizer 
 
 # 2023.07.10 - 1.0.1
 - Fixed: actual RAM values & analysis display formating
