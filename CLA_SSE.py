@@ -21,8 +21,8 @@
 ### Script Variables
 ######################################
 script_name = "CLA SSE - Sephs Skyrim Experimental Crash Log Analyzer"
-script_version = "1.1.0"
-script_changed = "2023.08.19"
+script_version = "1.1.1"
+script_changed = "2023.08.20"
 script_title = script_name + " (" + script_version + ") / " + script_changed
 ######################################
 ### Windows Version Check
