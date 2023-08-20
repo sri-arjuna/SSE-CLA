@@ -627,6 +627,10 @@ def show_issue_occourence__OLD(issue: str, FileContent: list, list2add: list) ->
 	for tmp_Line in FileContent:
 		if "Unhandled " in tmp_Line:
 			continue
+		#if "MODULES:" in tmp_Line.strip():
+		#	return sReturn
+		#else:
+		#	print("DEBUG --> " + tmp_Line, flush=True)
 		#if issue in tmp_Line and not any(tmp_Line in t for t in list2add):
 		if issue in tmp_Line.strip() and tmp_Line.strip() not in list2add:
 			sReturn += f"{tmp_Line.strip()} -//- {s_Count(tmp_Line.strip(),FileContent)}\n"
@@ -871,9 +875,12 @@ def main(file_list):
 							print(str_Skyrim, file=REPORT)
 
 					if "CompressedArchiveStream" in cul:
-						for gamefile in ".esp" ".esm" ".dds":
-							str_Compressed = show_issue_occourence(gamefile, DATA, printed)
-							print(str_Compressed, file=REPORT)
+						str_Compressed = show_issue_occourence("CompressedArchiveStream", DATA, printed)
+						print(str_Compressed, file=REPORT)
+						
+						#for gamefile in [".esp", ".esm", ".dds"]:
+						#	str_Compressed = show_issue_occourence(gamefile, DATA, printed)
+						#	print(str_Compressed, file=REPORT)
 
 					if "NiNode" in cul:
 						ninode_lines = []
