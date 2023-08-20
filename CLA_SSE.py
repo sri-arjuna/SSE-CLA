@@ -877,11 +877,14 @@ def main(file_list):
 					if "CompressedArchiveStream" in cul:
 						str_Compressed = show_issue_occourence("CompressedArchiveStream", DATA, printed)
 						print(str_Compressed, file=REPORT)
-						
 						#for gamefile in [".esp", ".esm", ".dds"]:
 						#	str_Compressed = show_issue_occourence(gamefile, DATA, printed)
 						#	print(str_Compressed, file=REPORT)
 
+
+					if "textures" in cul:
+						print(show_issue_occourence("textures", DATA, printed), file=REPORT)
+					
 					if "NiNode" in cul:
 						ninode_lines = []
 						str_Ninode = ""
