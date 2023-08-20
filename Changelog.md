@@ -8,6 +8,13 @@ Until then, its only a log of what I've changed to prepare update info on Nexus.
 
 ----
 
+# 2023.08.20 - 1.1.1
+HOTFIX
+- Fixed: Included the whole crashlog on CompressedArchiveStream issues.
+- Fixed: "textures" issue now actualy shows the related textures.
+- Added: bswin32keyboarddevice needs restarting computer to fix
+- Added: DynDOLOD warning to disable autosave.
+
 # 2023.08.20 - 1.1.0
 These changes helped to remove ~45 different crashlogs from my todo-testing list.
 Hope they help.

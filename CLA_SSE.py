@@ -250,6 +250,10 @@ simple_Chance = {
 				+ "\t- Try disabling it to figure it it really is. (aka cant reproduce issue)\n" \
 				+ f"\t- If is, you might want to check: %userprofile%\Documents\My Games\Skyrim Special Edition\SKSE\SkyrimUpscaler.log\n" \
 				+ "\n\tThen Report your issues to: https://www.nexusmods.com/skyrimspecialedition/mods/80343" ,
+	'bswin32keyboarddevice': "Usualy, a simple restart of the computer should fix the issue.",
+	'DynDOLOD.esm': "There is a chance that this might cause a CTD when changing locations.\n" \
+				+ "\tSpecificly when passing a door of some sorts, can cause the game its AUTO-SAVE to be triggered, because the scripts were not done when its called and thus make the game stall.\n" \
+				+ "\tTo avoid that, it is recomended to DISABLE Autosave in game settings.",
 }
 # Dialogue - no detailed description, summarizing in if block
 simple_Dialog = {
@@ -707,7 +711,8 @@ def main(file_list):
 						# Just check for culprints
 						for culprint_Line in DATA:
 							if "modules" in culprint_Line.lower():
-								break
+								if not "DynDOLOD.esm" == itm:
+									break
 							if itm in culprint_Line:
 								#culprints.append(itm)
 								culprints = list_add(itm, culprints)
