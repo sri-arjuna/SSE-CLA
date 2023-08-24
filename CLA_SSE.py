@@ -253,7 +253,10 @@ simple_Chance = {
 	'bswin32keyboarddevice': "Usualy, a simple restart of the computer should fix the issue.",
 	'DynDOLOD.esm': "There is a chance that this might cause a CTD when changing locations.\n" \
 				+ "\tSpecificly when passing a door of some sorts, can cause the game its AUTO-SAVE to be triggered, because the scripts were not done when its called and thus make the game stall.\n" \
-				+ "\tTo avoid that, it is recomended to DISABLE Autosave in game settings.",
+				+ "\tTo avoid that, it is recomended to DISABLE Autosave in game settings.\n" \
+				+ "\n\tIf that does not help, please report to either:\n" \
+				+ "\thttps://www.nexusmods.com/skyrimspecialedition/mods/32382 \n<OR>\n"
+				+ "\thttps://stepmodifications.org/forum/forum/223-dyndolod-xlodgen/ for a more detailed investigation.",
 }
 # Dialogue - no detailed description, summarizing in if block
 simple_Dialog = {
