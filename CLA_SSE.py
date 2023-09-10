@@ -545,9 +545,9 @@ def get_crash_logs(logdir='.') -> list:
 	# Use list comprehension to create a list of files that match the pattern
 	files = [os.path.join(logdir, f) for f in os.listdir(logdir.strip()) if os.path.isfile(os.path.join(logdir, f)) and pattern.search(f)]
 	reports = [os.path.join(logdir, f) for f in os.listdir(logdir.strip()) if os.path.isfile(os.path.join(logdir, f)) and patternR.search(f)]
-	if len(patternR) > 1:
+	#if patternR is not None and len(patternR) > 1:
 		# More than one report has found, just inform user anyway
-		print("--> You might want to move your old crashlogs to a sub-directory. <--")
+	#	print("--> You might want to move your old crashlogs to a sub-directory. <--")
 	return files	## TODO: Remove when rewrite is done // re-enabled bypass: bug fix #1
 	# Remove any log that already has a "-REPORT.txt" file
 	with tqdm(total=len(files), desc="Removing duplicates", unit="Report") as progress_bar:
@@ -1072,6 +1072,7 @@ else:
 ### Start stuff
 ######################################
 # Get args first
+workfiles = None
 if len(sys.argv) == 2:
 	if os.path.isdir(sys.argv[1]):
 		logdir = sys.argv[1]
@@ -1083,15 +1084,18 @@ else:
 # and raise exception if permission is missing.
 try:
 	workfiles = get_crash_logs(logdir)
-except Exception:
+except Exception as err:
 	# Practical tests show, this is raised on permission issue:
-	print_error(err_CLA.NoPerm, logdir)
-	os.system("pause")
-	sys.exit(1)
+	print("Args: \t", err.args)
+	print("Trace: \t", err.with_traceback)
+	#print_error(err_CLA.NoPerm, logdir)
+	#os.system("pause")
+	#sys.exit(1)
 # Don't call main() if there is nothing to do
-if len(workfiles) == 0:
-	print_error(err_CLA.NoFiles, logdir)
-	print("Chance of false positive... idk")
+if workfiles is None or len(workfiles) == 0:
+	pass
+	#print_error(err_CLA.NoFiles, logdir)
+	#print("Chance of false positive... idk")
 else:
 	# Start routine / handle file by file
 	main(workfiles)

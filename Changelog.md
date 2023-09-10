@@ -9,12 +9,19 @@ Until then, its only a log of what I've changed to prepare update info on Nexus.
 ----
 
 # 2023.09.10 - 1.2.0
+
 Changed:
 - Description for DynDOLOD
 
 Removed, aka Bug Fix:
 - Duplicate check, road to hell starts with best intentions, this seems like the case
 - "basic" support for .NetScriptFramework
+
+We're about to join forces, to combine "all the crashlog analyzers" (FO4, Skyrim, + upcoming Starfield) into a single tool.
+A collab of multiple skilled and versatile developers.
+
+To stay tuned, and for faster / more comfortable help on crashlogs, you might want to consider joining us at:
+https://discord.gg/pF9U5FmD6w
 
 
 
