@@ -8,6 +8,17 @@ Until then, its only a log of what I've changed to prepare update info on Nexus.
 
 ----
 
+# 2023.09.10 - 1.2.0
+Changed:
+- Description for DynDOLOD
+
+Removed, aka Bug Fix:
+- Duplicate check, road to hell starts with best intentions, this seems like the case
+- "basic" support for .NetScriptFramework
+
+
+
+
 # 2023.08.20 - 1.1.1
 HOTFIX
 - Fixed: Included the whole crashlog on CompressedArchiveStream issues.

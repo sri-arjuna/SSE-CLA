@@ -21,8 +21,8 @@
 ### Script Variables
 ######################################
 script_name = "CLA SSE - Sephs Skyrim Experimental Crash Log Analyzer"
-script_version = "1.1.1"
-script_changed = "2023.08.20"
+script_version = "1.2.0"
+script_changed = "2023.09.10"
 script_title = script_name + " (" + script_version + ") / " + script_changed
 ######################################
 ### Windows Version Check
@@ -545,7 +545,10 @@ def get_crash_logs(logdir='.') -> list:
 	# Use list comprehension to create a list of files that match the pattern
 	files = [os.path.join(logdir, f) for f in os.listdir(logdir.strip()) if os.path.isfile(os.path.join(logdir, f)) and pattern.search(f)]
 	reports = [os.path.join(logdir, f) for f in os.listdir(logdir.strip()) if os.path.isfile(os.path.join(logdir, f)) and patternR.search(f)]
-	#return files	## TODO: Remove when rewrite is done
+	if len(patternR) > 1:
+		# More than one report has found, just inform user anyway
+		print("--> You might want to move your old crashlogs to a sub-directory. <--")
+	return files	## TODO: Remove when rewrite is done // re-enabled bypass: bug fix #1
 	# Remove any log that already has a "-REPORT.txt" file
 	with tqdm(total=len(files), desc="Removing duplicates", unit="Report") as progress_bar:
 		for f in files.copy():
@@ -729,6 +732,11 @@ def main(file_list):
 					# VR or SSE?
 					MODE = DATA[0].split(" ")[1]
 				elif "NetScriptFramework" in str(DATA[2].strip()):
+					# BugFix #2 -- No more support for this.
+					print(".NetScriptFramework is not support, please use CrashLogger PDB.")
+					os.system("pause")
+					sys.exit(1)
+					return None
 					CrashLogger = ".NET Script Framework"
 					ver_Logger = str(DATA[2])
 					for SF_Line in DATA:
